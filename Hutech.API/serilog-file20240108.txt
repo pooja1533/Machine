@@ -1,0 +1,20 @@
+2024-01-08 09:57:41.115 +05:30  INF  Now listening on: https://localhost:7221
+2024-01-08 09:57:41.233 +05:30  INF  Now listening on: http://localhost:5275
+2024-01-08 09:57:41.236 +05:30  INF  Application started. Press Ctrl+C to shut down.
+2024-01-08 09:57:41.237 +05:30  INF  Hosting environment: Development
+2024-01-08 09:57:41.237 +05:30  INF  Content root path: D:\MAchine\Hutech\Hutech.API
+2024-01-08 09:57:45.317 +05:30  INF  Request starting HTTP/2 GET https://localhost:7221/swagger/index.html - -
+2024-01-08 09:57:49.168 +05:30  INF  Request finished HTTP/2 GET https://localhost:7221/swagger/index.html - - - 200 - text/html;charset=utf-8 3853.7041ms
+2024-01-08 09:57:49.171 +05:30  INF  Request starting HTTP/2 GET https://localhost:7221/_framework/aspnetcore-browser-refresh.js - -
+2024-01-08 09:57:49.171 +05:30  INF  Request starting HTTP/2 GET https://localhost:7221/_vs/browserLink - -
+2024-01-08 09:57:49.185 +05:30  INF  Request finished HTTP/2 GET https://localhost:7221/_framework/aspnetcore-browser-refresh.js - - - 200 11990 application/javascript;+charset=utf-8 13.3954ms
+2024-01-08 09:57:49.247 +05:30  INF  Request finished HTTP/2 GET https://localhost:7221/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 76.1364ms
+2024-01-08 09:57:49.302 +05:30  INF  Request starting HTTP/2 GET https://localhost:7221/swagger/v1/swagger.json - -
+2024-01-08 09:57:49.427 +05:30  INF  Request finished HTTP/2 GET https://localhost:7221/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 124.4863ms
+2024-01-08 09:58:45.176 +05:30  INF  Request starting HTTP/1.1 GET https://localhost:7221/api/Machine/GetMachine - -
+2024-01-08 09:58:45.183 +05:30  INF  Executing endpoint 'Hutech.API.Controllers.MachineController.GetMachine (Hutech.API)'
+2024-01-08 09:58:45.204 +05:30  INF  Route matched with {action = "GetMachine", controller = "Machine"}. Executing controller action with signature System.Threading.Tasks.Task`1[Imputabiliteafro.Api.Model.ApiResponse`1[System.Collections.Generic.List`1[Hutech.Models.MachineViewModel]]] GetMachine() on controller Hutech.API.Controllers.MachineController (Hutech.API).
+2024-01-08 09:58:48.364 +05:30  INF  Executing ObjectResult, writing value of type 'Imputabiliteafro.Api.Model.ApiResponse`1[[System.Collections.Generic.List`1[[Hutech.Models.MachineViewModel, Hutech, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2024-01-08 09:58:48.392 +05:30  INF  Executed action Hutech.API.Controllers.MachineController.GetMachine (Hutech.API) in 3185.0391ms
+2024-01-08 09:58:48.394 +05:30  INF  Executed endpoint 'Hutech.API.Controllers.MachineController.GetMachine (Hutech.API)'
+2024-01-08 09:58:48.394 +05:30  INF  Request finished HTTP/1.1 GET https://localhost:7221/api/Machine/GetMachine - - - 200 - application/json;+charset=utf-8 3218.6647ms

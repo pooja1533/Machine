@@ -1,0 +1,29 @@
+﻿@model Hutech.Models.InstrumentViewModel;
+<form class="horizontal" method="post" asp-controller="Instrument" asp-action="EditInstrument">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Edit Instrument</strong>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="company">Name</label>
+                    @Html.HiddenFor(x=>x.Id)
+                    @Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Instrument Name",@class="form-control"})
+                    @Html.ValidationMessageFor(x=>x.Name,"",new {@class="text-danger"})
+                </div>
+                <div class="form-group">
+                    <label for="company">Status</label>
+                    <div class="input-prepend input-group">
+                        <label>@Html.RadioButtonFor(x=>x.IsActive,"True")Active</label>
+                        <label>@Html.RadioButtonFor(x=>x.IsActive,"False")InActive</label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

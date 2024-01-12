@@ -1,0 +1,57 @@
+﻿@model Hutech.Models.UserViewModel;
+<form class="horizontal" method="post" asp-controller="User" asp-action="UpdateUser">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Update User</strong>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="FirstName">First Name</label>
+                            @Html.HiddenFor(x=>x.Id)
+                            @Html.TextBoxFor(x=>x.FirstName,new{Placeholder="Enter first Name",@class="form-control"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="LastName">Last Name</label>
+                            @Html.TextBoxFor(x=>x.LastName,new{Placeholder="Enter last Name",@class="form-control"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="UserName">User Name</label>
+                            @Html.TextBoxFor(x=>x.UserName,new{Placeholder="Enter user Name",@class="form-control"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number</label>
+                            @Html.TextAreaFor(x=>x.PhoneNumber,new{Placeholder="Enter Phone Number",@class="form-control"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Address">Address</label>
+                            @Html.TextAreaFor(x=>x.Address,new{Placeholder="Enter Address",@class="form-control"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Address">Role</label>
+                            @Html.DropDownListFor(x=>x.RoleId,Model.Roles,"Select Role",new { @class = "form-control processbank"})
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

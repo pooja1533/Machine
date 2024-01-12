@@ -1,0 +1,12 @@
+D:\MAchine\Hutech\Hutech.Core\bin\Debug\net7.0\Hutech.Core.deps.json
+D:\MAchine\Hutech\Hutech.Core\bin\Debug\net7.0\Hutech.Core.dll
+D:\MAchine\Hutech\Hutech.Core\bin\Debug\net7.0\Hutech.Core.pdb
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\Hutech.Core.csproj.AssemblyReference.cache
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\Hutech.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\Hutech.Core.AssemblyInfoInputs.cache
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\Hutech.Core.AssemblyInfo.cs
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\Hutech.Core.csproj.CoreCompileInputs.cache
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\Hutech.Core.dll
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\refint\Hutech.Core.dll
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\Hutech.Core.pdb
+D:\MAchine\Hutech\Hutech.Core\obj\Debug\net7.0\ref\Hutech.Core.dll

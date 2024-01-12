@@ -1,0 +1,12 @@
+D:\MAchine\Hutech\Hutech.Sql\bin\Debug\net7.0\Hutech.Sql.deps.json
+D:\MAchine\Hutech\Hutech.Sql\bin\Debug\net7.0\Hutech.Sql.dll
+D:\MAchine\Hutech\Hutech.Sql\bin\Debug\net7.0\Hutech.Sql.pdb
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\Hutech.Sql.csproj.AssemblyReference.cache
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\Hutech.Sql.GeneratedMSBuildEditorConfig.editorconfig
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\Hutech.Sql.AssemblyInfoInputs.cache
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\Hutech.Sql.AssemblyInfo.cs
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\Hutech.Sql.csproj.CoreCompileInputs.cache
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\Hutech.Sql.dll
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\refint\Hutech.Sql.dll
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\Hutech.Sql.pdb
+D:\MAchine\Hutech\Hutech.Sql\obj\Debug\net7.0\ref\Hutech.Sql.dll

@@ -1,0 +1,15 @@
+D:\MAchine\Hutech\Hutech.Application\bin\Release\net7.0\Hutech.Application.deps.json
+D:\MAchine\Hutech\Hutech.Application\bin\Release\net7.0\Hutech.Application.dll
+D:\MAchine\Hutech\Hutech.Application\bin\Release\net7.0\Hutech.Application.pdb
+D:\MAchine\Hutech\Hutech.Application\bin\Release\net7.0\Hutech.Core.dll
+D:\MAchine\Hutech\Hutech.Application\bin\Release\net7.0\Hutech.Core.pdb
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\Hutech.Application.csproj.AssemblyReference.cache
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\Hutech.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\Hutech.Application.AssemblyInfoInputs.cache
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\Hutech.Application.AssemblyInfo.cs
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\Hutech.Application.csproj.CoreCompileInputs.cache
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\Hutech.Application.csproj.CopyComplete
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\Hutech.Application.dll
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\refint\Hutech.Application.dll
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\Hutech.Application.pdb
+D:\MAchine\Hutech\Hutech.Application\obj\Release\net7.0\ref\Hutech.Application.dll

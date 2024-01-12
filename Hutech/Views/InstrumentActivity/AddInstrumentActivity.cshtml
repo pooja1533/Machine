@@ -1,0 +1,75 @@
+﻿@model Hutech.Models.InstrumentActivityViewModel;
+<form class="horizontal" method="post" asp-controller="Team" asp-action="AddTeam">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Add Team</strong>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Instrument Name</label>
+                            @Html.DropDownListFor(x=>x.InstrumentId,Model.Instruments,"Please select Instrument",new {@class="form-control processbank"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Activity Name</label>
+                            @Html.DropDownListFor(x=>x.ActivityId,Model.Activities,"Please select Activity",new {@class="form-control processbank"})
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Instrument+Activity</label>
+                            @Html.TextBoxFor(x=>x.InstrumentActivity,new{@class="form-control"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>@Html.RadioButtonFor(x=>x.Frequency,"Frquency Year")Frequency Year</label>
+                            @Html.TextBoxFor(x=>x.FrequencyYear,new{@class="form-control"})
+                            <label>@Html.RadioButtonFor(x=>x.Frequency,"Frquency Month")Frequency Month</label>
+                            @Html.TextBoxFor(x=>x.FrequencyMonth,new{@class="form-control"})
+                            <label>@Html.RadioButtonFor(x=>x.Frequency,"Frquency Day")Frequency Day</label>
+                            @Html.TextBoxFor(x=>x.FrequencyDay,new{@class="form-control"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">+-Days</label>
+                            @Html.TextBoxFor(x=>x.Days,new{@class="form-control"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Requirement</label>
+                            @Html.DropDownListFor(x=>x.RequirementId,Model.Requirement,"Please select Requirement",new {@class="form-control processbank"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Department</label>
+                            @Html.DropDownListFor(x=>x.DepartmentId,Model.Department,"Please select Department",new {@class="form-control processbank"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Before Alerts</label>
+                            @Html.TextBoxFor(x=>x.BeforeAlerts,new{@class="form-control"})
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,133 @@
+﻿@model Hutech.Models.MachineViewModel;
+<form class="horizontal" method="post" asp-controller="Machine" asp-action="EditMachine">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Update Machine</strong>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="company">Name</label>
+                            @Html.HiddenFor(x=>x.Id)
+                            @Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Machine Name",@class="form-control"})
+                            @Html.ValidationMessageFor(x=>x.Name,"",new {@class="text-danger"})
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="company">PurchaseDate</label>
+                            @* @Html.TextBoxFor(x=>x.PurchaseDate,new{Placeholder="Enter Machine PurchaseDate",@class="form-control"})
+                            @Html.ValidationMessageFor(x=>x.PurchaseDate,"",new {@class="text-danger"})*@
+                            <input asp-for="PurchaseDate" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="company">Price($)</label>
+                            @Html.TextBoxFor(x=>x.Price,new{Placeholder="Enter Price",@class="form-control"})
+                            @Html.ValidationMessageFor(x=>x.Price,"",new {@class="text-danger"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="company">Brand</label>
+                            @Html.TextBoxFor(x=>x.Brand,new{Placeholder="Enter Brand",@class="form-control"})
+                            @Html.ValidationMessageFor(x=>x.Brand,"",new {@class="text-danger"})
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="company">Vednor</label>
+                            @Html.TextBoxFor(x=>x.Vednor,new{Placeholder="Enter Vednor",@class="form-control"})
+                            @Html.ValidationMessageFor(x=>x.Vednor,"",new {@class="text-danger"})
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="company">Warranty(Year)</label>
+                            @Html.TextBoxFor(x=>x.Warranty,new{Placeholder="Enter Warranty",@class="form-control"})
+                            @Html.ValidationMessageFor(x=>x.Warranty,"",new {@class="text-danger"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="company">Service Interval</label>
+                            @Html.TextBoxFor(x=>x.ServiceInterval,new{Placeholder="Enter Service Interval",@class="form-control"})
+                            @Html.ValidationMessageFor(x=>x.ServiceInterval,"",new {@class="text-danger"})
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="company">Service Interval Time</label>
+                            @Html.DropDownList("Interval", Html.GetEnumSelectList<Interval>(), "Select Interval", new { @class = "form-control" })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="col-sm-12">
+    <div class="card">
+        <div class="card-header">
+            <strong>Add Comment</strong>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="company">Comment</label>
+                        @Html.HiddenFor(x=>x.Id)
+                        @Html.TextAreaFor(x=>x.Comment,new{Placeholder="Enter Machine Name",@class="form-control"})
+                        @Html.ValidationMessageFor(x=>x.Comment,"",new {@class="text-danger"})
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="company">Comment Date</label>
+                        <input type="date" placeholder="Comment Date" name="CommentDate" asp-for="CommentDate" class="form-control" value="@DateTime.UtcNow">
+                        @*@Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Machine Name",@class="form-control"})
+                        @Html.ValidationMessageFor(x=>x.Name,"",new {@class="text-danger"})*@
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="button" id="addcomment">Add Comment</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    
+        $('#addcomment').click(function () {
+        var comment = $("#Comment").val();
+        var commentDate = $("#CommentDate").val();
+        var Id=$("#Id").val();
+        $.ajax({
+            url:'/Machine/AddComment',
+            type:'Post',
+            data: {
+                Comment: comment,
+                commentDate: commentDate,
+                Id: Id
+            },
+            success:function(response){
+                window.location.reload();
+            },
+            error:function(response){
+                alert("Fail");
+            }
+        })
+        });
+</script>

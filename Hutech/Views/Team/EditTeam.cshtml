@@ -1,0 +1,36 @@
+﻿@model Hutech.Models.TeamViewModel;
+<form class="horizontal" method="post" asp-controller="Team" asp-action="EditTeam">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Edit Team</strong>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="company">Name</label>
+                    @Html.HiddenFor(x=>x.Id)
+                    @Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Team Name",@class="form-control"})
+                    @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
+                    @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
+                </div>
+                <div class="form-group">
+                    <label for="company">Location</label>
+                    @Html.DropDownListFor(x=>x.LocationId,Model.locations,"Please select Location",new {@class="form-control processbank"})
+                    @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
+                    @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
+                </div>
+                <div class="form-group">
+                    <label for="company">Status</label>
+                    <div class="input-prepend input-group">
+                        <label>@Html.RadioButtonFor(x=>x.IsActive,"True")Active</label>
+                        <label>@Html.RadioButtonFor(x=>x.IsActive,"False")InActive</label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
