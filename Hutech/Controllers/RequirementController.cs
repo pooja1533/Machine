@@ -4,9 +4,13 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using NuGet.Common;
 
 namespace Hutech.Controllers
 {
+    [Authorize]
     public class RequirementController : Controller
     {
         public IConfiguration configuration { get; set; }
@@ -20,6 +24,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 List<RequirementViewModel> requirements = new List<RequirementViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -28,7 +39,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
                     HttpResponseMessage Res = await client.GetAsync("Requirement/GetRequirement");
@@ -57,6 +68,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var validation = new RequirementValidator();
                 var result = validation.Validate(requirementViewModel);
                 if (!result.IsValid)
@@ -72,7 +90,7 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Clear();
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         requirementViewModel.IsDeleted = false;
                         var json = JsonConvert.SerializeObject(requirementViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
@@ -97,6 +115,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 RequirementViewModel requirementViewModel = new RequirementViewModel();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -104,6 +129,7 @@ namespace Hutech.Controllers
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage response = await client.GetAsync(string.Format("Requirement/GetRequirementDetail/{0}", id));
 
                     if (response.IsSuccessStatusCode)
@@ -126,6 +152,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var validation = new RequirementValidator();
                 var result = validation.Validate(requirementViewModel);
                 if (!result.IsValid)
@@ -143,6 +176,7 @@ namespace Hutech.Controllers
 
                         var json = JsonConvert.SerializeObject(requirementViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await client.PutAsync("Requirement/PutRequirement", stringcontenet);
 
                         if (response.IsSuccessStatusCode)
@@ -165,12 +199,20 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage response = await client.DeleteAsync(string.Format("Requirement/DeleteRequirement/{0}", id));
 
                     if (response.IsSuccessStatusCode)

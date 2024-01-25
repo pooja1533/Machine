@@ -5,8 +5,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
+    <!-- date-picker link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.2/js/bootstrap-multiselect.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.2/css/bootstrap-multiselect.css" rel="stylesheet" />
     <environment include="Development">
 
         <!-- VENDOR CSS -->
@@ -20,11 +25,13 @@
         <!-- MAIN CSS -->
         <link href="~/lib/coreui/css/style.css" rel="stylesheet" />
 
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/Style.css" />
     </environment>
     <environment exclude="Development">
         <!-- VENDOR CSS -->
+        
         <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        @*<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>*@
         <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
         <link href="~/lib/coreui/icons/css/coreui-icons.min.css" rel="stylesheet" />
         <link href="~/lib/flag-icon-css/css/flag-icon.css" rel="stylesheet" />
@@ -34,6 +41,9 @@
         <link href="~/lib/coreui/css/style.min.css" rel="stylesheet" />
 
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/site.css"  />
+
+
     </environment>
 
     @RenderSection("Headers", required: false)
@@ -120,8 +130,8 @@
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
         <!-- CoreUI and necessary plugins-->
         <script src="~/lib/pace-progress/pace.min.js"></script>
 
@@ -137,7 +147,7 @@
     </environment>
 
     @RenderSection("Scripts", required: false)
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 </body>
 </html>
 

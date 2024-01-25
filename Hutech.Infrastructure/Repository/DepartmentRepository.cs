@@ -56,7 +56,23 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
+        public async Task<List<Department>> GetActiveDepartment()
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<Department>(DepartmentQueries.GetActiveDepartment);
+                    return result.ToList();
+                }
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<Department> GetDepartmentDetail(long Id)
         {
             try

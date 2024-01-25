@@ -40,6 +40,25 @@ namespace Hutech.API.Controllers
                 throw ex;
             }
         }
+        
+        [HttpGet("GetActiveTeam")]
+        public async Task<ApiResponse<List<TeamViewModel>>> GetActiveTeam()
+        {
+            try
+            {
+                var apiResponse = new ApiResponse<List<TeamViewModel>>();
+                var team = await teamRepository.GetActiveTeam();
+                var data = mapper.Map<List<Team>, List<TeamViewModel>>(team);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
+        }
         [HttpGet("GetTeam")]
         public async Task<ApiResponse<List<TeamViewModel>>> GetTeam()
         {

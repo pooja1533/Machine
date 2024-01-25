@@ -11,6 +11,7 @@ namespace Hutech.Application.Interfaces
     {
         Task<bool> PostRequirement(Requirement requirement);
         public Task<List<Requirement>> GetRequirement();
+        public Task<List<Requirement>> GetActiveRequirement();
         public Task<Requirement> GetRequirementDetail(long Id);
         public Task<String> DeleteRequirement(long Id);
         public Task<String> PutRequirement(Requirement requirement);

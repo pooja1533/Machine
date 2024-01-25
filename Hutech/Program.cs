@@ -5,6 +5,7 @@ using Hutech.Models;
 using Serilog;
 using FluentValidation.AspNetCore;
 using Hutech;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -17,6 +18,10 @@ builder.Services.AddControllers(opt=> { opt.Filters.Add<LogActionAttribute>(); }
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(x => x.LoginPath = "/Identity/Account/Login");
+
 builder.Services.AddScoped<LogActionAttribute, LogActionAttribute>();
 builder.Services.AddSession(options =>
 {
@@ -27,6 +32,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddControllersWithViews().AddRazorPagesOptions(options => {
     options.Conventions.AddAreaPageRoute("Identity", "/Account/Login", "");
 });
+
 var env = builder.Environment;
 if (env.IsDevelopment())
 {
@@ -46,6 +52,8 @@ else
             .WriteTo.Console();
     });
 }
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,12 +1,15 @@
 ﻿using Hutech.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text;
 
 namespace Hutech.Controllers
 {
+    [Authorize]
     public class InstrumentController : Controller
     {
         public IConfiguration configuration { get; set; }
@@ -20,7 +23,14 @@ namespace Hutech.Controllers
         {
             try
             {
-                List<InstrumentViewModel> departments = new List<InstrumentViewModel>();
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                List<InstrumentViewModel> instruments = new List<InstrumentViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
@@ -28,7 +38,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
                     HttpResponseMessage Res = await client.GetAsync("Instrument/GetInstrument");
@@ -37,10 +47,10 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        departments = root["result"].ToObject<List<InstrumentViewModel>>();
+                        instruments = root["result"].ToObject<List<InstrumentViewModel>>();
                     }
                 }
-                return View(departments);
+                return View(instruments);
             }
             catch (Exception ex)
             {
@@ -57,6 +67,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var validation = new InstrumentValidator();
                 var result = validation.Validate(instrumentViewModel);
                 if (!result.IsValid)
@@ -72,7 +89,7 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Clear();
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         instrumentViewModel.IsDeleted = false;
                         var json = JsonConvert.SerializeObject(instrumentViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
@@ -97,6 +114,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 InstrumentViewModel instrumentViewModel = new InstrumentViewModel();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -104,6 +128,7 @@ namespace Hutech.Controllers
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage response = await client.GetAsync(string.Format("Instrument/GetInstrumentDetail/{0}", id));
 
                     if (response.IsSuccessStatusCode)
@@ -126,6 +151,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var validation = new InstrumentValidator();
                 var result = validation.Validate(instrumentViewModel);
                 if (!result.IsValid)
@@ -143,6 +175,7 @@ namespace Hutech.Controllers
 
                         var json = JsonConvert.SerializeObject(instrumentViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await client.PutAsync("Instrument/PutInstrument", stringcontenet);
 
                         if (response.IsSuccessStatusCode)
@@ -165,12 +198,20 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage response = await client.DeleteAsync(string.Format("Instrument/DeleteInstrument/{0}", id));
 
                     if (response.IsSuccessStatusCode)

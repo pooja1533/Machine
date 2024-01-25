@@ -22,6 +22,12 @@ namespace Hutech.Infrastructure
             service.AddTransient<IInstrumentRepository, InstrumentRepository>();
             service.AddTransient<IActivityRepository, ActivityRepository>();
             service.AddTransient<IRequirementRepository, RequirementRepository>();
+            service.AddTransient<IInstrumentActivityRepository, InstrumentActivityRepository>();
+            service.AddTransient<IGroupRepository,GroupRepository>();
+            service.AddTransient<IInstrumentIdRepository,InstrumentIdRepository>();
+            service.AddTransient<IAuditRepository, AuditRepository>();
+            service.AddTransient<IActivityDetailRepository, ActivityDetailRepository>();
+            service.AddTransient<IAuditTrailRepository, AuditTrailRepository>();
         }
     }
 }

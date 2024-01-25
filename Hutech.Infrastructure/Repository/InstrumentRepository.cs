@@ -56,7 +56,23 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
+        public async Task<List<Instrument>> GetActiveInstrument()
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<Instrument>(InstrumentQueries.GetActiveInstrument);
+                    return result.ToList();
+                }
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<Instrument> GetInstrumentDetail(long Id)
         {
             try

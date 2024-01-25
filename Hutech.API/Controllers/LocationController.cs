@@ -40,6 +40,24 @@ namespace Hutech.API.Controllers
                 throw ex;
             }
         }
+        [HttpGet("GetActiveLocation")]
+        public async Task<ApiResponse<List<LocationViewModel>>> GetActiveLocation()
+        {
+            try
+            {
+                var apiResponse = new ApiResponse<List<LocationViewModel>>();
+                var location = await locationRepository.GetActiveLocation();
+                var data = mapper.Map<List<Location>, List<LocationViewModel>>(location);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
+        }
         [HttpGet("GetLocation")]
         public async Task<ApiResponse<List<LocationViewModel>>> GetLocation()
         {

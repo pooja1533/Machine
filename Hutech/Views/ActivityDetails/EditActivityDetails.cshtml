@@ -1,0 +1,140 @@
+﻿@model Hutech.Models.ActivityDetailsViewModel;
+<form class="horizontal" method="post" asp-controller="ActivityDetails" asp-action="AddActivityDetails">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Add AddInstrumentId</strong>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Instrument Name Id</label>
+                            @Html.DropDownListFor(x=>x.InstrumentId,Model.InstrumentNameId,"Please select Instrument",new {@class="form-control processbank",@Id="InstrumentNameId",@name="InstrumentNameId",@disabled="true"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Instrument Name</label>
+                            @Html.TextBoxFor(x=>x.InstrumentName,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Instrument Serial</label>
+                            @Html.TextBoxFor(x=>x.InstrumentSerial,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Model</label>
+                            @Html.TextBoxFor(x=>x.Model,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Location Name</label>
+                            @Html.TextBoxFor(x=>x.LocationName,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Instrument Name Activity</label>
+                            @Html.DropDownListFor(x=>x.InstrumentActivityId,Model.InstrumentsActivity,"Please select Instrument",new {@class="form-control processbank",@Id="InstrumentNameActivityId",@name="InstrumentNameActivityId",@disabled="true"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">+- Days</label>
+                            @Html.TextBoxFor(x=>x.Days,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Frequency Period</label>
+                        </div>
+                        @foreach (var c in System.Enum.GetValues(typeof(FrequencyEnumData)))
+                        {
+                            @if (Model.Frequency == @c)
+                            {
+                                <input type="radio" asp-for="Frequency" value="@c" id="@c" class="frequency" checked />
+                            }
+                            else
+                            {
+                                <input type="radio" asp-for="Frequency" value="@c" id="@c" class="frequency" />
+                            }
+                            <label for="company">@c</label>
+                        }
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Team Name</label>
+                            @Html.TextBoxFor(x=>x.TeamName,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Team Location</label>
+                            @Html.TextBoxFor(x=>x.TeamLocation,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Requirement Name</label>
+                            @Html.TextBoxFor(x=>x.RequirementName,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Follow Department</label>
+                            @Html.TextBoxFor(x=>x.DeaprtmentName,new{Placeholder="Enter Instrument Id",@class="form-control",@readonly="true"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Remark</label>
+                            @Html.TextAreaFor(x=>x.Remark,new{Placeholder="Enter Remark",@class="form-control"})
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Performed Date</label>
+                            @Html.EditorFor(model => model.PerformedDate, new { htmlAttributes = new { @class = "form-control", placeholder = "Employee Date Of Birth" } })
+
+                            @*<div class="input-group date" data-target-input="nearest">
+                                <input asp-for="@Model.PerformedDate" class="form-control" />
+                            </div>*@
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Status</label>
+                        <div class="input-prepend input-group">
+                            <label for="company" class="status">Active</label>@Html.RadioButtonFor(x => x.IsActive, "true",new{@class="frequencyUnit frequency"})
+                            <label for="company" class="status">InActive</label>@Html.RadioButtonFor(x => x.IsActive, "false",new{@class="frequencyUnit frequency"})
+                        </div>
+                    </div>
+                    @Html.HiddenFor(x=>x.Id)
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    $(function () {
+        $('[type="date"]').prop('max', function () {
+            return new Date().toJSON().split('T')[0];
+        });
+    });
+</script>

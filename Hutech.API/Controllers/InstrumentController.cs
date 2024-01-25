@@ -93,6 +93,7 @@ namespace Hutech.API.Controllers
                 throw ex;
             }
         }
+        
         [HttpGet("GetInstrument")]
         public async Task<ApiResponse<List<InstrumentViewModel>>> GetInstrument()
         {
@@ -100,6 +101,24 @@ namespace Hutech.API.Controllers
             {
                 var apiResponse = new ApiResponse<List<InstrumentViewModel>>();
                 var instrument = await instrumentRepository.GetInstrument();
+                var data = mapper.Map<List<Instrument>, List<InstrumentViewModel>>(instrument);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
+        }
+        [HttpGet("GetActiveInstrument")]
+        public async Task<ApiResponse<List<InstrumentViewModel>>> GetActiveInstrument()
+        {
+            try
+            {
+                var apiResponse = new ApiResponse<List<InstrumentViewModel>>();
+                var instrument = await instrumentRepository.GetActiveInstrument();
                 var data = mapper.Map<List<Instrument>, List<InstrumentViewModel>>(instrument);
                 apiResponse.Success = true;
                 apiResponse.Result = data;

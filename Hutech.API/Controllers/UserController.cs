@@ -23,6 +23,27 @@ namespace Hutech.API.Controllers
             mapper = _mapper;
             logger = _logger;
         }
+        [HttpGet("GetUsers")]
+        public async Task<ApiResponse<List<UserViewModel>>> GetUsers()
+        {
+            try
+            {
+                logger.LogInformation($"API call For get all Users {DateTime.Now}");
+                var ApiResponse = new ApiResponse<List<UserViewModel>>();
+
+                var users = await userRepository.GetUsers();
+                var data = mapper.Map<List<AspNetUsers>, List<UserViewModel>>(users);
+                ApiResponse.Success = true;
+                ApiResponse.Result = data;
+                logger.LogInformation($"API End for get all Users {DateTime.Now}");
+                return ApiResponse;
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
+        }
         [HttpGet("GetAllusers/{UserRole}/{UserId}")]
         public async Task<ApiResponse<List<UserViewModel>>> GetAllusers(string UserRole,string UserId)
         {

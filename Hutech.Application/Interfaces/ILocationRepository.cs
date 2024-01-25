@@ -11,6 +11,7 @@ namespace Hutech.Application.Interfaces
     {
         Task<bool> PostLocation(Location location);
         public Task<List<Location>> GetLocation();
+        public Task<List<Location>> GetActiveLocation();
         public Task<Location> GetLocationDetail(long Id);
         public Task<String> DeleteLocation(long Id);
         public Task<String> PutLocation(Location aspNetRole);

@@ -13,6 +13,7 @@ namespace Hutech.Sql.Queries
         public static string GetRoleAccordingToRole => "select r.Id,r.name from AspNetRoles r where r.id in (select SubRoleId from RoleSubRoleMapping where RoleId=@roleId)";
         public static string GetRoleId => "Select Id from AspNetRoles where Name=@Role";
         public static string GetAllUsers = " Select a.Id,a.UserName,u.FirstName,u.Lastname,u.PhoneNumber,u.Address,r.Name as UserRole from AspNetUsers a left join UserDetail u on u.userId=a.Id join AspNetUserRoles ar on ar.UserId=a.Id join AspNetRoles r on r.Id=ar.RoleId  where u.IsActive=1 and a.Id!=@Id and r.Id in (select SubRoleId from RoleSubRoleMapping where RoleId=@RoleId)";
+        public static string GetUsers => "  Select a.Id,a.UserName,u.FirstName,u.Lastname,u.PhoneNumber,u.Address,r.Name as UserRole from AspNetUsers a left join UserDetail u on u.userId=a.Id join AspNetUserRoles ar on ar.UserId=a.Id join AspNetRoles r on r.Id=ar.RoleId  where u.IsActive=1 ";
         public static string GetUserById => "Select a.Id,a.UserName,u.FirstName,u.Lastname,u.PhoneNumber,u.Address,r.Id as roleId from AspNetUsers a left join UserDetail u on u.userId=a.Id left join AspNetUserRoles ur on ur.UserId=a.Id left join AspNetRoles r on r.Id=ur.RoleId where u.UserId=@Id";
 
         public static string DeleteUser = "Update UserDetail set IsActive=0 where UserId=@userId";

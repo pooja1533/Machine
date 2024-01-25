@@ -1,4 +1,5 @@
 ﻿using Hutech.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -6,11 +7,13 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text;
 
 namespace Hutech.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IConfiguration configuration;
@@ -24,6 +27,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var loggedinuser = HttpContext.Session.GetString("LoogedInUser");
                 logger.LogInformation($"Get All Users method call by {loggedinuser} {DateTime.Now} at controller level");
                 List<UserViewModel> users = new List<UserViewModel>();
@@ -34,7 +44,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                     var loggedinUserRole = HttpContext.Session.GetString("UserRole").ToString();
                     var loggedinuserId = HttpContext.Session.GetString("UserId").ToString();
@@ -59,6 +69,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
@@ -66,7 +83,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage Res = await client.DeleteAsync(string.Format("User/DeleteUser/Id=" + id));
 
                     if (Res.IsSuccessStatusCode)
@@ -87,6 +104,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 UserViewModel user = new UserViewModel();
                 List<RoleViewModel> roles = new List<RoleViewModel>();
                 string apiUrl = configuration["Baseurl"];
@@ -96,7 +120,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
                     HttpResponseMessage Res = await client.GetAsync(string.Format("User/GetUserById/Id=" + id));
@@ -136,6 +160,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 UserViewModel user = new UserViewModel();
                 List<RoleViewModel> roles = new List<RoleViewModel>();
                 string apiUrl = configuration["Baseurl"];
@@ -145,6 +176,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage Result = await client.GetAsync(string.Format("Role/GetRoles"));
 
                     if (Result.IsSuccessStatusCode)
@@ -162,7 +194,7 @@ namespace Hutech.Controllers
 
 
 
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     var json = JsonConvert.SerializeObject(userViewModel);
                     var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 

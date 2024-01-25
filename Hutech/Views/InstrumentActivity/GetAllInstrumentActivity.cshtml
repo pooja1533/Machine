@@ -1,0 +1,74 @@
+﻿<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fa fa-align-justify"></i> Instrument Activity
+                        <a href="/InstrumentActivity/AddInstrumentActivity">Add Instrument Activity</a>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-responsive-sm">
+                            <thead>
+                                <tr>
+                                    <th>Instrument Name</th>
+                                    <th>Activity Name</th>
+                                    <th>InstrumentActivity Name</th>
+                                    <th>Frequnecy Unit</th>
+                                    <th>Frequency Time</th>
+                                    <th>Requirement</th>
+                                    <th>Department</th>
+                                    <th>Before Alert Time</th>
+                                    <th>Before Alerts</th>
+                                    <th>Days</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                    @*<th>Delete</th>*@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@Model[i].InstrumentName</td>
+                                        <td>@Model[i].activityName</td>
+                                        <td>@Model[i].InstrumentActivityName</td>
+                                        <td>@Model[i].Frequency</td>
+                                        <td>@Model[i].FrequencyTime</td>
+                                        <td>@Model[i].RequirementName</td>
+                                        <td>@Model[i].DeaprtmentName</td>
+                                        <td>@Model[i].BeforeAlertsTime</td>
+                                        <td>@Model[i].BeforeAlerts</td>
+                                        <td>@Model[i].Days</td>
+                                        @if (Model[i].IsActive)
+                                        {
+                                            <td>Active</td>
+                                        }
+                                        else
+                                        {
+                                            <td>InActive</td>
+                                        }
+                                        <td>
+                                           <div class="btn-group" role="group">
+                                                <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                    <a class="dropdown-item" href="/InstrumentActivity/EditInstrumentActivity?id=@Model[i].Id">Edit</a>
+                                                    <a class="dropdown-item" href="/InstrumentActivity/DeleteInstrumentActivity?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col-->
+
+        </div>
+        <!-- /.row-->
+    </div>
+</div>

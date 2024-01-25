@@ -57,7 +57,23 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
+        public async Task<List<Requirement>> GetActiveRequirement()
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<Requirement>(RequirementQueries.GetActiveRequirement);
+                    return result.ToList();
+                }
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<Requirement> GetRequirementDetail(long Id)
         {
             try

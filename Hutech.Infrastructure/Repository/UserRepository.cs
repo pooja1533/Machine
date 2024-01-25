@@ -34,7 +34,25 @@ namespace Hutech.Infrastructure.Repository
                 return result.ToString();
             }
         }
+        public async Task<List<AspNetUsers>> GetUsers()
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    List<AspNetUsers> users = new List<AspNetUsers>();
+                    connection.Open();
+                    var result = await connection.QueryAsync<AspNetUsers>(UserQueries.GetUsers);
+                    users = result.ToList();
+                    return users;
+                }
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<List<AspNetUsers>> GetAllUSers(string userRole, string userId)
         {
             try

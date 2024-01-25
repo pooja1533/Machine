@@ -4,12 +4,14 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
+using Hutech.Core.Constants;
+using Hutech.Core.Entities;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Hutech.Controllers
 {
+    [Authorize]
     public class DepartmentController : Controller
     {
         public IConfiguration configuration { get; set; }
@@ -23,6 +25,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 List<DepartmentViewModel> departments = new List<DepartmentViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -31,7 +40,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
                     HttpResponseMessage Res = await client.GetAsync("Department/GetDepartment");
@@ -60,6 +69,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var validation = new DepartmentValidator();
                 var result = validation.Validate(departmentViewModel);
                 if (!result.IsValid)
@@ -75,7 +91,7 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Clear();
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         departmentViewModel.IsDeleted = false;
                         var json = JsonConvert.SerializeObject(departmentViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
@@ -100,6 +116,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 DepartmentViewModel departmentViewModel = new DepartmentViewModel();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -107,6 +130,7 @@ namespace Hutech.Controllers
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage response = await client.GetAsync(string.Format("Department/GetDepartmentDetail/{0}", id));
 
                     if (response.IsSuccessStatusCode)
@@ -129,6 +153,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var validation = new DepartmentValidator();
                 var result = validation.Validate(departmentViewModel);
                 if (!result.IsValid)
@@ -146,6 +177,7 @@ namespace Hutech.Controllers
 
                         var json = JsonConvert.SerializeObject(departmentViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await client.PutAsync("Department/PutDepartment", stringcontenet);
 
                         if (response.IsSuccessStatusCode)
@@ -168,12 +200,20 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage response = await client.DeleteAsync(string.Format("Department/DeleteDepartment/{0}", id));
 
                     if (response.IsSuccessStatusCode)

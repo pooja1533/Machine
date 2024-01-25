@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Humanizer;
+using Hutech.API.Model;
 using Hutech.Core.Entities;
 using Hutech.Models;
 using System.Reflection.PortableExecutable;
@@ -29,6 +31,18 @@ namespace Hutech.API.Mapper
             CreateMap<Activity, ActivityViewModel>();
             CreateMap<RequirementViewModel, Requirement>();
             CreateMap<Requirement, RequirementViewModel>();
+            CreateMap<Group, GroupViewModel>();
+            CreateMap<GroupViewModel, Group>();
+            CreateMap<InstrumentActivityViewModel, InstrumentActivity>();
+            CreateMap<InstrumentActivity, InstrumentActivityViewModel>();
+            CreateMap<InstrumentIdViewModel, InstrumentsIds>();
+            CreateMap<InstrumentsIds,InstrumentIdViewModel>();
+            CreateMap<AuditModels, AuditModel>();
+            CreateMap<AuditModel, AuditModels>();
+            CreateMap<ActivityDetailsViewModel, ActivityDetails>();
+            CreateMap<ActivityDetails, ActivityDetailsViewModel>();
+            CreateMap<AuditViewModel, Audit>();
+            CreateMap<Audit, AuditViewModel>();
         }
     }
 }

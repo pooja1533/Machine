@@ -40,6 +40,7 @@ namespace Hutech.API.Controllers
                 throw ex;
             }
         }
+        
         [HttpGet("GetRequirement")]
         public async Task<ApiResponse<List<RequirementViewModel>>> GetRequirement()
         {
@@ -47,6 +48,24 @@ namespace Hutech.API.Controllers
             {
                 var apiResponse = new ApiResponse<List<RequirementViewModel>>();
                 var requirement = await requirementRepository.GetRequirement();
+                var data = mapper.Map<List<Requirement>, List<RequirementViewModel>>(requirement);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
+        }
+        [HttpGet("GetActiveRequirement")]
+        public async Task<ApiResponse<List<RequirementViewModel>>> GetActiveRequirement()
+        {
+            try
+            {
+                var apiResponse = new ApiResponse<List<RequirementViewModel>>();
+                var requirement = await requirementRepository.GetActiveRequirement();
                 var data = mapper.Map<List<Requirement>, List<RequirementViewModel>>(requirement);
                 apiResponse.Success = true;
                 apiResponse.Result = data;

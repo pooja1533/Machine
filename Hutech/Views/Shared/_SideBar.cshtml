@@ -7,25 +7,150 @@
                     <span class="badge badge-primary">NEW</span>
                 </a>
             </li>*@
-            <li class="nav-title">Role Management</li>
+            <li class="nav-item nav-dropdown">
+                <a class="nav-link nav-dropdown-toggle" href="#">
+                    <i class="nav-icon icon-puzzle"></i> Group Management
+                </a>
+                <ul class="nav-dropdown-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Group/GetAllGroup">
+                            <i class="nav-icon icon-puzzle"></i> Group
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item nav-dropdown">
+                <a class="nav-link nav-dropdown-toggle" href="#">
+                    <i class="nav-icon icon-puzzle"></i> Role Management
+                </a>
+                <ul class="nav-dropdown-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Role/GetAllRoles">
+                            <i class="nav-icon icon-puzzle"></i> Role
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item nav-dropdown">
+                <a class="nav-link nav-dropdown-toggle" href="#">
+                    <i class="nav-icon icon-puzzle"></i> User Management
+                </a>
+                <ul class="nav-dropdown-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/User/GetAllUsers">
+                            <i class="nav-icon icon-puzzle"></i> Users
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            @*<li class="nav-item nav-dropdown">
+                <a class="nav-link nav-dropdown-toggle" href="#">
+                    <i class="nav-icon icon-puzzle"></i> Machine Management
+                </a>
+                <ul class="nav-dropdown-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Machine/GetAllMachine">
+                            <i class="nav-icon icon-puzzle"></i> Machines
+                        </a>
+                    </li>
+                </ul>
+            </li>*@
+            <li class="nav-item nav-dropdown">
+                <a class="nav-link nav-dropdown-toggle" href="#">
+                    <i class="nav-icon icon-puzzle"></i> System
+                </a>
+                <ul class="nav-dropdown-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Location/GetAllLocation">
+                            <i class="nav-icon icon-puzzle"></i> Location
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Department/GetAllDepartment">
+                            <i class="nav-icon icon-puzzle"></i> Department
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Team/GetAllTeam">
+                            <i class="nav-icon icon-puzzle"></i> Team
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Instrument/GetAllInstrument">
+                            <i class="nav-icon icon-puzzle"></i> Instrument Name
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Activity/GetAllActivity">
+                            <i class="nav-icon icon-puzzle"></i> Activity
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Requirement/GetAllRequirement">
+                            <i class="nav-icon icon-puzzle"></i> Requirement
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/InstrumentActivity/GetAllInstrumentActivity">
+                            <i class="nav-icon icon-puzzle"></i> Instrument Activity
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/InstrumentId/GetAllInstrumentId">
+                            <i class="nav-icon icon-puzzle"></i> Instrument Id
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item nav-dropdown">
+                <a class="nav-link nav-dropdown-toggle" href="#">
+                    <i class="nav-icon icon-puzzle"></i> Activity Details
+                </a>
+                <ul class="nav-dropdown-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ActivityDetails/GetAllActivityDetails">
+                            <i class="nav-icon icon-puzzle"></i> Activity Details
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item nav-dropdown">
+                <a class="nav-link nav-dropdown-toggle" href="#">
+                    <i class="nav-icon icon-puzzle"></i> Reports
+                </a>
+                <ul class="nav-dropdown-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/AuditTrail/GetAllAuditTrail">
+                            <i class="nav-icon icon-puzzle"></i> Audit Trail
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            @*<li class="nav-title">Group Management</li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Group/GetAllGroup">
+                    <i class="nav-icon icon-drop"></i> Group
+                </a>
+            </li>*@
+            @*<li class="nav-title">Role Management</li>
             <li class="nav-item">
                 <a class="nav-link" href="/Role/GetAllRoles">
                     <i class="nav-icon icon-drop"></i> Role
                 </a>
-            </li>
-            <li class="nav-title">User Management</li>
+            </li>*@
+            @*<li class="nav-title">User Management</li>
             <li class="nav-item">
                 <a class="nav-link" href="/User/GetAllUsers">
                     <i class="nav-icon icon-drop"></i> Users
                 </a>
-            </li>
-            <li class="nav-title">Machine Management</li>
+            </li>*@
+            @*<li class="nav-title">Machine Management</li>
             <li class="nav-item">
                 <a class="nav-link" href="/Machine/GetAllMachine">
                     <i class="nav-icon icon-drop"></i> Machines
                 </a>
-            </li>
-            <li class="nav-title">System</li>
+            </li>*@
+            @*<li class="nav-title">System</li>
             <li class="nav-item">
                 <a class="nav-link" href="/Location/GetAllLocation">
                     <i class="nav-icon icon-drop"></i> Location
@@ -45,13 +170,13 @@
                 <a class="nav-link" href="/Requirement/GetAllRequirement">
                     <i class="nav-icon icon-drop"></i> Requirement
                 </a>
-                <a class="nav-link" href="/Machine/GetAllMachine">
+                <a class="nav-link" href="/InstrumentActivity/GetAllInstrumentActivity">
                     <i class="nav-icon icon-drop"></i> Instrument Activity
                 </a>
-                <a class="nav-link" href="/Machine/GetAllMachine">
+                <a class="nav-link" href="/InstrumentId/GetAllInstrumentId">
                     <i class="nav-icon icon-drop"></i> Instrument Id
                 </a>
-            </li>
+            </li>*@
             @*<li class="nav-item">
                 <a class="nav-link" href="/typography">
                     <i class="nav-icon icon-pencil"></i> Typography

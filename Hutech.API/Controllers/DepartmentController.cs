@@ -41,6 +41,7 @@ namespace Hutech.API.Controllers
                 throw ex;
             }
         }
+        
         [HttpGet("GetDepartment")]
         public async Task<ApiResponse<List<DepartmentViewModel>>> GetDepartment()
         {
@@ -48,6 +49,24 @@ namespace Hutech.API.Controllers
             {
                 var apiResponse = new ApiResponse<List<DepartmentViewModel>>();
                 var department = await departmentRepository.GetDepartment();
+                var data = mapper.Map<List<Department>, List<DepartmentViewModel>>(department);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
+        }
+        [HttpGet("GetActiveDepartment")]
+        public async Task<ApiResponse<List<DepartmentViewModel>>> GetActiveDepartment()
+        {
+            try
+            {
+                var apiResponse = new ApiResponse<List<DepartmentViewModel>>();
+                var department = await departmentRepository.GetActiveDepartment();
                 var data = mapper.Map<List<Department>, List<DepartmentViewModel>>(department);
                 apiResponse.Success = true;
                 apiResponse.Result = data;

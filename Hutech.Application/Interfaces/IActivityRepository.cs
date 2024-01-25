@@ -11,6 +11,7 @@ namespace Hutech.Application.Interfaces
     {
         Task<bool> PostActivity(Activity activity);
         public Task<List<Activity>> GetActivity();
+        public Task<List<Activity>> GetActiveActivity();
         public Task<Activity> GetActivityDetail(long Id);
         public Task<String> DeleteActivity(long Id);
         public Task<String> PutActivity(Activity activity);

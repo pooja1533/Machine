@@ -11,6 +11,7 @@ namespace Hutech.Application.Interfaces
     {
         Task<bool> PostDepartment(Department location);
         public Task<List<Department>> GetDepartment();
+        public Task<List<Department>> GetActiveDepartment();
         public Task<Department> GetDepartmentDetail(long Id);
         public Task<String> DeleteDepartment(long Id);
         public Task<String> PutDepartment(Department aspNetRole);

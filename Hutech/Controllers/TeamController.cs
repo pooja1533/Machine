@@ -1,13 +1,17 @@
 ﻿using Hutech.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NuGet.Common;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text;
 
 namespace Hutech.Controllers
 {
+    [Authorize]
     public class TeamController : Controller
     {
         public IConfiguration configuration { get; set; }
@@ -22,6 +26,13 @@ namespace Hutech.Controllers
             TeamViewModel teamViewModel = new TeamViewModel();
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 List<LocationViewModel> locations = new List<LocationViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -30,10 +41,10 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
-                    HttpResponseMessage Res = await client.GetAsync("Location/GetLocation");
+                    HttpResponseMessage Res = await client.GetAsync("Location/GetActiveLocation");
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -62,11 +73,44 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var validation = new TeamValidator();
                 var result = validation.Validate(teamViewModel);
                 if (!result.IsValid)
                 {
-                    return View();
+                    List<LocationViewModel> locations = new List<LocationViewModel>();
+                    string apiUrl = configuration["Baseurl"];
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Clear();
+
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+
+                        HttpResponseMessage Res = await client.GetAsync("Location/GetActiveLocation");
+
+                        if (Res.IsSuccessStatusCode)
+                        {
+                            var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            locations = root["result"].ToObject<List<LocationViewModel>>();
+                        }
+                    }
+                    var data = locations.Select(x => new SelectListItem
+                    {
+                        Text = x.Name,
+                        Value = x.Id.ToString()
+                    }).ToList();
+                    teamViewModel.locations = data;
+                    return View(teamViewModel);
                 }
                 else
                 {
@@ -77,7 +121,7 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Clear();
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         teamViewModel.IsDeleted = false;
                         var json = JsonConvert.SerializeObject(teamViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
@@ -102,6 +146,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 List<TeamViewModel> teams = new List<TeamViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -110,7 +161,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
                     HttpResponseMessage Res = await client.GetAsync("Team/GetTeam");
@@ -134,6 +185,13 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 TeamViewModel teamViewModel = new TeamViewModel();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -141,6 +199,7 @@ namespace Hutech.Controllers
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage response = await client.GetAsync(string.Format("Team/GetTeamDetail/{0}", id));
 
                     if (response.IsSuccessStatusCode)
@@ -157,10 +216,10 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
-                    HttpResponseMessage Res = await client.GetAsync("Location/GetLocation");
+                    HttpResponseMessage Res = await client.GetAsync("Location/GetActiveLocation");
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -188,11 +247,44 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 var validateTeam = new TeamValidator();
                 var validateResult = validateTeam.Validate(teamViewModel);
                 if (!validateResult.IsValid)
                 {
-                    return View();
+                    List<LocationViewModel> locations = new List<LocationViewModel>();
+                    string apiUrl = configuration["Baseurl"];
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Clear();
+
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+
+                        HttpResponseMessage Res = await client.GetAsync("Location/GetActiveLocation");
+
+                        if (Res.IsSuccessStatusCode)
+                        {
+                            var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            locations = root["result"].ToObject<List<LocationViewModel>>();
+                        }
+                    }
+                    var data = locations.Select(x => new SelectListItem
+                    {
+                        Text = x.Name,
+                        Value = x.Id.ToString()
+                    }).ToList();
+                    teamViewModel.locations = data;
+                    return View(teamViewModel);
                 }
                 else
                 {
@@ -205,6 +297,7 @@ namespace Hutech.Controllers
 
                         var json = JsonConvert.SerializeObject(teamViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await client.PutAsync("Team/PutTeam", stringcontenet);
 
                         if (response.IsSuccessStatusCode)
@@ -228,12 +321,20 @@ namespace Hutech.Controllers
         {
             try
             {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     HttpResponseMessage response = await client.DeleteAsync(string.Format("Team/DeleteTeam/{0}", id));
 
                     if (response.IsSuccessStatusCode)

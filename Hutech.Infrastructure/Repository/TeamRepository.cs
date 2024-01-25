@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Hutech.Infrastructure.Repository
 {
-    public class TeamRepository:ITeamRepository
+    public class TeamRepository : ITeamRepository
     {
         public IConfiguration configuration;
         public TeamRepository(IConfiguration _configuration)
@@ -55,6 +55,23 @@ namespace Hutech.Infrastructure.Repository
             }
         }
 
+        public async Task<List<Team>> GetActiveTeam()
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<Team>(TeamQueries.GetActiveTeam);
+                    return result.ToList();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<Team> GetTeamDetail(long Id)
         {
             try
@@ -98,7 +115,7 @@ namespace Hutech.Infrastructure.Repository
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    var result = await connection.QueryAsync<Team>(TeamQueries.UpdateTeam, new { Id = team.Id, Name = team.Name, LocationId = team.LocationId,IsActive=team.IsActive });
+                    var result = await connection.QueryAsync<Team>(TeamQueries.UpdateTeam, new { Id = team.Id, Name = team.Name, LocationId = team.LocationId, IsActive = team.IsActive });
                     return result.ToString();
                 }
 

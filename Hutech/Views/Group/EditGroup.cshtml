@@ -1,0 +1,29 @@
+﻿@model Hutech.Models.GroupViewModel;
+<form class="horizontal" method="post" asp-controller="Group" asp-action="EditGroup">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Edit Group</strong>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="company">Name</label>
+                    @Html.HiddenFor(x=>x.Id)
+                    @Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Group Name",@class="form-control"})
+                    @Html.ValidationMessageFor(x=>x.Name,"",new {@class="text-danger"})
+                </div>
+                <div class="form-group">
+                    <label for="company">Status</label>
+                    <div class="input-prepend input-group">
+                        @Html.RadioButtonFor(x => x.IsActive, "true")<label for="company" class="status ">Active</label> &nbsp;&nbsp;
+                        @Html.RadioButtonFor(x => x.IsActive, "false")<label for="company" class="status frequencyUnit">InActive</label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

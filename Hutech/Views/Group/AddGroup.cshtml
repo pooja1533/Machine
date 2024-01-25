@@ -1,0 +1,22 @@
+﻿@model Hutech.Models.GroupViewModel;
+<form class="horizontal" method="post" asp-controller="Group" asp-action="AddGroup">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Add Group</strong>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="company">Name</label>
+                    @Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Group Name",@class="form-control"})
+                    @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
+                    @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

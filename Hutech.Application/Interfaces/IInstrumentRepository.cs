@@ -11,6 +11,7 @@ namespace Hutech.Application.Interfaces
     {
         Task<bool> PostInstrument(Instrument instrument);
         public Task<List<Instrument>> GetInstrument();
+        public Task<List<Instrument>> GetActiveInstrument();
         public Task<Instrument> GetInstrumentDetail(long Id);
         public Task<String> DeleteInstrument(long Id);
         public Task<String> PutInstrument(Instrument instrument);

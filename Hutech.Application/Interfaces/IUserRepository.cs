@@ -10,6 +10,7 @@ namespace Hutech.Application.Interfaces
     public interface IUserRepository
     {
         public Task<List<AspNetUsers>> GetAllUSers(string userRole,string userId);
+        public Task<List<AspNetUsers>> GetUsers();
         public Task<string> DeleteUser(string userId);
         public Task<AspNetUsers> GetUserById(string Id);
         public Task<string> UpdateUser(AspNetUsers aspNetUsers);
