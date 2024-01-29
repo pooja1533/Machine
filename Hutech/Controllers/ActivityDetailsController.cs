@@ -1,4 +1,5 @@
 ﻿using Hutech.Models;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -64,6 +65,9 @@ namespace Hutech.Controllers
                 ActivityDetailsViewModel model = new ActivityDetailsViewModel();
                 List<ActivityDetailsViewModel> activityDetails = new List<ActivityDetailsViewModel>();
                 List<UserViewModel> users=new List<UserViewModel>();
+                var loggedinuserId = HttpContext.Session.GetString("UserId").ToString();
+                var email = HttpContext.Session.GetString("LoogedInUser".ToString());
+
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
@@ -72,12 +76,18 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    if(string.IsNullOrEmpty(userId))
+                    if (string.IsNullOrEmpty(userId))
                     {
-                        userId = HttpContext.Session.GetString("UserId");
-
+                        userId = HttpContext.Session.GetString("SelectedUserId");
+                        if(string.IsNullOrEmpty(userId))
+                            userId = HttpContext.Session.GetString("UserId");
+                        HttpContext.Session.SetString("SelectedUserId", userId.ToString());
                     }
-
+                    else if (new Guid(userId) == new Guid())
+                    {
+                        userId = "0";
+                        HttpContext.Session.SetString("SelectedUserId", userId.ToString());
+                    }
                     HttpResponseMessage Res = await client.GetAsync(string.Format("ActivityDetails/GetAllActivityDetails/{0}", userId));
 
                     if (Res.IsSuccessStatusCode)
@@ -87,31 +97,45 @@ namespace Hutech.Controllers
                         activityDetails = root["result"].ToObject<List<ActivityDetailsViewModel>>();
                     }
                 }
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Clear();
+                //using (var client = new HttpClient())
+                //{
+                //    client.BaseAddress = new Uri(apiUrl);
+                //    client.DefaultRequestHeaders.Clear();
 
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    HttpResponseMessage User = await client.GetAsync("User/GetUsers");
+                //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                //    HttpResponseMessage User = await client.GetAsync("User/GetUsers");
 
-                    if (User.IsSuccessStatusCode)
-                    {
-                        var content = await User.Content.ReadAsStringAsync();
-                        JObject root = JObject.Parse(content);
-                        users = root["result"].ToObject<List<UserViewModel>>();
-                    }
-                }
-                
-                var data = users.Select(x => new SelectListItem
+                //    if (User.IsSuccessStatusCode)
+                //    {
+                //        var content = await User.Content.ReadAsStringAsync();
+                //        JObject root = JObject.Parse(content);
+                //        users = root["result"].ToObject<List<UserViewModel>>();
+                //    }
+                //}
+                //var data = users.Select(x => new SelectListItem
+                //{
+                //    Text = x.UserName.ToString(),
+                //    Value = x.Id.ToString()
+                //}).ToList();
+                List<UserViewModel> userViewModels=new List<UserViewModel>();
+                UserViewModel modelData=new UserViewModel();
+                UserViewModel alluser = new UserViewModel();
+                modelData.Id =new Guid(loggedinuserId);
+                modelData.UserName = email;
+                userViewModels.Add(modelData);
+                alluser.Id = new Guid();
+                alluser.UserName = "Select All";
+                userViewModels.Add(alluser);
+                var data = userViewModels.Select(x => new SelectListItem
                 {
                     Text = x.UserName.ToString(),
                     Value = x.Id.ToString()
                 }).ToList();
+
                 model.ActivityDetails = activityDetails;
                 model.User = data;
-                model.UserId= HttpContext.Session.GetString("UserId").ToString();
+                model.UserId= HttpContext.Session.GetString("SelectedUserId").ToString();
                 return View(model);
             }
             catch (Exception ex)

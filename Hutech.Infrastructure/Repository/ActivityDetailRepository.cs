@@ -28,8 +28,16 @@ namespace Hutech.Infrastructure.Repository
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    var result = await connection.QueryAsync<ActivityDetails>(ActivityDetailsQueries.GetAllActivityDetails, new { LoggedInUser=userId});
-                    return result.ToList();
+                    if(!string.IsNullOrEmpty(userId) && userId!="0")
+                    {
+                        var result = await connection.QueryAsync<ActivityDetails>(ActivityDetailsQueries.GetAllActivityDetails, new { LoggedInUser = userId });
+                        return result.ToList();
+                    }
+                    else
+                    {
+                        var result = await connection.QueryAsync<ActivityDetails>(ActivityDetailsQueries.GetAllUsersActivityDetails);
+                        return result.ToList();
+                    }
                 }
 
             }
