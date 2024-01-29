@@ -39,7 +39,7 @@ namespace Hutech.API.Controllers
         {
             var objaudit = new AuditModel();
             //objaudit.RoleId = Convert.ToString(HttpContext.Session.GetInt32(AllSessionKeys.RoleId));
-            objaudit.ControllerName = "Portal";
+            objaudit.ModuleName = "Portal";
             objaudit.ActionName = "Login";
             objaudit.Area = "";
             objaudit.LoggedInAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);

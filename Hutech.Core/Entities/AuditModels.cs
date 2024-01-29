@@ -10,7 +10,7 @@ namespace Hutech.Core.Entities
     {
         public int AuditId { get; set; }
         public string Area { get; set; }
-        public string ControllerName { get; set; }
+        public string ModuleName { get; set; }
         public string ActionName { get; set; }
         public string RoleId { get; set; }
         public string LangId { get; set; }

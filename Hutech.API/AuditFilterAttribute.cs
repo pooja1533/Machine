@@ -83,7 +83,7 @@ namespace Hutech.API
             objaudit.PageAccessed = Convert.ToString(filterContext.HttpContext.Request.Path); // URL User Requested 
             objaudit.LoggedInAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             objaudit.IpAddress = Convert.ToString(_httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
-            objaudit.ControllerName = controllerName; // ControllerName 
+            objaudit.ModuleName = controllerName; // ControllerName 
             objaudit.ActionName = actionName;
             objaudit.Message = message;
             RequestHeaders header = request.GetTypedHeaders();

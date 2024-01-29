@@ -18,6 +18,8 @@
                                 <button class="btn btn-primary" type="button" id="GenerateReport">Report</button>
                                 <label for="company">Enter Keyword To search</label>
                                 <input type="text" id="keyword" placeholder="Enter Keyword to search" onkeypress="searchForKeyword(event)" value="@ViewBag.Keyword" />
+                                <div class="export-btn"><a class="dic-action-col" href="/AuditTrail/ExportAuditTrail?fdate=@ViewBag.StartDate&tdate=@ViewBag.EndDate&keyword=@ViewBag.Keyword">Export to Excel</a></div>
+
                             </div>
                         </div>
                         @*<div class="form-group">
@@ -39,8 +41,8 @@
                             @for (int i = 0; i < Model.Count; i++)
                             {
                                 <tr>
-                                    <td>@Model[i].ControllerName</td>
-                                    <td>@Model[i].CurrentDatetime</td>
+                                        <td>@Model[i].ModuleName</td>
+                                        <td>@Model[i].CreatedDatetime</td>
                                     <td>@Model[i].UserId</td>
                                     <td>@Model[i].Description</td>
                                     <td>@Model[i].Message</td>

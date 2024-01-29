@@ -35,7 +35,7 @@ namespace Hutech.Infrastructure.Repository
                     para.Add("@LoggedInAt", objauditmodel.LoggedInAt);
                     para.Add("@LoggedOutAt", objauditmodel.LoggedOutAt);
                     para.Add("@Message", objauditmodel.Message);
-                    para.Add("@ControllerName", objauditmodel.ControllerName);
+                    para.Add("@ModuleName", objauditmodel.ModuleName);
                     para.Add("@ActionName", objauditmodel.ActionName);
                     para.Add("@UrlReferrer", objauditmodel.UrlReferrer);
                     para.Add("@Area", objauditmodel.Area);

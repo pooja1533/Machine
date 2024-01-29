@@ -9,11 +9,11 @@ namespace Hutech.Core.Entities
     public class Audit
     {
         public long AuditId { get; set; }
-        public string ControllerName { get; set; }
+        public string ModuleName { get; set; }
         public string UserId { get; set; }
         public string Message { get; set; }
         public string Description { get; set; }
-        public DateTime CurrentDatetime { get; set; }
+        public DateTime CreatedDatetime { get; set; }
 
     }
 }

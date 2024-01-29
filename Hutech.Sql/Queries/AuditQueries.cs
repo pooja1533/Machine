@@ -9,7 +9,8 @@ namespace Hutech.Sql.Queries
 {
     public class AuditQueries
     {
-        public static string GetAuditTrail => " Select AuditId,ControllerName,Message,Description,CurrentDatetime,a.UserName as UserId  " +
-            "from Audit au left join AspNetUsers a on au.UserID=a.Id where cast(au.CurrentDatetime as date)>=CONVERT(datetime,@fromDate) and cast(au.CurrentDatetime as date)<=CONVERT(datetime,@toDate)AND((@keyword = '' AND 1 = 1) OR((@keyword != '' AND au.ControllerName like + '%' +@keyword + '%') or(@keyword != '' AND au.Description like + '%' + @keyword + '%')or(@keyword != '' AND au.Message like + '%' + @keyword + '%')or(@keyword != '' AND a.UserName like + '%' + @keyword + '%')))order by au.auditId desc";
+        public static string GetAuditTrail => " Select AuditId,ModuleName,Message,Description,CreatedDatetime,a.UserName as UserId  " +
+            "from Audit au left join AspNetUsers a on au.UserID=a.Id where cast(au.CreatedDatetime as date)>=CONVERT(datetime,@fromDate) and cast(au.CreatedDatetime as date)<=CONVERT(datetime,@toDate)AND((@keyword = '' AND 1 = 1) OR((@keyword != '' AND au.ModuleName like + '%' +@keyword + '%') or(@keyword != '' AND au.Description like + '%' + @keyword + '%')or(@keyword != '' AND au.Message like + '%' + @keyword + '%')or(@keyword != '' AND a.UserName like + '%' + @keyword + '%')))order by au.auditId desc";
+
     }
 }
