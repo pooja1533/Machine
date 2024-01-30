@@ -28,6 +28,8 @@ namespace Hutech.Infrastructure
             service.AddTransient<IAuditRepository, AuditRepository>();
             service.AddTransient<IActivityDetailRepository, ActivityDetailRepository>();
             service.AddTransient<IAuditTrailRepository, AuditTrailRepository>();
+            service.AddTransient<IConfigurationRepository, ConfigurationRepository>();
+
         }
     }
 }
