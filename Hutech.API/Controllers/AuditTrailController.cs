@@ -22,8 +22,9 @@ namespace Hutech.API.Controllers
             auditTrailRepository = _auditTrailRepository;
             logger = _logger;
         }
-        [HttpGet("GetAuditTrail/{startDate}/{endDate}/{keyword}")]
-        public async Task<ApiResponse<List<AuditViewModel>>> GetAuditTrail(string startDate, string endDate,string keyword)
+        [SkipAuditFilterAttribute]
+        [HttpGet("GetAuditTrail/{startDate}/{endDate}/{keyword}/{pageNumber}")]
+        public async Task<ApiResponse<List<AuditViewModel>>> GetAuditTrail(string startDate, string endDate,string keyword,int pageNumber)
         {
             try
             {
@@ -32,9 +33,12 @@ namespace Hutech.API.Controllers
                     keyword=string.Empty;
                 else
                     keyword = keyword + "%";
-                var activity = await auditTrailRepository.GetAuditTrail(startDate, endDate,keyword);
-                var data = mapper.Map<List<Audit>, List<AuditViewModel>>(activity);
+                var activity = await auditTrailRepository.GetAuditTrail(startDate, endDate,keyword,pageNumber);
+                var data = mapper.Map<List<Audit>, List<AuditViewModel>>(activity.Value.GridRecords);
                 apiResponse.Success = true;
+                apiResponse.CurrentPage = activity.Value.CurrentPage;
+                apiResponse.TotalPage = activity.Value.TotalPages;
+                apiResponse.TotalRecords = activity.Value.TotalRecords;
                 apiResponse.Result = data;
                 return apiResponse;
             }

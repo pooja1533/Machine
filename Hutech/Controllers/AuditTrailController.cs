@@ -21,7 +21,7 @@ namespace Hutech.Controllers
             configuration = _configuration;
             logger = _logger;
         }
-        public async Task<IActionResult> ExportAuditTrail(string? fdate, string? tdate, string? keyword)
+        public async Task<IActionResult> ExportAuditTrail(string? fdate, string? tdate, string? keyword,int pageNumber=0)
         {
             DateTime endDate = DateTime.UtcNow;
             DateTime startDate = DateTime.UtcNow.AddDays(-7);
@@ -67,7 +67,7 @@ namespace Hutech.Controllers
                     //tDate=tDate.Replace("/", "-");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}", fDate, tDate, keyword);
+                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}/{3}", fDate, tDate, keyword,pageNumber);
                     apiUrl += url;
 
                     HttpResponseMessage Res = await client.GetAsync(apiUrl);
@@ -138,7 +138,7 @@ namespace Hutech.Controllers
                 Response.Body.Flush();
             }
         }
-        public async Task<IActionResult> GetAllAuditTrail(string? fdate,string? tdate,string? keyword)
+        public async Task<IActionResult> GetAllAuditTrail(string? fdate,string? tdate,string? keyword, int pageNumber = 1)
         {
             DateTime endDate = DateTime.UtcNow;
             DateTime startDate = DateTime.UtcNow.AddDays(-7);
@@ -155,6 +155,8 @@ namespace Hutech.Controllers
                 string fDate = string.Empty;
                 string tDate = string.Empty;
                 List<AuditViewModel> audit = new List<AuditViewModel>();
+                int totalRecords = 0;
+                int totalPage = 0;
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
@@ -183,7 +185,7 @@ namespace Hutech.Controllers
                     //tDate=tDate.Replace("/", "-");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}", fDate,tDate,keyword);
+                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}/{3}", fDate,tDate,keyword,pageNumber);
                     apiUrl += url;
 
                     HttpResponseMessage Res = await client.GetAsync(apiUrl);
@@ -193,6 +195,9 @@ namespace Hutech.Controllers
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
                         audit = root["result"].ToObject<List<AuditViewModel>>();
+                        pageNumber = (int)root["currentPage"];
+                        totalRecords = (int)root["totalRecords"];
+                        totalPage= (int)root["totalPage"];
                     }
                 }
                 ViewBag.StartDate = fDate;
@@ -202,7 +207,14 @@ namespace Hutech.Controllers
                     keyword = "";
                 }
                 ViewBag.Keyword = keyword;
-                return View(audit);
+                var data = new GridData<AuditViewModel>()
+                {
+                    CurrentPage = pageNumber,
+                    GridRecords = audit,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                return View(data);
             }
             catch (Exception ex)
             {

@@ -30,6 +30,7 @@
                     <table class="table table-responsive-sm">
                         <thead>
                             <tr>
+                                <th>AuditId</th>
                                 <th>Module</th>
                                 <th>DateTime</th>
                                 <th>UserId</th>
@@ -37,21 +38,64 @@
                                 <td>Message</td>
                             </tr>
                         </thead>
+                            @{
+                                int recordsPerPage = 10;
+                                int pageNumber = Model.CurrentPage;
+                                int pageSize = pageNumber + 4;
+                                int rowNo = ((pageNumber - 1) * recordsPerPage);
+                            }
                         <tbody>
-                            @for (int i = 0; i < Model.Count; i++)
+                                @for (int i = 0; i < Model.GridRecords.Count; i++)
                             {
                                 <tr>
-                                        <td>@Model[i].ModuleName</td>
-                                        <td>@Model[i].CreatedDatetime</td>
-                                    <td>@Model[i].UserId</td>
-                                    <td>@Model[i].Description</td>
-                                    <td>@Model[i].Message</td>
+                                        <td>@Model.GridRecords[i].AuditId</td>
+                                        <td>@Model.GridRecords[i].ModuleName</td>
+                                        <td>@Model.GridRecords[i].CreatedDatetime</td>
+                                        <td>@Model.GridRecords[i].UserId</td>
+                                        <td>@Model.GridRecords[i].Description</td>
+                                        <td>@Model.GridRecords[i].Message</td>
 
                                 </tr>
                             }
 
                         </tbody>
                     </table>
+                        @if (Model.TotalPages > 1)
+                        {
+                            <nav>
+                                <ul class="pagination">
+                                    @if (pageNumber > 1)
+                                    {
+                                        int prevPage = pageNumber - 1;
+                                        <li class="page-item">
+                                            <a class="page-link" href="/AuditTrail/GetAllAuditTrail?pageNumber=@prevPage&keyword=@ViewBag.Keyword&tdate=@ViewBag.EndDate&fdate=@ViewBag.StartDate">Prev</a>
+                                        </li>
+                                    }
+                                    @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
+                                    {
+                                        if (i == pageNumber)
+                                        {
+                                            <li class="page-item active">
+                                                <a class="page-link" href="/AuditTrail/GetAllAuditTrail?pageNumber=@i&keyword=@ViewBag.Keyword&tdate=@ViewBag.EndDate&fdate=@ViewBag.StartDate">@i</a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" href="/AuditTrail/GetAllAuditTrail?pageNumber=@i&keyword=@ViewBag.Keyword&tdate=@ViewBag.EndDate&fdate=@ViewBag.StartDate">@i</a>
+                                            </li>
+                                        }
+                                    }
+                                    @if (pageNumber < Model.TotalPages)
+                                    {
+                                        int nextPage = pageNumber + 1;
+                                        <li class="page-item">
+                                            <a class="page-link" href="/AuditTrail/GetAllAuditTrail?pageNumber=@nextPage&keyword=@ViewBag.Keyword&tdate=@ViewBag.EndDate&fdate=@ViewBag.StartDate">Next</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        }
                 </div>
             </div>
         </div>

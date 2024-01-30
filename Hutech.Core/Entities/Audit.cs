@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace Hutech.Core.Entities
         public string Message { get; set; }
         public string Description { get; set; }
         public DateTime CreatedDatetime { get; set; }
+        
 
     }
 }
