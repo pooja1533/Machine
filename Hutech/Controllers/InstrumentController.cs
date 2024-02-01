@@ -1,11 +1,17 @@
-﻿using Hutech.Models;
+﻿using DocumentFormat.OpenXml.ExtendedProperties;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Hutech.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Hutech.Controllers
 {
@@ -14,10 +20,12 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<InstrumentController> logger;
-        public InstrumentController(IConfiguration _configuration, ILogger<InstrumentController> _logger)
+        private Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnv;
+        public InstrumentController(IConfiguration _configuration, ILogger<InstrumentController> _logger, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
             configuration = _configuration;
             logger = _logger;
+            hostingEnv = env;
         }
         public async Task<IActionResult> GetAllInstrument()
         {
@@ -60,13 +68,17 @@ namespace Hutech.Controllers
         }
         public IActionResult AddInstrument()
         {
+            ViewBag.AllowedFileExtension = HttpContext.Session.GetString("FileType");
+            ViewBag.AlloweFileSize = HttpContext.Session.GetString("FileSize");
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> AddInstrument(InstrumentViewModel instrumentViewModel)
+        public async Task<IActionResult> AddInstrument(InstrumentDocumentViewModel instrumentdocumentViewModel)
         {
             try
             {
+                ViewBag.AllowedFileExtension = HttpContext.Session.GetString("FileType");
+                ViewBag.AlloweFileSize = HttpContext.Session.GetString("FileSize");
                 var token = Request.Cookies["jwtCookie"];
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -75,7 +87,7 @@ namespace Hutech.Controllers
                     token = token.Replace("Bearer ", "");
                 }
                 var validation = new InstrumentValidator();
-                var result = validation.Validate(instrumentViewModel);
+                var result = validation.Validate(instrumentdocumentViewModel);
                 if (!result.IsValid)
                 {
                     return View();
@@ -83,6 +95,13 @@ namespace Hutech.Controllers
                 else
                 {
                     string apiUrl = configuration["Baseurl"];
+                    var instrument = new InstrumentViewModel()
+                    {
+                        Id = instrumentdocumentViewModel.Id,
+                        Name = instrumentdocumentViewModel.Name,
+                        IsActive = true,
+                        IsDeleted = false
+                    };
                     using (var client = new HttpClient())
                     {
                         client.BaseAddress = new Uri(apiUrl);
@@ -90,15 +109,82 @@ namespace Hutech.Controllers
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        instrumentViewModel.IsDeleted = false;
-                        var json = JsonConvert.SerializeObject(instrumentViewModel);
+                        instrumentdocumentViewModel.IsDeleted = false;
+                        var json = JsonConvert.SerializeObject(instrument);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
                         HttpResponseMessage Res = await client.PostAsync("Instrument/PostInstrument", stringContent);
-
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            if (instrumentdocumentViewModel.Files != null)
+                            {
+                                if (instrumentdocumentViewModel.Files.Count > 0)
+                                {
+                                    var FileDic = "Documents/Instrument/Image/";
+                                    string FilePath = Path.Combine(hostingEnv.ContentRootPath, FileDic);
+
+                                    var DocumentDic = "Documents/Instrument/Document";
+                                    string FileDocumentPath = Path.Combine(hostingEnv.ContentRootPath, DocumentDic);
+
+                                    if (!Directory.Exists(FilePath))
+                                        Directory.CreateDirectory(FilePath);
+
+                                    if (!Directory.Exists(FileDocumentPath))
+                                        Directory.CreateDirectory(FileDocumentPath);
+
+                                    if (instrumentdocumentViewModel.Files != null)
+                                    {
+                                        foreach (var data in instrumentdocumentViewModel.Files)
+                                        {
+                                            if (data.ContentType.Contains("image"))
+                                            {
+                                                var imgFilePath = Path.Combine(FilePath, data.FileName);
+                                                using (FileStream fs = System.IO.File.Create(imgFilePath))
+                                                {
+                                                    data.CopyTo(fs);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var imgFilePath = Path.Combine(FileDocumentPath, data.FileName);
+                                                using (FileStream fs = System.IO.File.Create(imgFilePath))
+                                                {
+                                                    data.CopyTo(fs);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    var formData = new Dictionary<string, string>()
+                                    {
+                            { "IsActive", instrumentdocumentViewModel.IsActive.ToString()},
+                            { "IsDelete", instrumentdocumentViewModel.IsDeleted.ToString()},
+                            { "Name", instrumentdocumentViewModel.Name},
+                        };
+                                    var formContent = new MultipartFormDataContent();
+
+                                    foreach (var keyValuePair in formData)
+                                    {
+                                        formContent.Add(new StringContent(keyValuePair.Value), keyValuePair.Key);
+                                    }
+
+                                    foreach (var file in instrumentdocumentViewModel.Files)
+                                    {
+                                        formContent.Add(new StreamContent(file.OpenReadStream())
+                                        {
+                                            Headers = { ContentLength = file.Length, ContentType = new MediaTypeHeaderValue(file.ContentType) }
+                                        },
+                                        "Files",
+                                        file.FileName);
+                                    }
+                                    HttpResponseMessage response = await client.PostAsync("Instrument/UploadInstrumentDocument/", formContent);
+                                    if (response.IsSuccessStatusCode)
+                                    {
+                                        var contentData = await response.Content.ReadAsStringAsync();
+                                        JObject root = JObject.Parse(contentData);
+                                    }
+                                }
+                            }
                         }
                     }
                     return RedirectToAction("GetAllInstrument");
@@ -114,6 +200,8 @@ namespace Hutech.Controllers
         {
             try
             {
+                ViewBag.AllowedFileExtension = HttpContext.Session.GetString("FileType");
+                ViewBag.AlloweFileSize = HttpContext.Session.GetString("FileSize");
                 var token = Request.Cookies["jwtCookie"];
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -138,7 +226,43 @@ namespace Hutech.Controllers
                         instrumentViewModel = root["result"].ToObject<InstrumentViewModel>();
                     }
                 }
-                return View(instrumentViewModel);
+                InstrumentDocumentViewModel model = new InstrumentDocumentViewModel();
+                model.Id = instrumentViewModel.Id;
+                model.Name = instrumentViewModel.Name;
+                var documentData = (string[])null;
+                var documentIdsData = (string[])null;
+                if (!string.IsNullOrEmpty(instrumentViewModel.Path))
+                {
+                    var documents = instrumentViewModel.Path.Split(",");
+                    documentData = documents;
+                }
+                if (!string.IsNullOrEmpty(instrumentViewModel.DocumentId))
+                {
+                    var documentIds = instrumentViewModel.DocumentId.Split(",");
+                    documentIdsData = documentIds;
+                }
+                if (documentData != null)
+                {
+                    for (int i = 0; i < documentData.Length; i++)
+                    {
+                        var filePath = documentData[i];
+                        var fileName = documentData[i].Split("/").Last();
+                        FileViewModel file = new FileViewModel();
+                        file.FileName = fileName;
+                        file.FilePath = filePath;
+                        file.Id = System.Convert.ToInt64(documentIdsData[i]);
+                        model.UplodedFile.Add(file);
+                    }
+                }
+
+                //foreach (var item in documents)
+                //{
+                //    var fileName = item.Split("/").Last();
+                //    FileViewModel file = new FileViewModel();
+                //    file.FileName=fileName;
+                //    model.UplodedFile.Add(file);
+                //}
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -147,7 +271,135 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> EditInstrument(InstrumentViewModel instrumentViewModel)
+        public async Task<IActionResult> EditInstrument(InstrumentDocumentViewModel instrumentDocumentViewModel)
+        {
+            try
+            {
+                ViewBag.AllowedFileExtension = HttpContext.Session.GetString("FileType");
+                ViewBag.AlloweFileSize = HttpContext.Session.GetString("FileSize");
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                var validation = new InstrumentValidator();
+                var result = validation.Validate(instrumentDocumentViewModel);
+                if (!result.IsValid)
+                {
+                    return View();
+                }
+                else
+                {
+                    var instrument = new InstrumentViewModel()
+                    {
+                        Id = instrumentDocumentViewModel.Id,
+                        Name = instrumentDocumentViewModel.Name,
+                        IsActive = true,
+                        IsDeleted = false
+                    };
+                    string apiUrl = configuration["Baseurl"];
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                        var json = JsonConvert.SerializeObject(instrument);
+                        var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        HttpResponseMessage response = await client.PutAsync("Instrument/PutInstrument", stringcontenet);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            //instrumentViewModel = root["result"].ToObject<InstrumentDocumentViewModel>();
+                            if (instrumentDocumentViewModel.Files != null)
+                            {
+                                if (instrumentDocumentViewModel.Files.Count > 0)
+                                {
+                                    //HttpResponseMessage DeleteExistingInstrumentDocument = await client.DeleteAsync(string.Format("Instrument/DeleteExistingInstrumentDocument/{0}", instrumentDocumentViewModel.Id));
+
+
+                                    var FileDic = "Documents/Instrument/Image/";
+                                    string FilePath = Path.Combine(hostingEnv.ContentRootPath, FileDic);
+
+                                    var DocumentDic = "Documents/Instrument/Document";
+                                    string FileDocumentPath = Path.Combine(hostingEnv.ContentRootPath, DocumentDic);
+
+                                    if (!Directory.Exists(FilePath))
+                                        Directory.CreateDirectory(FilePath);
+
+                                    if (!Directory.Exists(FileDocumentPath))
+                                        Directory.CreateDirectory(FileDocumentPath);
+
+                                    if (instrumentDocumentViewModel.Files != null)
+                                    {
+                                        foreach (var data in instrumentDocumentViewModel.Files)
+                                        {
+                                            if (data.ContentType.Contains("image"))
+                                            {
+                                                var imgFilePath = Path.Combine(FilePath, data.FileName);
+                                                using (FileStream fs = System.IO.File.Create(imgFilePath))
+                                                {
+                                                    data.CopyTo(fs);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var imgFilePath = Path.Combine(FileDocumentPath, data.FileName);
+                                                using (FileStream fs = System.IO.File.Create(imgFilePath))
+                                                {
+                                                    data.CopyTo(fs);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    var formData = new Dictionary<string, string>()
+                                    {
+                            { "IsActive", instrumentDocumentViewModel.IsActive.ToString()},
+                            { "IsDelete", instrumentDocumentViewModel.IsDeleted.ToString()},
+                            { "Name", instrumentDocumentViewModel.Name},
+                            { "Id",instrumentDocumentViewModel.Id.ToString()}
+                        };
+                                    var formContent = new MultipartFormDataContent();
+
+                                    foreach (var keyValuePair in formData)
+                                    {
+                                        formContent.Add(new StringContent(keyValuePair.Value), keyValuePair.Key);
+                                    }
+
+                                    foreach (var file in instrumentDocumentViewModel.Files)
+                                    {
+                                        formContent.Add(new StreamContent(file.OpenReadStream())
+                                        {
+                                            Headers = { ContentLength = file.Length, ContentType = new MediaTypeHeaderValue(file.ContentType) }
+                                        },
+                                        "Files",
+                                        file.FileName);
+                                    }
+                                    HttpResponseMessage responseData = await client.PostAsync("Instrument/UploadInstrumentDocument/", formContent);
+                                    if (response.IsSuccessStatusCode)
+                                    {
+                                        var contentData = await responseData.Content.ReadAsStringAsync();
+                                        JObject rootData = JObject.Parse(contentData);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return RedirectToAction("GetAllInstrument");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure.{ex.Message}");
+                throw ex;
+            }
+        }
+        public async Task<IActionResult> DeleteDocument(long documentId, long instrumentId)
         {
             try
             {
@@ -158,35 +410,23 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
-                var validation = new InstrumentValidator();
-                var result = validation.Validate(instrumentViewModel);
-                if (!result.IsValid)
+                string apiUrl = configuration["Baseurl"];
+                using (var client = new HttpClient())
                 {
-                    return View();
-                }
-                else
-                {
-                    string apiUrl = configuration["Baseurl"];
-                    using (var client = new HttpClient())
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    HttpResponseMessage response = await client.DeleteAsync(string.Format("Instrument/DeleteDocument/{0}/{1}", documentId, instrumentId));
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        var json = JsonConvert.SerializeObject(instrumentViewModel);
-                        var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        HttpResponseMessage response = await client.PutAsync("Instrument/PutInstrument", stringcontenet);
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var content = await response.Content.ReadAsStringAsync();
-                            JObject root = JObject.Parse(content);
-                            instrumentViewModel = root["result"].ToObject<InstrumentViewModel>();
-                        }
+                        var content = await response.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        //var message = root["value"].ToString();
                     }
-                    return RedirectToAction("GetAllInstrument");
                 }
+                return RedirectToAction("GetAllInstrument");
             }
             catch (Exception ex)
             {
@@ -228,6 +468,22 @@ namespace Hutech.Controllers
                 logger.LogInformation($"Exception Occure.{ex.Message}");
                 throw ex;
             }
+        }
+        public ActionResult Download(string fileName)
+        {
+            string path = string.Empty;
+            var name = fileName.Split("/").Last();
+            if (fileName.Contains("Image"))
+            {
+                path = Path.Combine(hostingEnv.ContentRootPath, "Documents/Instrument/Image/" + name);
+            }
+            else
+            {
+                path = Path.Combine(hostingEnv.ContentRootPath, "Documents/Instrument/Document/" + name);
+
+            }
+            byte[] fileBytes = System.IO.File.ReadAllBytes(path);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, name);
         }
     }
 }

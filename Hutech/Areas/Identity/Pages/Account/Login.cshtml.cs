@@ -224,6 +224,16 @@ namespace Hutech.Areas.Identity.Pages.Account
                         {
                             var content = await response.Content.ReadAsStringAsync();
                         }
+                        List<ConfigurationViewModel> configure=new List<ConfigurationViewModel>();
+                        HttpResponseMessage configurationresponse = await client.GetAsync(string.Format("Configuration/GetAllConfiguration"));
+                        if (configurationresponse.IsSuccessStatusCode)
+                        {
+                            var content = await configurationresponse.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            configure = root["result"].ToObject<List<ConfigurationViewModel>>();
+                            HttpContext.Session.SetString("FileType", configure.First().FileType);
+                            HttpContext.Session.SetString("FileSize",configure.First().FileSize);
+                        }
                     }
 
 

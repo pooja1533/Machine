@@ -16,11 +16,66 @@ namespace Hutech.API.Controllers
         private readonly IMapper mapper;
         private readonly IInstrumentRepository instrumentRepository;
         private readonly ILogger<InstrumentController> logger;
-        public InstrumentController(IMapper _mapper, IInstrumentRepository _instrumentRepository, ILogger<InstrumentController> _logger)
+        private readonly IConfiguration configuration;
+        public InstrumentController(IMapper _mapper, IInstrumentRepository _instrumentRepository, ILogger<InstrumentController> _logger,IConfiguration _configuration)
         {
             mapper = _mapper;
             instrumentRepository = _instrumentRepository;
             logger = _logger;
+            configuration = _configuration;
+        }
+        [HttpPost("UploadInstrumentDocument")]
+        public async Task<ApiResponse<string>> UploadInstrumentDocument([FromForm] InstrumentDocumentViewModel instrumentDocumentViewModel)
+        {
+            try
+            {
+                var name = configuration.GetSection("InstrumentDocument").Value;
+                string path = string.Empty;
+                List <DocumentViewModel> documents = new List<DocumentViewModel>();
+                foreach(var files in instrumentDocumentViewModel.Files)
+                {
+                    if (files.ContentType.Contains("image"))
+                    {
+                        path = name + "Image/";
+                    }
+                    else
+                    {
+                        path = name + "Document/";
+
+                    }
+                    DocumentViewModel document = new DocumentViewModel();
+                    document.FileName = Path.GetFileNameWithoutExtension(files.FileName);
+                    document.FileExtension = Path.GetExtension(files.FileName);
+                    document.IsDeleted = false;
+                    document.CreatedDate = DateTime.UtcNow;
+                    document.CreatedBy = HttpContext.Session.GetString("UserId");
+                    document.Path = path + files.FileName;
+;                    documents.Add(document);
+
+                }
+                var instrumentdata = mapper.Map<List<DocumentViewModel>, List<Document>>(documents);
+
+                var apiResponse = new ApiResponse<string>();
+                if (instrumentDocumentViewModel.Id > 0)
+                {
+                    bool data = await instrumentRepository.UpdateInstrumentDocument(instrumentdata, instrumentDocumentViewModel.Id);
+                    apiResponse.Result = "instrumentdata updated successfully";
+                    apiResponse.Success = data;
+                }
+                else
+                {
+                    bool data = await instrumentRepository.UploadInstrumentDocument(instrumentdata);
+                    apiResponse.Result = "instrumentdata added successfully";
+                    apiResponse.Success = data;
+                }
+                return apiResponse;
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
         }
         [HttpPost("PostInstrument")]
         public async Task<ApiResponse<string>> PostInstrumentt(InstrumentViewModel instrumentViewModel)
@@ -50,6 +105,40 @@ namespace Hutech.API.Controllers
                 var data = mapper.Map<Instrument, InstrumentViewModel>(instrument);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
+        }
+        [HttpDelete("DeleteExistingInstrumentDocument/{Id}")]
+        public async Task<ApiResponse<string>> DeleteExistingInstrumentDocument(long Id)
+        {
+            try
+            {
+                var apiResponse = new ApiResponse<string>();
+                var role = await instrumentRepository.DeleteExistingInstrumentDocument(Id);
+                apiResponse.Success = true;
+                apiResponse.Message = "instrument deleted Successfully";
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"Exception Occure in API.{ex.Message}");
+                throw ex;
+            }
+        }
+        [HttpDelete("DeleteDocument/{documentId}/{instrumentId}")]
+        public async Task<ApiResponse<string>> DeleteDocument (long documentId,long instrumentId)
+        {
+            try
+            {
+                var apiResponse = new ApiResponse<string>();
+                var role = await instrumentRepository.DeleteDocument(documentId,instrumentId);
+                apiResponse.Success = true;
+                apiResponse.Message = "instrument document deleted Successfully";
                 return apiResponse;
             }
             catch (Exception ex)

@@ -1,6 +1,9 @@
-﻿@model Hutech.Models.InstrumentViewModel;
-<form class="horizontal" method="post" asp-controller="Instrument" asp-action="AddInstrument">
-    <div class="col-sm-12">
+﻿@model Hutech.Models.InstrumentDocumentViewModel;
+@using (Html.BeginForm("AddInstrument", "Instrument", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "validateForm(event)" }))
+{
+
+    @*<form class="horizontal" method="post" asp-controller="Instrument" asp-action="AddInstrument" enctype="multipart/form-data" onsubmit="validateForm(event)>
+*@    <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
                 <strong>Add Instrument</strong>
@@ -10,13 +13,64 @@
                     <label for="company">Name</label>
                     @Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Instrument Name",@class="form-control"})
                     @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
-                    @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
+                </div>
+                <div class="form-group">
+                    <label for="company">Select Multiple Files</label>
+                    <input asp-for="Files" class="form-control" multiple />
+                    <span asp-validation-for="Files" class="text-danger"></span>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <input class="btn btn-primary" type="submit" value="Save changes">
                     <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
-</form>
+}
+@*</form>
+*@
+<script type="text/javascript">
+    var success = "true"
+    $("#Files").change(function () {
+        var allowedExtension = '@ViewBag.AllowedFileExtension';
+        var allowedFileSize = '@ViewBag.AlloweFileSize';
+        var size = parseInt(allowedFileSize);
+        var files = document.getElementById('Files');
+        for (var i = 0; i < files.files.length; ++i) {
+            var name = files.files.item(i).name;
+            var ext = name.split(".").slice(-1)[0];
+
+            var sizeInBytes = files.files.item(i).size;
+            let fileSizeMB = sizeInBytes / (1024 ** 2)
+
+            if (!allowedExtension.includes(ext)) {
+                alert(ext + " is not supported " + "Only supported Extensions are " + allowedExtension);
+                success = 'false';
+                event.preventDefault();
+            }
+            else {
+                if (fileSizeMB > size) {
+                    alert("Maximum file size is " + size + " MB");
+                    success = 'false';
+                    event.preventDefault();
+                }
+                else {
+                    success = 'true';
+
+                }
+            }
+        }
+    });
+
+    function validateForm(event) {
+        event = event || window.event || event.srcElement;
+        if (success == "true") {
+            document.forms['myform'].submit();
+        }
+        else {
+            event.preventDefault();
+            return false;
+        }
+    }
+
+</script>

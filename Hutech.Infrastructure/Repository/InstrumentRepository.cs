@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +21,41 @@ namespace Hutech.Infrastructure.Repository
         {
             configuration = _configuration;
         }
+        public async Task<string>  DeleteExistingInstrumentDocument(long Id)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<InstrumentDocumentMapping>(InstrumentQueries.DeleteExistingInstrumentDocument, new { Id = Id });
+                    return result.ToString();
+                }
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<string> DeleteDocument(long documentId,long instrumentId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<InstrumentDocumentMapping>(InstrumentQueries.DeleteInstrumentDocument, new { DocumentId = documentId,InstrumentId= instrumentId });
+                    var data = await connection.QueryAsync<Document>(InstrumentQueries.DeleteDocument, new {Id=documentId });
+                    return result.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<string> DeleteInstrument(long Id)
         {
             try
@@ -89,7 +124,64 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
+        public async Task<bool> UpdateInstrumentDocument(List<Document> document,long instrumentId)
+        {
+            try
+            {
+                foreach (var data in document)
+                {
+                    using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                    {
+                        connection.Open();
+                        var result = await connection.QueryAsync<long>(InstrumentQueries.UploadInstrumentDocument, data);
+                        InstrumentDocumentMapping instrumentDocument = new InstrumentDocumentMapping()
+                        {
+                            InstrumentId = instrumentId,
+                            DocumentId = result.First(),
+                            IsDeleted = false,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = data.CreatedBy
+                        };
+                        var instrumentDocumentMapping = await connection.QueryAsync<long>(InstrumentQueries.AddInstrumentDocumentMapping, instrumentDocument);
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> UploadInstrumentDocument(List<Document> document)
+        {
+            try
+            {
+                foreach(var data in document)
+                {
+                    using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                    {
+                        connection.Open();
+                        var result = await connection.QueryAsync<long>(InstrumentQueries.UploadInstrumentDocument, data);
+                        var instrumentId = await connection.QueryAsync<long>(InstrumentQueries.GetLastAddedInstrumentId);
 
+                        InstrumentDocumentMapping instrumentDocument = new InstrumentDocumentMapping()
+                        {
+                            InstrumentId = instrumentId.First(),
+                            DocumentId = result.First(),
+                            IsDeleted = false,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = data.CreatedBy
+                        };
+                        var instrumentDocumentMapping = await connection.QueryAsync<long>(InstrumentQueries.AddInstrumentDocumentMapping, instrumentDocument);
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<bool> PostInstrument(Instrument instrument)
         {
             try

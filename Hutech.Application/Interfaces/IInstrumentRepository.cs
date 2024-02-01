@@ -14,6 +14,10 @@ namespace Hutech.Application.Interfaces
         public Task<List<Instrument>> GetActiveInstrument();
         public Task<Instrument> GetInstrumentDetail(long Id);
         public Task<String> DeleteInstrument(long Id);
+        public Task<string> DeleteDocument(long documentId,long instrumentId);
+        public Task<string> DeleteExistingInstrumentDocument(long Id);
         public Task<String> PutInstrument(Instrument instrument);
+        Task<bool> UploadInstrumentDocument(List<Document> document);
+        Task<bool> UpdateInstrumentDocument(List<Document> documents, long instrumentId);
     }
 }
