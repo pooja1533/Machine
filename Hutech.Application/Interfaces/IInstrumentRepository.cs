@@ -10,6 +10,7 @@ namespace Hutech.Application.Interfaces
     public interface IInstrumentRepository
     {
         Task<bool> PostInstrument(Instrument instrument);
+        Task<bool> AddInstrumentDocumentMapping(InstrumentDocumentMapping instrumentDocumentMapping);
         public Task<List<Instrument>> GetInstrument();
         public Task<List<Instrument>> GetActiveInstrument();
         public Task<Instrument> GetInstrumentDetail(long Id);
@@ -17,7 +18,8 @@ namespace Hutech.Application.Interfaces
         public Task<string> DeleteDocument(long documentId,long instrumentId);
         public Task<string> DeleteExistingInstrumentDocument(long Id);
         public Task<String> PutInstrument(Instrument instrument);
-        Task<bool> UploadInstrumentDocument(List<Document> document);
-        Task<bool> UpdateInstrumentDocument(List<Document> documents, long instrumentId);
+        Task<long> GetLastInsertedInstrumentId();
+        //Task<bool> UploadInstrumentDocument(List<Document> document);
+        //Task<bool> UpdateInstrumentDocument(List<Document> documents, long instrumentId);
     }
 }

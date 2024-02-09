@@ -1,7 +1,7 @@
 ﻿@model Hutech.Models.InstrumentDocumentViewModel;
 @using (Html.BeginForm("AddInstrument", "Instrument", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "validateForm(event)" }))
 {
-
+    @Html.AntiForgeryToken()
     @*<form class="horizontal" method="post" asp-controller="Instrument" asp-action="AddInstrument" enctype="multipart/form-data" onsubmit="validateForm(event)>
 *@    <div class="col-sm-12">
         <div class="card">
@@ -11,7 +11,7 @@
             <div class="card-body">
                 <div class="form-group">
                     <label for="company">Name</label>
-                    @Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Instrument Name",@class="form-control"})
+                    @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Instrument Name", @class = "form-control", maxlength = "50" })
                     @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
                 </div>
                 <div class="form-group">
@@ -26,6 +26,16 @@
             </div>
         </div>
     </div>
+}
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            window.location.href = url;
+        };
+    </script>
 }
 @*</form>
 *@

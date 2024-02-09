@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using Hutech.Models;
+using Hutech.Resources;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,15 +14,18 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<ConfigurationController> logger;
-        public ConfigurationController(IConfiguration _configuration, ILogger<ConfigurationController> _logger)
+        private readonly LanguageService languageService;
+        public ConfigurationController(IConfiguration _configuration, ILogger<ConfigurationController> _logger, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
+            languageService = _languageService;
         }
         public IActionResult AddConfiguration()
         {
             return View();
         }
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> AddConfiguration(ConfigurationViewModel configurationViewModel)
         {
@@ -34,26 +38,47 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
-
-                string apiUrl = configuration["Baseurl"];
-                using (var client = new HttpClient())
+                var validation = new ConfigurationValidator();
+                var result = validation.Validate(configurationViewModel);
+                if (!result.IsValid)
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var json = JsonConvert.SerializeObject(configurationViewModel);
-                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-
-                    HttpResponseMessage Res = await client.PostAsync("Configuration/PostConfiguration", stringContent);
-
-                    if (Res.IsSuccessStatusCode)
-                    {
-                        var content = await Res.Content.ReadAsStringAsync();
-                    }
+                    return View();
                 }
-                return RedirectToAction("GetAllConfiguration");
+                else
+                {
+                    string apiUrl = configuration["Baseurl"];
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        var json = JsonConvert.SerializeObject(configurationViewModel);
+                        var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
+                        HttpResponseMessage Res = await client.PostAsync("Configuration/PostConfiguration", stringContent);
+
+                        if (Res.IsSuccessStatusCode)
+                        {
+                            var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Configuration/AddConfiguration/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Configuration Added Successfully");
+                                TempData["RedirectURl"] = "/Configuration/GetAllConfiguration/";
+                            }
+                        }
+                    }
+                    //return RedirectToAction("GetAllConfiguration");
+                }
+                return View();
             }
             catch (Exception ex)
             {
@@ -89,7 +114,17 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        configurations = root["result"].ToObject<List<ConfigurationViewModel>>();
+
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            configurations = root["result"].ToObject<List<ConfigurationViewModel>>();
+                        }
                     }
                 }
                 return View(configurations);
@@ -125,7 +160,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        configurationViewModel = root["result"].ToObject<ConfigurationViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + id;
+                            TempData["RedirectURl"] = "/Configuration/AddConfiguration/";
+                        }
+                        else
+                        {
+                            configurationViewModel = root["result"].ToObject<ConfigurationViewModel>();
+                        }
                     }
                 }
                 return View(configurationViewModel);

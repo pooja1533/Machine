@@ -1,4 +1,5 @@
 ﻿using Hutech.Models;
+using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -19,11 +20,13 @@ namespace Hutech.Controllers
         private readonly IConfiguration configuration;
         private string BaseUrl = string.Empty;
         private readonly ILogger<RoleController> logger;
-        public RoleController(IConfiguration _configuration, ILogger<RoleController> logger)
+        private readonly LanguageService languageService;
+        public RoleController(IConfiguration _configuration, ILogger<RoleController> logger, LanguageService _languageService)
         {
             configuration = _configuration;
             BaseUrl = configuration["Baseurl"];
             this.logger = logger;
+            languageService = _languageService;
         }
         public async Task<IActionResult> EditRole(Guid id)
         {
@@ -50,7 +53,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        roleViewModel = root["result"].ToObject<RoleViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/Role/AddRole/";
+                        }
+                        else
+                        {
+                            roleViewModel = root["result"].ToObject<RoleViewModel>();
+                        }
                     }
                 }
                 return View(roleViewModel);
@@ -61,6 +74,7 @@ namespace Hutech.Controllers
                 throw ex;
             }
         }
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> EditRole(RoleViewModel roleViewModel)
         {
@@ -97,7 +111,23 @@ namespace Hutech.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             JObject root = JObject.Parse(content);
-                            roleViewModel = root["result"].ToObject<RoleViewModel>();
+                            var resultData = root["success"].ToString();
+
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Role/EditRole/";
+                                return RedirectToAction("EditRole", new { id = roleViewModel.Id });
+
+                            }
+                            else
+                            {
+                                roleViewModel = root["result"].ToObject<RoleViewModel>();
+                                TempData["message"] = languageService.Getkey("Role Updated Successfully");
+                                TempData["RedirectURl"] = "/Role/GetAllRoles/";
+                            }
+
                         }
                     }
                     return RedirectToAction("GetAllRoles");
@@ -134,7 +164,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        //var message = root["value"].ToString();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("Role Deleted Successfully");
+                            TempData["RedirectURl"] = "/Role/GetAllRoles/";
+                        }
                     }
                 }
                 return RedirectToAction("GetAllRoles");
@@ -175,10 +216,18 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        roles = root["result"].ToObject<List<RoleViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            roles = root["result"].ToObject<List<RoleViewModel>>();
+                        }
                     }
                 }
-                //logger.LogInformation($"Get All Roles method executed successfully {DateTime.Now} at controller level");
                 return View(roles);
             }
             catch (Exception ex)
@@ -192,6 +241,7 @@ namespace Hutech.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddRoleAsync(RoleViewModel roleViewModel)
         {
             try
@@ -229,11 +279,24 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Role/AddRole/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Role Added Successfully");
+                                TempData["RedirectURl"] = "/Role/GetAllRoles/";
+                            }
                         }
                     }
                 }
 
-                return RedirectToAction("GetAllRoles");
+                return View();
             }
             catch(Exception ex)
             {

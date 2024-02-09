@@ -91,7 +91,7 @@ namespace Hutech.Controllers
 
                         foreach (var item in audit)
                         {
-                            item.Message = item.Message.Replace(",", ";");
+                            item.Request_Data = item.Request_Data.Replace(",", ";");
                             string line = string.Join(",", properties.Select(p => p.GetValue(item, null)).ToArray());
                             csvBuilder.AppendLine(line);
                         }
@@ -124,7 +124,7 @@ namespace Hutech.Controllers
                         worksheet.Cell(currentRow, 1).Value = products[i].ModuleName;
                         worksheet.Cell(currentRow, 2).Value = products[i].CreatedDatetime;
                         worksheet.Cell(currentRow, 3).Value = products[i].Description;
-                        worksheet.Cell(currentRow, 4).Value = products[i].Message;
+                        worksheet.Cell(currentRow, 4).Value = products[i].Request_Data;
                         worksheet.Cell(currentRow, 4).Value = products[i].UserId;
                     }
                 }

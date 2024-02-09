@@ -5,6 +5,12 @@
     Layout = "_LayoutFullScreen";
 
 }
+<style>
+    .row {
+        margin-right: 59px !important;
+        margin-left: 74px !important;
+    }
+</style>
 <div class="container-fluid">
     <div class="animated fadeIn">
         <div class="row justify-content-center">
@@ -17,12 +23,12 @@
                             <p class="text-muted">Sign In to your account</p>
                             <div class="input-group mb-3">
                                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                                <label asp-for="Input.Email" class="form-label">Email</label>
+                                @* <label asp-for="Input.Email" class="form-label">Email</label> *@
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
                             </div>
                             <div class="input-group mb-4">
                                 <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                                <label asp-for="Input.Password" class="form-label">Password</label>
+                                @* <label asp-for="Input.Password" class="form-label">Password</label> *@
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
                             <div class="row">
@@ -35,7 +41,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card text-white bg-primary py-5 d-md-down-none" style="width:44%">
+                    @* <div class="card text-white bg-primary py-5 d-md-down-none" style="width:44%">
                         <div class="card-body text-center">
                             <div>
                                 <h2>Sign up</h2>
@@ -43,7 +49,7 @@
                                     <button class="btn btn-primary active mt-3" type="button" onclick="Register()">Register Now!</button>
                             </div>
                         </div>
-                    </div>
+                    </div> *@
                 </div>
             </div>
             </form>

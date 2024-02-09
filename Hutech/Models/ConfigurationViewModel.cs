@@ -1,4 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Office.CoverPageProps;
+using FluentValidation;
+using Hutech.Resources;
 
 namespace Hutech.Models
 {
@@ -8,5 +10,14 @@ namespace Hutech.Models
         public string FileSize { get; set; }
         public string FileType { get; set; }
 
+    }
+    public class ConfigurationValidator :AbstractValidator<ConfigurationViewModel>
+    {
+        public ConfigurationValidator()
+        {
+            RuleFor(x => x.FileType).NotEmpty().WithMessage("Please enter file types that you want to allow user to upload");
+
+            RuleFor(x => x.FileSize).NotEmpty().WithMessage("Please enter File Size ");
+        }
     }
 }

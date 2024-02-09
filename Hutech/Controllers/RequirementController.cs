@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using NuGet.Common;
+using Hutech.Resources;
 
 namespace Hutech.Controllers
 {
@@ -15,10 +16,12 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<RequirementController> logger;
-        public RequirementController(IConfiguration _configuration, ILogger<RequirementController> _logger)
+        private readonly LanguageService languageService;
+        public RequirementController(IConfiguration _configuration, ILogger<RequirementController> _logger,LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
+            languageService = _languageService;
         }
         public async Task<IActionResult> GetAllRequirement()
         {
@@ -48,7 +51,16 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        requirements = root["result"].ToObject<List<RequirementViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            requirements = root["result"].ToObject<List<RequirementViewModel>>();
+                        }
                     }
                 }
                 return View(requirements);
@@ -64,6 +76,7 @@ namespace Hutech.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddRequirement(RequirementViewModel requirementViewModel)
         {
             try
@@ -100,6 +113,19 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Requirement/AddRequirement/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Requirement Added Successfully");
+                                TempData["RedirectURl"] = "/Requirement/GetAllRequirement/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllRequirement");
@@ -136,7 +162,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        requirementViewModel = root["result"].ToObject<RequirementViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/Requirement/AddRequirement/";
+                        }
+                        else
+                        {
+                            requirementViewModel = root["result"].ToObject<RequirementViewModel>();
+                        }
                     }
                 }
                 return View(requirementViewModel);
@@ -148,6 +184,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRequirement(RequirementViewModel requirementViewModel)
         {
             try
@@ -183,7 +220,21 @@ namespace Hutech.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             JObject root = JObject.Parse(content);
-                            requirementViewModel = root["result"].ToObject<RequirementViewModel>();
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Requirement/EditRequirement/";
+                                return RedirectToAction("EditRequirement", new { id = requirementViewModel.Id });
+
+                            }
+                            else
+                            {
+                                requirementViewModel = root["result"].ToObject<RequirementViewModel>();
+                                TempData["message"] = languageService.Getkey("Requirement Updated Successfully");
+                                TempData["RedirectURl"] = "/Requirement/GetAllRequirement/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllRequirement");
@@ -219,6 +270,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("Requirement Deleted Successfully");
+                            TempData["RedirectURl"] = "/Requirement/GetAllRequirement/";
+                        }
                         //var message = root["value"].ToString();
                     }
                 }

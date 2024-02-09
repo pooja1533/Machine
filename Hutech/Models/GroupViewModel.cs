@@ -13,8 +13,7 @@ namespace Hutech.Models
     {
         public GroupValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Group Name")
-            .Matches(@"^[A-Za-z\s]*$").WithMessage("Group Name should only contain letters.");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Group Name");
         }
     }
 }

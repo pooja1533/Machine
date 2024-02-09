@@ -1,4 +1,5 @@
 ﻿using Hutech.Models;
+using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,10 +16,12 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<InstrumentIdController> logger;
-        public InstrumentIdController(IConfiguration _configuration, ILogger<InstrumentIdController> _logger)
+        private readonly LanguageService languageService;
+        public InstrumentIdController(IConfiguration _configuration, ILogger<InstrumentIdController> _logger, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
+            languageService = _languageService;
         }
         public async Task<IActionResult> AddInstrumentIdAsync()
         {
@@ -123,6 +126,7 @@ namespace Hutech.Controllers
             return View(instrumentId);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddInstrumentId(InstrumentIdViewModel instrumentIdViewModel)
         {
             var token = Request.Cookies["jwtCookie"];
@@ -237,6 +241,19 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/InstrumentId/AddInstrumentId/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("InstrumentId Added Successfully");
+                                TempData["RedirectURl"] = "/InstrumentId/GetAllInstrumentId/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllInstrumentId");
@@ -277,7 +294,16 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        activities = root["result"].ToObject<List<InstrumentIdViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            activities = root["result"].ToObject<List<InstrumentIdViewModel>>();
+                        }
                     }
                 }
                 return View(activities);
@@ -312,6 +338,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("InstrumentId Deleted Successfully");
+                            TempData["RedirectURl"] = "/InstrumentId/GetAllInstrumentId/";
+                        }
                         //var message = root["value"].ToString();
                     }
                 }
@@ -426,7 +464,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        activityViewModel = root["result"].ToObject<InstrumentIdViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/InstrumentId/AddInstrumentId/";
+                        }
+                        else
+                        {
+                            activityViewModel = root["result"].ToObject<InstrumentIdViewModel>();
+                        }
                     }
                 }
                 activityViewModel.Teams = team;
@@ -441,6 +489,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditInstrumentId(InstrumentIdViewModel activityViewModel)
         {
             string apiUrl = configuration["Baseurl"];
@@ -557,7 +606,21 @@ namespace Hutech.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             JObject root = JObject.Parse(content);
-                            activityViewModel = root["result"].ToObject<InstrumentIdViewModel>();
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/InstrumentId/EditInstrumentId/";
+                                return RedirectToAction("InstrumentId", new { id = activityViewModel.Id });
+
+                            }
+                            else
+                            {
+                                activityViewModel = root["result"].ToObject<InstrumentIdViewModel>();
+                                TempData["message"] = languageService.Getkey("InstrumentId Updated Successfully");
+                                TempData["RedirectURl"] = "/InstrumentId/GetAllInstrumentId/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllInstrumentId");

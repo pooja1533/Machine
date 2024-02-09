@@ -22,7 +22,7 @@
         margin-right:7px !important;
     }
 </style>
-<form class="horizontal" method="post" asp-controller="InstrumentActivity" asp-action="AddInstrumentActivity">
+<form class="horizontal" method="post" asp-controller="InstrumentActivity" asp-action="AddInstrumentActivity" asp-antiforgery="true">
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
@@ -123,7 +123,16 @@
         </div>
     </div>
 </form>
-
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            window.location.href = url;
+        };
+    </script>
+}
 <script type="text/javascript">
     function checkBeforeAlerts() {
         var checkBox = document.getElementById("BeforeAlerts");

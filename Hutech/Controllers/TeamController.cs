@@ -1,4 +1,5 @@
 ﻿using Hutech.Models;
+using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,10 +17,12 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<TeamController> logger;
-        public TeamController(IConfiguration _configuration, ILogger<TeamController> _logger)
+        private readonly LanguageService languageService;
+        public TeamController(IConfiguration _configuration, ILogger<TeamController> _logger, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
+            languageService = _languageService;
         }
         public async Task<IActionResult> AddTeam()
         {
@@ -69,6 +72,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddTeam(TeamViewModel teamViewModel)
         {
             try
@@ -131,6 +135,19 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Team/AddTeam/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Team Added Successfully");
+                                TempData["RedirectURl"] = "/Team/GetAllTeam/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllTeam");
@@ -170,7 +187,17 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        teams = root["result"].ToObject<List<TeamViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            teams = root["result"].ToObject<List<TeamViewModel>>();
+                        }
+
                     }
                 }
                 return View(teams);
@@ -206,7 +233,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        teamViewModel = root["result"].ToObject<TeamViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/Team/AddTeam/";
+                        }
+                        else
+                        {
+                            teamViewModel = root["result"].ToObject<TeamViewModel>();
+                        }
                     }
                 }
                 List<LocationViewModel> locations = new List<LocationViewModel>();
@@ -243,6 +280,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditTeam(TeamViewModel teamViewModel)
         {
             try
@@ -304,7 +342,21 @@ namespace Hutech.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             JObject root = JObject.Parse(content);
-                            teamViewModel = root["result"].ToObject<TeamViewModel>();
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Team/EditTeam/";
+                                return RedirectToAction("EditTeam", new { id = teamViewModel.Id });
+
+                            }
+                            else
+                            {
+                                teamViewModel = root["result"].ToObject<TeamViewModel>();
+                                TempData["message"] = languageService.Getkey("Team Updated Successfully");
+                                TempData["RedirectURl"] = "/Team/GetAllTeam/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllTeam");
@@ -341,6 +393,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("Team Deleted Successfully");
+                            TempData["RedirectURl"] = "/Team/GetAllTeam/";
+                        }
                     }
                 }
                 return RedirectToAction("GetAllTeam");

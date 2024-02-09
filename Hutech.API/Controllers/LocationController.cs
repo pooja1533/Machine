@@ -16,36 +16,46 @@ namespace Hutech.API.Controllers
         private readonly IMapper mapper;
         private readonly ILocationRepository locationRepository;
         private readonly ILogger<LocationController> logger;
-        public LocationController(IMapper _mapper,ILocationRepository _locationRepository, ILogger<LocationController> _logger)
+        private readonly IAuditRepository auditRepository;
+        public LocationController(IMapper _mapper,ILocationRepository _locationRepository, ILogger<LocationController> _logger, IAuditRepository _auditRepository)
         {
             mapper = _mapper;
             locationRepository = _locationRepository;
             logger = _logger;
+            auditRepository = _auditRepository;
         }
         [HttpPost("PostLocation")]
         public async Task<ApiResponse<string>> PostLocation(LocationViewModel locationViewModel)
         {
             try
             {
+                //string dataa = null;
+                //var length = dataa.Length;
                 var apiResponse = new ApiResponse<string>();
                 var locationdata = mapper.Map<LocationViewModel, Location>(locationViewModel);
                 bool data = await locationRepository.PostLocation(locationdata);
                 apiResponse.Result = "Location added successfully";
-                apiResponse.Success = data;
+                apiResponse.Success = true;
                 return apiResponse;
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                var apiResponse = new ApiResponse<string>();
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetActiveLocation")]
         public async Task<ApiResponse<List<LocationViewModel>>> GetActiveLocation()
         {
+            var apiResponse = new ApiResponse<List<LocationViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<LocationViewModel>>();
                 var location = await locationRepository.GetActiveLocation();
                 var data = mapper.Map<List<Location>, List<LocationViewModel>>(location);
                 apiResponse.Success = true;
@@ -54,16 +64,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetLocation")]
         public async Task<ApiResponse<List<LocationViewModel>>> GetLocation()
         {
+            var apiResponse = new ApiResponse<List<LocationViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<LocationViewModel>>();
                 var location = await locationRepository.GetLocation();
                 var data = mapper.Map<List<Location>, List<LocationViewModel>>(location);
                 apiResponse.Success = true;
@@ -72,16 +87,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetLocationDetail/{id}")]
         public async Task<ApiResponse<LocationViewModel>> GetLocationDetail(long id)
         {
+            var apiResponse = new ApiResponse<LocationViewModel>();
             try
             {
-                var apiResponse = new ApiResponse<LocationViewModel>();
                 var location = await locationRepository.GetLocationDetail(id);
                 var data = mapper.Map<Location, LocationViewModel>(location);
                 apiResponse.Success = true;
@@ -90,16 +110,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var Id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", Id);
+                long auditId = System.Convert.ToInt64(Id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpDelete("DeleteLocation/{Id}")]
         public async Task<ApiResponse<string>> DeleteLocation(long Id)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var role = await locationRepository.DeleteLocation(Id);
                 apiResponse.Success = true;
                 apiResponse.Message = "location deleted Successfully";
@@ -107,16 +132,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpPut("PutLocation")]
         public async Task<ApiResponse<string>> PutLocation(LocationViewModel model)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var data = mapper.Map<LocationViewModel, Location>(model);
                 var role = await locationRepository.PutLocation(data);
                 apiResponse.Success = true;
@@ -125,8 +155,13 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
     }

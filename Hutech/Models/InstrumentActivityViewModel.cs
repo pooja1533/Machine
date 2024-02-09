@@ -51,6 +51,8 @@ namespace Hutech.Models
 
         [NotMapped]
         public string? InstrumentActivityGroup { get; set; }
+        public DateTime CreatedDateTime { get; set; }
+        public DateTime? ModifiedDateTime { get; set; }
     }
     public class InstrumentActivityValidator : AbstractValidator<InstrumentActivityViewModel>
     {

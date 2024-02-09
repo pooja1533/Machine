@@ -46,7 +46,7 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     var result = await connection.QueryAsync<InstrumentDocumentMapping>(InstrumentQueries.DeleteInstrumentDocument, new { DocumentId = documentId,InstrumentId= instrumentId });
-                    var data = await connection.QueryAsync<Document>(InstrumentQueries.DeleteDocument, new {Id=documentId });
+                    var data = await connection.QueryAsync<Document>(DocumentQueries.DeleteDocument, new {Id=documentId });
                     return result.ToString();
                 }
 
@@ -124,64 +124,64 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
-        public async Task<bool> UpdateInstrumentDocument(List<Document> document,long instrumentId)
-        {
-            try
-            {
-                foreach (var data in document)
-                {
-                    using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
-                    {
-                        connection.Open();
-                        var result = await connection.QueryAsync<long>(InstrumentQueries.UploadInstrumentDocument, data);
-                        InstrumentDocumentMapping instrumentDocument = new InstrumentDocumentMapping()
-                        {
-                            InstrumentId = instrumentId,
-                            DocumentId = result.First(),
-                            IsDeleted = false,
-                            CreatedDate = DateTime.UtcNow,
-                            CreatedBy = data.CreatedBy
-                        };
-                        var instrumentDocumentMapping = await connection.QueryAsync<long>(InstrumentQueries.AddInstrumentDocumentMapping, instrumentDocument);
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public async Task<bool> UploadInstrumentDocument(List<Document> document)
-        {
-            try
-            {
-                foreach(var data in document)
-                {
-                    using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
-                    {
-                        connection.Open();
-                        var result = await connection.QueryAsync<long>(InstrumentQueries.UploadInstrumentDocument, data);
-                        var instrumentId = await connection.QueryAsync<long>(InstrumentQueries.GetLastAddedInstrumentId);
+        //public async Task<bool> UpdateInstrumentDocument(List<Document> document,long instrumentId)
+        //{
+        //    try
+        //    {
+        //        foreach (var data in document)
+        //        {
+        //            using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+        //            {
+        //                connection.Open();
+        //                var result = await connection.QueryAsync<long>(InstrumentQueries.UploadInstrumentDocument, data);
+        //                InstrumentDocumentMapping instrumentDocument = new InstrumentDocumentMapping()
+        //                {
+        //                    InstrumentId = instrumentId,
+        //                    DocumentId = result.First(),
+        //                    IsDeleted = false,
+        //                    CreatedDate = DateTime.UtcNow,
+        //                    CreatedBy = data.CreatedBy
+        //                };
+        //                var instrumentDocumentMapping = await connection.QueryAsync<long>(InstrumentQueries.AddInstrumentDocumentMapping, instrumentDocument);
+        //            }
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+        //public async Task<bool> UploadInstrumentDocument(List<Document> document)
+        //{
+        //    try
+        //    {
+        //        foreach(var data in document)
+        //        {
+        //            using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+        //            {
+        //                connection.Open();
+        //                var result = await connection.QueryAsync<long>(InstrumentQueries.UploadInstrumentDocument, data);
+        //                var instrumentId = await connection.QueryAsync<long>(InstrumentQueries.GetLastAddedInstrumentId);
 
-                        InstrumentDocumentMapping instrumentDocument = new InstrumentDocumentMapping()
-                        {
-                            InstrumentId = instrumentId.First(),
-                            DocumentId = result.First(),
-                            IsDeleted = false,
-                            CreatedDate = DateTime.UtcNow,
-                            CreatedBy = data.CreatedBy
-                        };
-                        var instrumentDocumentMapping = await connection.QueryAsync<long>(InstrumentQueries.AddInstrumentDocumentMapping, instrumentDocument);
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //                InstrumentDocumentMapping instrumentDocument = new InstrumentDocumentMapping()
+        //                {
+        //                    InstrumentId = instrumentId.First(),
+        //                    DocumentId = result.First(),
+        //                    IsDeleted = false,
+        //                    CreatedDate = DateTime.UtcNow,
+        //                    CreatedBy = data.CreatedBy
+        //                };
+        //                var instrumentDocumentMapping = await connection.QueryAsync<long>(InstrumentQueries.AddInstrumentDocumentMapping, instrumentDocument);
+        //            }
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
         public async Task<bool> PostInstrument(Instrument instrument)
         {
             try
@@ -211,6 +211,46 @@ namespace Hutech.Infrastructure.Repository
                     return result.ToString();
                 }
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<bool> AddInstrumentDocumentMapping(InstrumentDocumentMapping instrumentDocumentMapping)
+        {
+            try
+            {
+                bool result = false;
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var instrumentDocumentMappingresult = await connection.QueryAsync<string>(InstrumentQueries.AddInstrumentDocumentMapping, instrumentDocumentMapping);
+                    if(instrumentDocumentMappingresult != null)
+                    {
+                        result= true;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<long> GetLastInsertedInstrumentId()
+        {
+            try
+            {
+                long lastinstrumentId = 0;
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var instrumentDocumentMappingresult = await connection.QueryAsync<long>(InstrumentQueries.GetLastAddedInstrumentId);
+                    lastinstrumentId = instrumentDocumentMappingresult.First();
+                }
+                return lastinstrumentId;
             }
             catch (Exception ex)
             {

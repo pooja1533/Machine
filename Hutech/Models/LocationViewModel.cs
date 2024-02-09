@@ -13,9 +13,7 @@ namespace Hutech.Models
     {
         public LocationValidator() 
         {
-            RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Location Name")
-            .Matches(@"^[A-Za-z\s]*$").WithMessage("Location Name only contain Character");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Location Name");
         }
-
     }
 }

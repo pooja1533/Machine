@@ -21,9 +21,8 @@ namespace Hutech.Models
     public class TeamValidator : AbstractValidator<TeamViewModel>
     {
         public TeamValidator() 
-        { 
-            RuleFor(x=>x.Name).NotEmpty().WithMessage("Please enter Name")
-            .Matches(@"^[A-Za-z\s]*$").WithMessage("Team Name should only contain letters.");
+        {
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Name");
         }
     }
 }

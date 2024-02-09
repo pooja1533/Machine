@@ -17,6 +17,7 @@
         public string SessionId { get; set; }
         public string UrlReferrer { get; set; }
         public string UserId { get; set; }
-        public string Message { get; set; }
+        public string? Request_Data { get; set; }
+        public string? Exception_Details { get; set; }
     }
 }

@@ -8,5 +8,6 @@
         public int CurrentPage { get; set; }
         public int TotalRecords { get; set; }
         public int TotalPage { get; set; }
+        public long? AuditId { get; set; }
     }
 }

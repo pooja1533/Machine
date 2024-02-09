@@ -14,5 +14,8 @@ namespace Hutech.Application.Interfaces
 
         public Task<ActivityDetails> GetActivityDetails(long Id);
         public Task<String> DeleteActivityDetails(long Id);
+        Task<bool> AddActivityDetailDocumentMapping(ActivityDetailDocumentMapping instrumentDocumentMapping);
+        Task<long> GetLastInsertedActivityDetailId();
+        public Task<string> DeleteDocument(long documentId, long activityDetailId);
     }
 }

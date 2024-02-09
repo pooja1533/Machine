@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Hutech.Core.Constants;
 using Hutech.Core.Entities;
 using System.IdentityModel.Tokens.Jwt;
+using Hutech.Resources;
 
 namespace Hutech.Controllers
 {
@@ -16,10 +17,12 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<ActivityController> logger;
-        public ActivityController(IConfiguration _configuration, ILogger<ActivityController> _logger)
+        private readonly LanguageService languageService;
+        public ActivityController(IConfiguration _configuration, ILogger<ActivityController> _logger, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
+            languageService = _languageService;
         }
         public async Task<IActionResult> GetAllActivity()
         {
@@ -49,7 +52,16 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        activities = root["result"].ToObject<List<ActivityViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            activities = root["result"].ToObject<List<ActivityViewModel>>();
+                        }
                     }
                 }
                 return View(activities);
@@ -65,6 +77,7 @@ namespace Hutech.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddActivity(ActivityViewModel activityViewModel)
         {
             try
@@ -101,6 +114,19 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Activity/AddActivity/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Activity Added Successfully");
+                                TempData["RedirectURl"] = "/Activity/GetAllActivity/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllActivity");
@@ -137,7 +163,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        activityViewModel = root["result"].ToObject<ActivityViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/Activity/AddActivity/";
+                        }
+                        else
+                        {
+                            activityViewModel = root["result"].ToObject<ActivityViewModel>();
+                        }
                     }
                 }
                 return View(activityViewModel);
@@ -149,6 +185,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditActivity(ActivityViewModel activityViewModel)
         {
             try
@@ -184,7 +221,21 @@ namespace Hutech.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             JObject root = JObject.Parse(content);
-                            activityViewModel = root["result"].ToObject<ActivityViewModel>();
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                //TempData["RedirectURl"] = "/Activity/EditActivity/";
+                                return RedirectToAction("EditActivity", new { id = activityViewModel.Id });
+
+                            }
+                            else
+                            {
+                                activityViewModel = root["result"].ToObject<ActivityViewModel>();
+                                TempData["message"] = languageService.Getkey("Activity Updated Successfully");
+                                TempData["RedirectURl"] = "/Activity/GetAllActivity/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllActivity");
@@ -220,6 +271,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("Activity Deleted Successfully");
+                            TempData["RedirectURl"] = "/Activity/GetAllActivity/";
+                        }
                         //var message = root["value"].ToString();
                     }
                 }

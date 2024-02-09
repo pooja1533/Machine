@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,5 +30,9 @@ namespace Hutech.Core.Entities
         public DateTime? ModifiedDate { get; set;}
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+        [NotMapped]
+        public string? DocumentId { get; set; }
+        [NotMapped]
+        public string? Path { get; set; }
     }
 }

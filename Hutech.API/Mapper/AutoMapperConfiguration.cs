@@ -47,6 +47,8 @@ namespace Hutech.API.Mapper
             CreateMap<ConfigurationViewModel, Configure>();
             CreateMap<Document, DocumentViewModel>();
             CreateMap<DocumentViewModel, Document>();
+            CreateMap<Document, DocumentViewModel>();
+            CreateMap<DocumentViewModel, Document>();
         }
     }
 }

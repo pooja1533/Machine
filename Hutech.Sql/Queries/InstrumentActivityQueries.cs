@@ -8,7 +8,7 @@ namespace Hutech.Sql.Queries
 {
     public class InstrumentActivityQueries
     {
-        public static string PostInstrumentActivity => "Insert into InstrumentActivity values(@InstrumentId,@ActivityId,@InstrumentActivityName,@Frequency,@FrequencyTime,@Days,@RequirementId,@DepartmentId,@BeforeAlerts,@IsActive,@IsDeleted,@BeforeAlertsTime)";
+        public static string PostInstrumentActivity => "Insert into InstrumentActivity values(@InstrumentId,@ActivityId,@InstrumentActivityName,@Frequency,@FrequencyTime,@Days,@RequirementId,@DepartmentId,@BeforeAlerts,@IsActive,@IsDeleted,@BeforeAlertsTime,@CreatedDateTime,@ModifiedDateTime)";
         public static string GetLastInsertedId => "Select top 1 Id from InstrumentActivity order by id desc";
         public static string AddUserOfInstrumentActivity => "Insert into InstrumentActivityUserModal values(@InstrumentActivityId,@GroupId,@IsActive,@IsDeleted)";
         public static string GetInstrumentActivity => " Select ia.Id,ia.Days,ia.IsActive,ia.BeforeAlertsTime,ia.InstrumentActivityName,ia.FrequencyTime,i.Name as InstrumentName,a.Name as activityName,ia.FrequencyUnit as Frequency,r.name as RequirementName,d.name as DeaprtmentName from InstrumentActivity ia left join Instrument i on i.Id=ia.InstrumentId " +

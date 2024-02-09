@@ -16,19 +16,21 @@ namespace Hutech.API.Controllers
         private readonly IMapper mapper;
         private readonly IConfigurationRepository configurationRepository;
         private readonly ILogger<ConfigurationController> logger;
-        public ConfigurationController(IMapper _mapper, IConfigurationRepository _configurationRepository, ILogger<ConfigurationController> _logger)
+        private readonly IAuditRepository auditRepository;
+        public ConfigurationController(IMapper _mapper, IConfigurationRepository _configurationRepository, ILogger<ConfigurationController> _logger, IAuditRepository _auditRepository)
         {
             mapper = _mapper;
             configurationRepository = _configurationRepository;
             logger = _logger;
+            auditRepository = _auditRepository;
         }
 
         [HttpGet("GetAllConfiguration")]
         public async Task<ApiResponse<List<ConfigurationViewModel>>> GetAllConfiguration()
         {
+            var apiResponse = new ApiResponse<List<ConfigurationViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<ConfigurationViewModel>>();
                 var configures = await configurationRepository.GetAllConfiguration();
                 var data = mapper.Map<List<Configure>, List<ConfigurationViewModel>>(configures);
                 apiResponse.Success = true;
@@ -37,34 +39,46 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpPost("PostConfiguration")]
         public async Task<ApiResponse<string>> PostConfiguration(ConfigurationViewModel configurationViewModel)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
+                //string dataa = null;
+                //var length = dataa.Length;
                 var activitydata = mapper.Map<ConfigurationViewModel, Configure>(configurationViewModel);
                 bool data = await configurationRepository.PostConfiguration(activitydata);
                 apiResponse.Result = "configuration added successfully";
-                apiResponse.Success = data;
+                apiResponse.Success = true;
                 return apiResponse;
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetConfigurationDetail/{id}")]
         public async Task<ApiResponse<ConfigurationViewModel>> GetConfigurationDetail(long id)
         {
+            var apiResponse = new ApiResponse<ConfigurationViewModel>();
             try
             {
-                var apiResponse = new ApiResponse<ConfigurationViewModel>();
                 var configure = await configurationRepository.GetConfigurationDetail(id);
                 var data = mapper.Map<Configure, ConfigurationViewModel>(configure);
                 apiResponse.Success = true;
@@ -73,8 +87,13 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var Id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", Id);
+                long auditId = System.Convert.ToInt64(Id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
     }

@@ -1,3 +1,4 @@
+using Hutech;
 using Hutech.API;
 using Hutech.API.Helpers;
 using Hutech.Application.Interfaces;
@@ -107,6 +108,12 @@ else
             .WriteTo.Console();
     });
 }
+builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+
+var emailConfig = builder.Configuration
+        .GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
 builder.Services.AddAuthorization();
 
 

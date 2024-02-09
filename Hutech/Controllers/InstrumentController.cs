@@ -1,6 +1,8 @@
 ﻿using DocumentFormat.OpenXml.ExtendedProperties;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Hutech.Models;
+using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +23,13 @@ namespace Hutech.Controllers
         public IConfiguration configuration { get; set; }
         private readonly ILogger<InstrumentController> logger;
         private Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnv;
-        public InstrumentController(IConfiguration _configuration, ILogger<InstrumentController> _logger, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
+        private readonly LanguageService languageService;
+        public InstrumentController(IConfiguration _configuration, ILogger<InstrumentController> _logger, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
             hostingEnv = env;
+            languageService = _languageService;
         }
         public async Task<IActionResult> GetAllInstrument()
         {
@@ -55,7 +59,16 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        instruments = root["result"].ToObject<List<InstrumentViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            instruments = root["result"].ToObject<List<InstrumentViewModel>>();
+                        }
                     }
                 }
                 return View(instruments);
@@ -73,6 +86,7 @@ namespace Hutech.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddInstrument(InstrumentDocumentViewModel instrumentdocumentViewModel)
         {
             try
@@ -117,6 +131,7 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject rootData = JObject.Parse(content);
                             if (instrumentdocumentViewModel.Files != null)
                             {
                                 if (instrumentdocumentViewModel.Files.Count > 0)
@@ -185,6 +200,18 @@ namespace Hutech.Controllers
                                     }
                                 }
                             }
+                            var resultData = rootData["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = rootData["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Instrument/AddAddInstrument/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Instrument Added Successfully");
+                                TempData["RedirectURl"] = "/Instrument/GetAllInstrument/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllInstrument");
@@ -223,12 +250,23 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        instrumentViewModel = root["result"].ToObject<InstrumentViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/Instrument/AddInstrument/";
+                        }
+                        else
+                        {
+                            instrumentViewModel = root["result"].ToObject<InstrumentViewModel>();
+                        }
                     }
                 }
                 InstrumentDocumentViewModel model = new InstrumentDocumentViewModel();
                 model.Id = instrumentViewModel.Id;
                 model.Name = instrumentViewModel.Name;
+                model.IsActive = instrumentViewModel.IsActive;
                 var documentData = (string[])null;
                 var documentIdsData = (string[])null;
                 if (!string.IsNullOrEmpty(instrumentViewModel.Path))
@@ -271,6 +309,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditInstrument(InstrumentDocumentViewModel instrumentDocumentViewModel)
         {
             try
@@ -296,7 +335,7 @@ namespace Hutech.Controllers
                     {
                         Id = instrumentDocumentViewModel.Id,
                         Name = instrumentDocumentViewModel.Name,
-                        IsActive = true,
+                        IsActive = instrumentDocumentViewModel.IsActive,
                         IsDeleted = false
                     };
                     string apiUrl = configuration["Baseurl"];
@@ -388,6 +427,20 @@ namespace Hutech.Controllers
                                     }
                                 }
                             }
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Instrument/EditInstrument/";
+                                return RedirectToAction("EditInstrument", new { id = instrumentDocumentViewModel.Id });
+
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Instrument Updated Successfully");
+                                TempData["RedirectURl"] = "/Instrument/GetAllInstrument/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllInstrument");
@@ -423,10 +476,21 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("Document Deleted Successfully");
+                        }
                         //var message = root["value"].ToString();
                     }
                 }
-                return RedirectToAction("GetAllInstrument");
+                return RedirectToAction("EditInstrument", "Instrument", new { @id = instrumentId });
             }
             catch (Exception ex)
             {
@@ -458,6 +522,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("Instrument Deleted Successfully");
+                            TempData["RedirectURl"] = "/Instrument/GetAllInstrument/";
+                        }
                         //var message = root["value"].ToString();
                     }
                 }

@@ -1,4 +1,5 @@
 ﻿using Hutech.Models;
+using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -14,10 +15,12 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<LocationController> logger;
-        public LocationController(IConfiguration _configuration, ILogger<LocationController> _logger)
+        private readonly LanguageService languageService;
+        public LocationController(IConfiguration _configuration, ILogger<LocationController> _logger, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
+            languageService = _languageService;
         }
         public async Task<IActionResult> GetAllLocation()
         {
@@ -47,7 +50,16 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        locations = root["result"].ToObject<List<LocationViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            locations = root["result"].ToObject<List<LocationViewModel>>();
+                        }
                     }
                 }
                 return View(locations);
@@ -63,6 +75,7 @@ namespace Hutech.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddLocation(LocationViewModel locationViewModel)
         {
             try
@@ -99,9 +112,23 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Location/AddLocation/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Location Added Successfully");
+                                TempData["RedirectURl"] = "/Location/GetAllLocation/";
+                            }
                         }
                     }
-                    return RedirectToAction("GetAllLocation");
+                    //return RedirectToAction("GetAllLocation");
+                    return View();
                 }
             }
             catch (Exception ex)
@@ -135,7 +162,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        locationViewModel = root["result"].ToObject<LocationViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/Location/AddLocation/";
+                        }
+                        else
+                        {
+                            locationViewModel = root["result"].ToObject<LocationViewModel>();
+                        }
                     }
                 }
                 return View(locationViewModel);
@@ -147,6 +184,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditLocation(LocationViewModel locationViewModel)
         {
             try
@@ -182,7 +220,21 @@ namespace Hutech.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             JObject root = JObject.Parse(content);
-                            locationViewModel = root["result"].ToObject<LocationViewModel>();
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Location/EditLocation/";
+                                return RedirectToAction("EditLocation", new { id = locationViewModel.Id });
+
+                            }
+                            else
+                            {
+                                locationViewModel = root["result"].ToObject<LocationViewModel>();
+                                TempData["message"] = languageService.Getkey("Location Updated Successfully");
+                                TempData["RedirectURl"] = "/Location/GetAllLocation/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllLocation");
@@ -219,6 +271,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("Location Deleted Successfully");
+                            TempData["RedirectURl"] = "/Location/GetAllLocation/";
+                        }
                         //var message = root["value"].ToString();
                     }
                 }

@@ -74,6 +74,16 @@
         <!-- /.row-->
     </div>
 </div>
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            window.location.href = url;
+        };
+    </script>
+}
 <script type="text/javascript">
     function changeUser() {
         var userId = $("#UserId option:selected").val();

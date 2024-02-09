@@ -1,5 +1,8 @@
-﻿@model Hutech.Models.ActivityDetailsViewModel;
-<form class="horizontal" method="post" asp-controller="ActivityDetails" asp-action="AddActivityDetails">
+﻿@model Hutech.Models.ActivityDetailsDocumentViewModel;
+@* <form class="horizontal" method="post" asp-controller="ActivityDetails" asp-action="AddActivityDetails"> *@
+@using (Html.BeginForm("AddActivityDetails", "ActivityDetails", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "validateForm(event)" }))
+{
+    @Html.AntiForgeryToken()
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
@@ -102,6 +105,30 @@
                         <div class="form-group">
                             <label for="company">Remark</label>
                             @Html.TextAreaFor(x=>x.Remark,new{Placeholder="Enter Remark",@class="form-control"})
+                            @Html.ValidationMessageFor(x => x.Remark, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @if (Model != null)
+                    {
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="company">Uploaded Documents</label><br />
+                                @foreach (var document in Model.UplodedFile)
+                                {
+                                    <a href="/ActivityDetails/Download?fileName=@document.FilePath">@document.FileName</a>
+                                    <a href="/ActivityDetails/DeleteDocument?documentId=@document.Id&activityDetailId=@Model.Id"><i class="fa fa-trash-o"></i></a>
+                                    <br />
+                                }
+                            </div>
+
+                        </div>
+                        
+                    }
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Select Multiple Files</label>
+                            <input asp-for="Files" class="form-control" multiple />
+                            <span asp-validation-for="Files" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -122,19 +149,80 @@
                         </div>
                     </div>
                     @Html.HiddenFor(x=>x.Id)
+                    @Html.HiddenFor(x=>x.InstrumentId)
+                    @Html.HiddenFor(x=>x.InstrumentActivityId)
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <input class="btn btn-primary" type="submit" value="Save changes">
                     <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
-</form>
+}
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            var Id = $("#Id").val();
+            window.location.href = url + "?id=" + Id;
+        };
+    </script>
+}
+@* </form> *@
 <script type="text/javascript">
+    var success = "true";
+    $(':radio').click(function () {
+        return false;
+    });
+
+    var success = "true"
     $(function () {
         $('[type="date"]').prop('max', function () {
             return new Date().toJSON().split('T')[0];
         });
     });
+    $("#Files").change(function () {
+        var allowedExtension = '@ViewBag.AllowedFileExtension';
+        var allowedFileSize = '@ViewBag.AlloweFileSize';
+        var size = parseInt(allowedFileSize);
+        var files = document.getElementById('Files');
+        for (var i = 0; i < files.files.length; ++i) {
+            var name = files.files.item(i).name;
+            var ext = name.split(".").slice(-1)[0];
+
+            var sizeInBytes = files.files.item(i).size;
+            let fileSizeMB = sizeInBytes / (1024 ** 2)
+            debugger;
+            if (!allowedExtension.includes(ext)) {
+                alert(ext + " is not supported " + "Only supported Extensions are " + allowedExtension);
+                success = 'false';
+                event.preventDefault();
+            }
+            else {
+                if (fileSizeMB > size) {
+                    alert("Maximum file size is " + size + " MB");
+                    success = 'false';
+                    event.preventDefault();
+                }
+                else {
+                    success = 'true';
+
+                }
+            }
+        }
+    });
+
+    function validateForm(event) {
+        event = event || window.event || event.srcElement;
+        if (success == "true") {
+            document.forms['myform'].submit();
+        }
+        else {
+            event.preventDefault();
+            return false;
+        }
+    }
 </script>

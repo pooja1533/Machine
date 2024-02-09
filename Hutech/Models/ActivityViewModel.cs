@@ -13,8 +13,7 @@ namespace Hutech.Models
     {
         public ActivityValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Department Name")
-            .Matches(@"^[A-Za-z\s]*$").WithMessage("Activity Name should only contain letters.");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Activity Name");
         }
     }
 }

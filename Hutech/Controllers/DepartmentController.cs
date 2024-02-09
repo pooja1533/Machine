@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Hutech.Core.Constants;
 using Hutech.Core.Entities;
 using System.IdentityModel.Tokens.Jwt;
+using Hutech.Resources;
 
 namespace Hutech.Controllers
 {
@@ -16,10 +17,12 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<DepartmentController> logger;
-        public DepartmentController(IConfiguration _configuration,ILogger<DepartmentController> _logger)
+        private readonly LanguageService languageService;
+        public DepartmentController(IConfiguration _configuration,ILogger<DepartmentController> _logger, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
+            languageService = _languageService;
         }
         public async Task<IActionResult> GetAllDepartment()
         {
@@ -49,7 +52,16 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        departments = root["result"].ToObject<List<DepartmentViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            departments = root["result"].ToObject<List<DepartmentViewModel>>();
+                        }
                     }
                 }
                 return View(departments);
@@ -65,6 +77,7 @@ namespace Hutech.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddDepartment(DepartmentViewModel departmentViewModel)
         {
             try
@@ -101,6 +114,19 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Department/AddDepartment/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("Department Added Successfully");
+                                TempData["RedirectURl"] = "/Department/GetAllDepartment/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllDepartment");
@@ -137,7 +163,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        departmentViewModel = root["result"].ToObject<DepartmentViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/Department/AddDepartment/";
+                        }
+                        else
+                        {
+                            departmentViewModel = root["result"].ToObject<DepartmentViewModel>();
+                        }
                     }
                 }
                 return View(departmentViewModel);
@@ -149,6 +185,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDepartment(DepartmentViewModel departmentViewModel)
         {
             try
@@ -184,7 +221,21 @@ namespace Hutech.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             JObject root = JObject.Parse(content);
-                            departmentViewModel = root["result"].ToObject<DepartmentViewModel>();
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/Department/EditDepartment/";
+                                return RedirectToAction("EditDepartment", new { id = departmentViewModel.Id });
+
+                            }
+                            else
+                            {
+                                departmentViewModel = root["result"].ToObject<DepartmentViewModel>();
+                                TempData["message"] = languageService.Getkey("Department Updated Successfully");
+                                TempData["RedirectURl"] = "/Department/GetAllDepartment/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllDepartment");
@@ -220,6 +271,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("Department Deleted Successfully");
+                            TempData["RedirectURl"] = "/Department/GetAllDepartment/";
+                        }
                         //var message = root["value"].ToString();
                     }
                 }

@@ -1,5 +1,5 @@
 ﻿@model Hutech.Models.DepartmentViewModel;
-<form class="horizontal" method="post" asp-controller="Department" asp-action="EditDepartment">
+<form class="horizontal" method="post" asp-controller="Department" asp-action="EditDepartment" asp-antiforgery="true">
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
@@ -9,7 +9,7 @@
                 <div class="form-group">
                     <label for="company">Name</label>
                     @Html.HiddenFor(x=>x.Id)
-                    @Html.TextBoxFor(x=>x.Name,new{Placeholder="Enter Department Name",@class="form-control"})
+                    @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Department Name", @class = "form-control", maxlength = "50" })
                     @Html.ValidationMessageFor(x=>x.Name,"",new {@class="text-danger"})
                 </div>
                 <div class="form-group">
@@ -27,3 +27,14 @@
         </div>
     </div>
 </form>
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            var Id = $("#Id").val();
+            window.location.href = url + "?id=" + Id;
+        };
+    </script>
+}

@@ -1,5 +1,5 @@
 ﻿@model Hutech.Models.ConfigurationViewModel;
-<form class="horizontal" method="post" asp-controller="Configuration" asp-action="AddConfiguration">
+<form class="horizontal" method="post" asp-controller="Configuration" asp-action="AddConfiguration" asp-antiforgery="true">
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
@@ -12,7 +12,7 @@
                     @Html.ValidationMessageFor(x=>x.FileType,"", new { @class = "text-danger"})
                 </div>
                 <div class="form-group">
-                    <label for="company">File Size</label>
+                    <label for="company">File Size(MB)</label>
                     @Html.TextBoxFor(x=>x.FileSize,new{Placeholder="Enter File Size",@class="form-control"})
                     @Html.ValidationMessageFor(x=>x.FileSize,"", new { @class = "text-danger"})
                 </div>
@@ -24,3 +24,13 @@
         </div>
     </div>
 </form>
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            window.location.href = url;
+        };
+    </script>
+}

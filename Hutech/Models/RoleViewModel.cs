@@ -11,8 +11,7 @@ namespace Hutech.Models
     {
         public RoleValidator() 
         {
-            RuleFor(x => x.Name).NotEmpty().WithMessage("Please Enter Role Name")
-            .Matches(@"^[A-Za-z\s]*$").WithMessage("RoleName should only contain letters.");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Please Enter Role Name");
         }
     }
 }

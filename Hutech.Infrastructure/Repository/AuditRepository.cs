@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
 using Hutech.Core.Entities;
+using Hutech.Sql.Queries;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -20,7 +21,25 @@ namespace Hutech.Infrastructure.Repository
         {
             _configuration = configuration;
         }
-        public void InsertAuditLogs(AuditModels objauditmodel)
+
+        public async void AddExceptionDetails(long auditId, string Message)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(_configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<AspNetRole>(AuditQueries.AddExceptionDetails, new { AuditId = auditId, Exception_Details = Message});
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public long InsertAuditLogs(AuditModels objauditmodel)
         {
             try
             {
@@ -34,7 +53,7 @@ namespace Hutech.Infrastructure.Repository
                     para.Add("@PageAccessed", objauditmodel.PageAccessed);
                     para.Add("@LoggedInAt", objauditmodel.LoggedInAt);
                     para.Add("@LoggedOutAt", objauditmodel.LoggedOutAt);
-                    para.Add("@Message", objauditmodel.Message);
+                    para.Add("@Request_Data", objauditmodel.Request_Data);
                     para.Add("@ModuleName", objauditmodel.ModuleName);
                     para.Add("@ActionName", objauditmodel.ActionName);
                     para.Add("@UrlReferrer", objauditmodel.UrlReferrer);
@@ -42,7 +61,14 @@ namespace Hutech.Infrastructure.Repository
                     para.Add("@RoleId", objauditmodel.RoleId);
                     para.Add("@LangId", objauditmodel.LangId);
                     para.Add("@IsFirstLogin", objauditmodel.IsFirstLogin);
-                    connection.Execute("Usp_InsertAuditLogs", para, null, 0, CommandType.StoredProcedure);
+                    para.Add("@Exception_Details", objauditmodel.Exception_Details);
+                    // @ReturnVal could be any name
+                    //para.Add("@ReturnVal", SqlDbType.Int);
+
+
+                    var result=connection.ExecuteScalar("Usp_InsertAuditLogs", para, null, 0, CommandType.StoredProcedure);
+                    long id = System.Convert.ToInt64(result);
+                    return id;
                 }
                     
             }

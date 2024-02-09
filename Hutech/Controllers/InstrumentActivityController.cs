@@ -1,4 +1,5 @@
 ﻿using Hutech.Models;
+using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,10 +16,12 @@ namespace Hutech.Controllers
     {
         public IConfiguration configuration { get; set; }
         private readonly ILogger<InstrumentActivityController> logger;
-        public InstrumentActivityController(IConfiguration _configuration, ILogger<InstrumentActivityController> _logger)
+        private readonly LanguageService languageService;
+        public InstrumentActivityController(IConfiguration _configuration, ILogger<InstrumentActivityController> _logger, LanguageService _languageService)
         {
             logger = _logger;
             configuration = _configuration;
+            languageService = _languageService;
         }
         public async Task<IActionResult> AddInstrumentActivity()
         {
@@ -173,6 +176,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddInstrumentActivity(InstrumentActivityViewModel instrumentActivityViewModel)
         {
             var token = Request.Cookies["jwtCookie"];
@@ -311,7 +315,7 @@ namespace Hutech.Controllers
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
-            
+            instrumentActivityViewModel.CreatedDateTime= DateTime.UtcNow;
             if (!result.IsValid)
             {
                 instrumentActivityViewModel.EmailList = userData;
@@ -340,6 +344,19 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
+                            JObject root = JObject.Parse(content);
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/InstrumentActivity/AddInstrumentActivity/";
+                            }
+                            else
+                            {
+                                TempData["message"] = languageService.Getkey("InstrumentActivity Added Successfully");
+                                TempData["RedirectURl"] = "/InstrumentActivity/GetAllInstrumentActivity/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllInstrumentActivity");
@@ -377,6 +394,18 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("InstrumentActivity Deleted Successfully");
+                            TempData["RedirectURl"] = "/InstrumentActivity/GetAllInstrumentActivity/";
+                        }
                         //var message = root["value"].ToString();
                     }
                 }
@@ -416,7 +445,16 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        instrumentactivities = root["result"].ToObject<List<InstrumentActivityViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            instrumentactivities = root["result"].ToObject<List<InstrumentActivityViewModel>>();
+                        }
                     }
                 }
                 return View(instrumentactivities);
@@ -452,7 +490,17 @@ namespace Hutech.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        activityViewModel = root["result"].ToObject<InstrumentActivityViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/InstrumentActivity/AddInstrumentActivity/";
+                        }
+                        else
+                        {
+                            activityViewModel = root["result"].ToObject<InstrumentActivityViewModel>();
+                        }
                     }
                 }
 
@@ -596,6 +644,7 @@ namespace Hutech.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditInstrumentActivity(InstrumentActivityViewModel activityViewModel)
         {
             try
@@ -762,7 +811,21 @@ namespace Hutech.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             JObject root = JObject.Parse(content);
-                            activityViewModel = root["result"].ToObject<InstrumentActivityViewModel>();
+                            var resultData = root["success"].ToString();
+                            if (resultData == "False" || resultData == "false")
+                            {
+                                var Id = root["auditId"].ToString();
+                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["RedirectURl"] = "/InstrumentActivity/EditInstrumentActivity/";
+                                return RedirectToAction("EditInstrumentActivity", new { id = activityViewModel.Id });
+
+                            }
+                            else
+                            {
+                                activityViewModel = root["result"].ToObject<InstrumentActivityViewModel>();
+                                TempData["message"] = languageService.Getkey("InstrumentActivity Updated Successfully");
+                                TempData["RedirectURl"] = "/InstrumentActivity/GetAllInstrumentActivity/";
+                            }
                         }
                     }
                     return RedirectToAction("GetAllInstrumentActivity");
@@ -774,5 +837,6 @@ namespace Hutech.Controllers
                 throw ex;
             }
         }
+        
     }
 }

@@ -3,6 +3,7 @@ using Hutech.Application.Interfaces;
 using Hutech.Core.Entities;
 using Hutech.Infrastructure.Repository;
 using Hutech.Models;
+using Hutech.Sql.Queries;
 using Imputabiliteafro.Api.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +16,18 @@ namespace Hutech.API.Controllers
     {
         private readonly IMapper mapper;
         private readonly IInstrumentRepository instrumentRepository;
+        private readonly IDocumentRepository documentRepository;
         private readonly ILogger<InstrumentController> logger;
         private readonly IConfiguration configuration;
-        public InstrumentController(IMapper _mapper, IInstrumentRepository _instrumentRepository, ILogger<InstrumentController> _logger,IConfiguration _configuration)
+        private readonly IAuditRepository auditRepository;
+        public InstrumentController(IMapper _mapper, IInstrumentRepository _instrumentRepository,IDocumentRepository _documentRepository, ILogger<InstrumentController> _logger,IConfiguration _configuration,IAuditRepository _auditRepository)
         {
             mapper = _mapper;
+            documentRepository = _documentRepository;
             instrumentRepository = _instrumentRepository;
             logger = _logger;
             configuration = _configuration;
+            auditRepository = _auditRepository;
         }
         [HttpPost("UploadInstrumentDocument")]
         public async Task<ApiResponse<string>> UploadInstrumentDocument([FromForm] InstrumentDocumentViewModel instrumentDocumentViewModel)
@@ -58,23 +63,54 @@ namespace Hutech.API.Controllers
                 var apiResponse = new ApiResponse<string>();
                 if (instrumentDocumentViewModel.Id > 0)
                 {
-                    bool data = await instrumentRepository.UpdateInstrumentDocument(instrumentdata, instrumentDocumentViewModel.Id);
+                    var data = await documentRepository.UpdateDocument(instrumentdata, instrumentDocumentViewModel.Id);
+                    foreach(var item in data)
+                    {
+                        InstrumentDocumentMapping instrumentDocument = new InstrumentDocumentMapping()
+                        {
+                            InstrumentId = instrumentDocumentViewModel.Id,
+                            DocumentId = item,
+                            IsDeleted = false,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = instrumentdata.First().CreatedBy
+                        };
+                        bool result = await instrumentRepository.AddInstrumentDocumentMapping(instrumentDocument);
+                        //var instrumentDocumentMapping = await connection.QueryAsync<long>(InstrumentQueries.AddInstrumentDocumentMapping, instrumentDocument);
+                    }
                     apiResponse.Result = "instrumentdata updated successfully";
-                    apiResponse.Success = data;
                 }
                 else
                 {
-                    bool data = await instrumentRepository.UploadInstrumentDocument(instrumentdata);
+                    var data = await documentRepository.UploadDocument(instrumentdata);
+                    var instrumentId = await instrumentRepository.GetLastInsertedInstrumentId();
+                    foreach (var item in data)
+                    {
+                        InstrumentDocumentMapping instrumentDocument = new InstrumentDocumentMapping()
+                        {
+                            InstrumentId = instrumentId,
+                            DocumentId = item,
+                            IsDeleted = false,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = instrumentdata.First().CreatedBy
+                        };
+                        bool result = await instrumentRepository.AddInstrumentDocumentMapping(instrumentDocument);
+                    }
                     apiResponse.Result = "instrumentdata added successfully";
-                    apiResponse.Success = data;
                 }
+                apiResponse.Success = true;
                 return apiResponse;
 
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                var apiResponse = new ApiResponse<string>();
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpPost("PostInstrument")]
@@ -86,21 +122,27 @@ namespace Hutech.API.Controllers
                 var instrumentdata = mapper.Map<InstrumentViewModel, Instrument>(instrumentViewModel);
                 bool data = await instrumentRepository.PostInstrument(instrumentdata);
                 apiResponse.Result = "instrumentdata added successfully";
-                apiResponse.Success = data;
+                apiResponse.Success = true;
                 return apiResponse;
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                var apiResponse = new ApiResponse<string>();
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetInstrumentDetail/{id}")]
         public async Task<ApiResponse<InstrumentViewModel>> GetInstrumentDetail(long id)
         {
+            var apiResponse = new ApiResponse<InstrumentViewModel>();
             try
             {
-                var apiResponse = new ApiResponse<InstrumentViewModel>();
                 var instrument = await instrumentRepository.GetInstrumentDetail(id);
                 var data = mapper.Map<Instrument, InstrumentViewModel>(instrument);
                 apiResponse.Success = true;
@@ -109,16 +151,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var Id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", Id);
+                long auditId = System.Convert.ToInt64(Id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpDelete("DeleteExistingInstrumentDocument/{Id}")]
         public async Task<ApiResponse<string>> DeleteExistingInstrumentDocument(long Id)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var role = await instrumentRepository.DeleteExistingInstrumentDocument(Id);
                 apiResponse.Success = true;
                 apiResponse.Message = "instrument deleted Successfully";
@@ -126,16 +173,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpDelete("DeleteDocument/{documentId}/{instrumentId}")]
         public async Task<ApiResponse<string>> DeleteDocument (long documentId,long instrumentId)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var role = await instrumentRepository.DeleteDocument(documentId,instrumentId);
                 apiResponse.Success = true;
                 apiResponse.Message = "instrument document deleted Successfully";
@@ -143,16 +195,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpDelete("DeleteInstrument/{Id}")]
         public async Task<ApiResponse<string>> DeleteInstrument(long Id)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var role = await instrumentRepository.DeleteInstrument(Id);
                 apiResponse.Success = true;
                 apiResponse.Message = "instrument deleted Successfully";
@@ -160,16 +217,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpPut("PutInstrument")]
         public async Task<ApiResponse<string>> PutInstrument(InstrumentViewModel model)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var data = mapper.Map<InstrumentViewModel, Instrument>(model);
                 var role = await instrumentRepository.PutInstrument(data);
                 apiResponse.Success = true;
@@ -178,17 +240,22 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         
         [HttpGet("GetInstrument")]
         public async Task<ApiResponse<List<InstrumentViewModel>>> GetInstrument()
         {
+            var apiResponse = new ApiResponse<List<InstrumentViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<InstrumentViewModel>>();
                 var instrument = await instrumentRepository.GetInstrument();
                 var data = mapper.Map<List<Instrument>, List<InstrumentViewModel>>(instrument);
                 apiResponse.Success = true;
@@ -197,16 +264,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetActiveInstrument")]
         public async Task<ApiResponse<List<InstrumentViewModel>>> GetActiveInstrument()
         {
+            var apiResponse = new ApiResponse<List<InstrumentViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<InstrumentViewModel>>();
                 var instrument = await instrumentRepository.GetActiveInstrument();
                 var data = mapper.Map<List<Instrument>, List<InstrumentViewModel>>(instrument);
                 apiResponse.Success = true;
@@ -215,8 +287,13 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
     }

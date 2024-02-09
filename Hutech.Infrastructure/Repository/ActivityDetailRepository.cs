@@ -105,5 +105,62 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
+        public async Task<bool> AddActivityDetailDocumentMapping(ActivityDetailDocumentMapping activityDetailDocumentMapping)
+        {
+            try
+            {
+                bool result = false;
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var activitydetailDocumentMappingresult = await connection.QueryAsync<string>(ActivityDetailsQueries.AddActivityDetailDocumentMapping, activityDetailDocumentMapping);
+                    if (activitydetailDocumentMappingresult != null)
+                    {
+                        result = true;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<long> GetLastInsertedActivityDetailId()
+        {
+            try
+            {
+                long lastinstrumentId = 0;
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var instrumentDocumentMappingresult = await connection.QueryAsync<long>(ActivityDetailsQueries.GetLastInsertedActivityDetailId);
+                    lastinstrumentId = instrumentDocumentMappingresult.First();
+                }
+                return lastinstrumentId;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<string> DeleteDocument(long documentId, long activityDetailId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<ActivityDetailDocumentMapping>(ActivityDetailsQueries.DeleteActivityDetailDocument, new { DocumentId = documentId, ActivityDetailId = activityDetailId });
+                    var data = await connection.QueryAsync<Document>(DocumentQueries.DeleteDocument, new { Id = documentId });
+                    return result.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

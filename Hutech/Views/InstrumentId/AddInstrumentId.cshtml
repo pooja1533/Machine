@@ -1,5 +1,5 @@
 ﻿@model Hutech.Models.InstrumentIdViewModel;
-<form class="horizontal" method="post" asp-controller="InstrumentId" asp-action="AddInstrumentId">
+<form class="horizontal" method="post" asp-controller="InstrumentId" asp-action="AddInstrumentId" asp-antiforgery="true">
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
@@ -10,7 +10,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">Instrument Id</label>
-                            @Html.TextBoxFor(x=>x.InstrumentsId,new{Placeholder="Enter Instrument Id",@class="form-control"})
+                            @Html.TextBoxFor(x => x.InstrumentsId, new { Placeholder = "Enter Instrument Id", @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.InstrumentsId,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
@@ -18,7 +18,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">Model</label>
-                            @Html.TextBoxFor(x=>x.Model,new{Placeholder="Enter Model",@class="form-control"})
+                            @Html.TextBoxFor(x => x.Model, new { Placeholder = "Enter Model", @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.Model,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
@@ -26,7 +26,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">Instrument Serial</label>
-                            @Html.TextBoxFor(x=>x.InstrumentSerial,new{Placeholder="Enter InstrumentSerial",@class="form-control"})
+                            @Html.TextBoxFor(x => x.InstrumentSerial, new { Placeholder = "Enter InstrumentSerial", @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.InstrumentSerial,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
@@ -71,6 +71,16 @@
         </div>
     </div>
 </form>
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            window.location.href = url;
+        };
+    </script>
+}
 <script type="text/javascript">
     function handleLocationChange() {
         var teamId = $("#TeamId option:selected").text();

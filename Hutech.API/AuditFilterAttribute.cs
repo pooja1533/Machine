@@ -1,4 +1,5 @@
-﻿using Hutech.API.Helpers;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Hutech.API.Helpers;
 using Hutech.Application.Interfaces;
 using Hutech.Core.Entities;
 using Hutech.Models;
@@ -95,7 +96,8 @@ namespace Hutech.API
                 objaudit.IpAddress = Convert.ToString(_httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                 objaudit.ModuleName = controllerName; // ControllerName 
                 objaudit.ActionName = actionName;
-                objaudit.Message = message;
+                objaudit.Request_Data = message;
+                objaudit.Exception_Details = "";
                 RequestHeaders header = request.GetTypedHeaders();
                 Uri uriReferer = header.Referer;
 
@@ -104,7 +106,8 @@ namespace Hutech.API
                     objaudit.UrlReferrer = header.Referer.AbsoluteUri;
                 }
 
-                _auditRepository.InsertAuditLogs(objaudit);
+              long Id= _auditRepository.InsertAuditLogs(objaudit);
+                filterContext.RouteData.Values.Add("AuditId", Id);
             }
         }
     }

@@ -16,11 +16,13 @@ namespace Hutech.API.Controllers
         private readonly IMapper mapper;
         private readonly ITeamRepository teamRepository;
         private readonly ILogger<TeamController> logger;
-        public TeamController(IMapper _mapper, ITeamRepository _teamRepository, ILogger<TeamController> _logger)
+        private readonly IAuditRepository auditRepository;
+        public TeamController(IMapper _mapper, ITeamRepository _teamRepository, ILogger<TeamController> _logger, IAuditRepository _auditRepository)
         {
             mapper = _mapper;
             teamRepository = _teamRepository;
             logger = _logger;
+            auditRepository = _auditRepository;
         }
         [HttpPost("PostTeam")]
         public async Task<ApiResponse<string>> PostTeam(TeamViewModel teamViewModel)
@@ -31,22 +33,28 @@ namespace Hutech.API.Controllers
                 var teamdata = mapper.Map<TeamViewModel, Team>(teamViewModel);
                 bool data = await teamRepository.PostTeam(teamdata);
                 apiResponse.Result = "Location added successfully";
-                apiResponse.Success = data;
+                apiResponse.Success = true;
                 return apiResponse;
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                var apiResponse = new ApiResponse<string>();
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         
         [HttpGet("GetActiveTeam")]
         public async Task<ApiResponse<List<TeamViewModel>>> GetActiveTeam()
         {
+            var apiResponse = new ApiResponse<List<TeamViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<TeamViewModel>>();
                 var team = await teamRepository.GetActiveTeam();
                 var data = mapper.Map<List<Team>, List<TeamViewModel>>(team);
                 apiResponse.Success = true;
@@ -55,16 +63,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetTeam")]
         public async Task<ApiResponse<List<TeamViewModel>>> GetTeam()
         {
+            var apiResponse = new ApiResponse<List<TeamViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<TeamViewModel>>();
                 var team = await teamRepository.GetTeam();
                 var data = mapper.Map<List<Team>, List<TeamViewModel>>(team);
                 apiResponse.Success = true;
@@ -73,16 +86,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetTeamDetail/{id}")]
         public async Task<ApiResponse<TeamViewModel>> GetTeamDetail(long id)
         {
+            var apiResponse = new ApiResponse<TeamViewModel>();
             try
             {
-                var apiResponse = new ApiResponse<TeamViewModel>();
                 var team = await teamRepository.GetTeamDetail(id);
                 var data = mapper.Map<Team, TeamViewModel>(team);
                 apiResponse.Success = true;
@@ -92,16 +110,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var Id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", Id);
+                long auditId = System.Convert.ToInt64(Id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpPut("PutTeam")]
         public async Task<ApiResponse<string>> PutTeam(TeamViewModel model)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var data = mapper.Map<TeamViewModel, Team>(model);
                 var role = await teamRepository.UpdateTeam(data);
                 apiResponse.Success = true;
@@ -110,16 +133,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var Id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", Id);
+                long auditId = System.Convert.ToInt64(Id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpDelete("DeleteTeam/{Id}")]
         public async Task<ApiResponse<string>> DeleteTeam(long Id)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var role = await teamRepository.DeleteTeam(Id);
                 apiResponse.Success = true;
                 apiResponse.Message = "Delete Team Successfully";
@@ -127,8 +155,13 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
     }

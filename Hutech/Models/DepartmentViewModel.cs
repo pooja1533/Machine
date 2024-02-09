@@ -12,9 +12,8 @@ namespace Hutech.Models
     public class DepartmentValidator : AbstractValidator<DepartmentViewModel>
     {
         public DepartmentValidator() 
-        { 
-            RuleFor(x=>x.Name).NotEmpty().WithMessage("Please enter Department Name")
-            .Matches(@"^[A-Za-z\s]*$").WithMessage("Department Name should only contain letters.");
+        {
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Department Name");
         }
     }
 }

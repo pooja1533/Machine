@@ -24,7 +24,6 @@ namespace Hutech.API.Controllers
         private readonly IActivityRepository activityRepository;
         private readonly ILogger<ActivityController> logger;
 
-
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuditRepository _auditRepository;
         public ActivityController(IMapper _mapper, IActivityRepository _activityRepository, ILogger<ActivityController> _logger, IHttpContextAccessor httpContextAccessor,IAuditRepository auditRepository)
@@ -61,22 +60,28 @@ namespace Hutech.API.Controllers
                 bool data = await activityRepository.PostActivity(activitydata);
                 //AuditActivity();
                 apiResponse.Result = "activity added successfully";
-                apiResponse.Success = data;
+                apiResponse.Success = true;
                 return apiResponse;
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                _auditRepository.AddExceptionDetails(auditId, ex.Message);
+                var apiResponse = new ApiResponse<string>();
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         
         [HttpGet("GetActivity")]
         public async Task<ApiResponse<List<ActivityViewModel>>> GetActivity()
         {
+            var apiResponse = new ApiResponse<List<ActivityViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<ActivityViewModel>>();
                 var activity = await activityRepository.GetActivity();
                 var data = mapper.Map<List<Activity>, List<ActivityViewModel>>(activity);
                 apiResponse.Success = true;
@@ -85,16 +90,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                _auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetActiveActivity")]
         public async Task<ApiResponse<List<ActivityViewModel>>> GetActiveActivity()
         {
+            var apiResponse = new ApiResponse<List<ActivityViewModel>>();
             try
             {
-                var apiResponse = new ApiResponse<List<ActivityViewModel>>();
                 var activity = await activityRepository.GetActiveActivity();
                 var data = mapper.Map<List<Activity>, List<ActivityViewModel>>(activity);
                 apiResponse.Success = true;
@@ -103,16 +113,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                _auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpGet("GetActivityDetail/{id}")]
         public async Task<ApiResponse<ActivityViewModel>> GetActivityDetail(long id)
         {
+            var apiResponse = new ApiResponse<ActivityViewModel>();
             try
             {
-                var apiResponse = new ApiResponse<ActivityViewModel>();
                 var activity = await activityRepository.GetActivityDetail(id);
                 var data = mapper.Map<Activity, ActivityViewModel>(activity);
                 apiResponse.Success = true;
@@ -121,16 +136,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var Id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", Id);
+                long auditId = System.Convert.ToInt64(Id);
+                _auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpDelete("DeleteActivity/{Id}")]
         public async Task<ApiResponse<string>> DeleteActivity(long Id)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var role = await activityRepository.DeleteActivity(Id);
                 apiResponse.Success = true;
                 apiResponse.Message = "Activity deleted Successfully";
@@ -138,16 +158,21 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                _auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
         [HttpPut("PutActivity")]
         public async Task<ApiResponse<string>> PutActivity(ActivityViewModel model)
         {
+            var apiResponse = new ApiResponse<string>();
             try
             {
-                var apiResponse = new ApiResponse<string>();
                 var data = mapper.Map<ActivityViewModel, Activity>(model);
                 var role = await activityRepository.PutActivity(data);
                 apiResponse.Success = true;
@@ -156,8 +181,13 @@ namespace Hutech.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Exception Occure in API.{ex.Message}");
-                throw ex;
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                _auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
     }

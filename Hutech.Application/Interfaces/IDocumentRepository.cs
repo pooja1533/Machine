@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Hutech.Application.Interfaces
 {
-    public interface IAuditRepository
+    public interface IDocumentRepository
     {
-        long InsertAuditLogs(AuditModels objauditmodel);
-        void AddExceptionDetails(long auditId, string Message);
+        Task<List<long>> UploadDocument(List<Document> document);
+        Task<List<long>> UpdateDocument(List<Document> documents, long instrumentId);
     }
 }
