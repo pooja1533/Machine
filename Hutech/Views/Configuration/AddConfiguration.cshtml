@@ -8,7 +8,7 @@
             <div class="card-body">
                 <div class="form-group">
                     <label for="company">File Type</label>
-                    @Html.TextBoxFor(x=>x.FileType,new{Placeholder="Enter File Type",@class="form-control"})
+                    @Html.TextBoxFor(x => x.FileType, new { Placeholder = "Enter File Type", @class = "form-control",autofocus = "autofocus" })
                     @Html.ValidationMessageFor(x=>x.FileType,"", new { @class = "text-danger"})
                 </div>
                 <div class="form-group">

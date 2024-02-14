@@ -15,7 +15,7 @@ namespace Hutech.Sql.Queries
             " left join activity a on a.Id= ia.activityId "+
             " left join Requirement r on r.Id = ia.RequirementID"+
             " left join Department d on d.Id=ia.DepartmentId where ia.IsDeleted=0";
-        public static string GetActiveInstrumentActivity => "Select ia.Id,ia.Days,ia.IsActive,ia.BeforeAlertsTime,ia.InstrumentActivityName,ia.FrequencyTime,i.Name as InstrumentName,a.Name as activityName,ia.FrequencyUnit as Frequency,r.name as RequirementName,d.name as DeaprtmentName from InstrumentActivity ia left join Instrument i on i.Id=ia.InstrumentId " +
+        public static string GetActiveInstrumentActivity => "Select ia.Id,ia.Days,ia.IsActive,ia.BeforeAlertsTime,ia.CreatedDateTime,ia.BeforeAlerts,ia.InstrumentActivityName,ia.FrequencyTime,i.Name as InstrumentName,a.Name as activityName,ia.FrequencyUnit as Frequency,r.name as RequirementName,d.name as DeaprtmentName from InstrumentActivity ia left join Instrument i on i.Id=ia.InstrumentId " +
             " left join activity a on a.Id= ia.activityId left join Requirement r on r.Id = ia.RequirementID left join Department d on d.Id=ia.DepartmentId where ia.IsDeleted=0 and ia.IsActive=1";
         public static string DeleteExistingInstrumentActivityForGroup => "Delete from  InstrumentActivityUserModal where InstrumentActivityId= @InstrumentActivityId";
         public static string DeleteExistingInstrumentActivityGroup => "Update InstrumentActivityUserModal set Isdeleted=1 where InstrumentActivityId= @InstrumentActivityId";
@@ -25,5 +25,6 @@ namespace Hutech.Sql.Queries
         public static string PutInstrumentActivity => "Update InstrumentActivity set InstrumentId=@InstrumentId,ActivityId=@ActivityId," +
             "InstrumentActivityName=@InstrumentActivityName,FrequencyUnit=@Frequency,FrequencyTime=@FrequencyTime,Days=@Days,RequirementId=@RequirementId,DepartmentId=@DepartmentId,BeforeAlerts=@BeforeAlerts,BeforeAlertsTime=@BeforeAlertsTime,IsActive=@IsActive where Id=@Id";
         //public static string AddInstrumentActivityForGroup => "Insert into InstrumentActivityUserModal";
+        public static string GetLastPerformedDateForInstrumentActivity => "Select top 1 PerformedDate from ActivityDetails where InstrumentActivityId=@Id and isdeleted=0 order by PerformedDate desc";
     }
 }

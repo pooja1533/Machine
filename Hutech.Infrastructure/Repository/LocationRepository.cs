@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.ApiResponse;
 using Hutech.Core.Entities;
 using Hutech.Sql.Queries;
 using Microsoft.Data.SqlClient;
@@ -37,7 +38,7 @@ namespace Hutech.Infrastructure.Repository
             }
 
         }
-        public async Task<List<Location>> GetLocation()
+        public async Task<ExecutionResult<GridData<Location>>> GetLocation(int pageNumber)
         {
             try
             {
@@ -45,7 +46,36 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     var result = await connection.QueryAsync<Location>(LocationQueries.GetLocation);
-                    return result.ToList();
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var locationList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var locations = new GridData<Location>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = locationList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Location>>(locations);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var locationList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var locations = new GridData<Location>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = locationList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Location>>(locations);
+                    }
                 }
 
             }

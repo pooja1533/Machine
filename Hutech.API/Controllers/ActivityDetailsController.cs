@@ -31,16 +31,19 @@ namespace Hutech.API.Controllers
             documentRepository = _documentRepository;
             auditRepository = _auditRepository;
         }
-        [HttpGet("GetAllActivityDetails/{userId}")]
-        public async Task<ApiResponse<List<ActivityDetailsViewModel>>> GetAllActivityDetails(string userId)
+        [HttpGet("GetAllActivityDetails/{userId}/{pageNumber}")]
+        public async Task<ApiResponse<List<ActivityDetailsViewModel>>> GetAllActivityDetails(string userId,int pageNumber)
         {
             var apiResponse = new ApiResponse<List<ActivityDetailsViewModel>>();
             try
             {
-                var activity = await activityDetailRepository.GetAllActivityDetails(userId);
-                var data = mapper.Map<List<ActivityDetails>, List<ActivityDetailsViewModel>>(activity);
+                var activity = await activityDetailRepository.GetAllActivityDetails(userId,pageNumber);
+                var data = mapper.Map<List<ActivityDetails>, List<ActivityDetailsViewModel>>(activity.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
+                apiResponse.CurrentPage = activity.Value.CurrentPage;
+                apiResponse.TotalPage = activity.Value.TotalPages;
+                apiResponse.TotalRecords = activity.Value.TotalRecords;
                 return apiResponse;
             }
             catch (Exception ex)

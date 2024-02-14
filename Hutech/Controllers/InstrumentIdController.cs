@@ -266,7 +266,7 @@ namespace Hutech.Controllers
                 }
             }
         }
-        public async Task<IActionResult> GetAllInstrumentId()
+        public async Task<IActionResult> GetAllInstrumentId(int pageNumber=1)
         {
             try
             {
@@ -277,6 +277,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                int totalRecords = 0;
+                int totalPage = 0;
                 List<InstrumentIdViewModel> activities = new List<InstrumentIdViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -288,7 +290,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
-                    HttpResponseMessage Res = await client.GetAsync("InstrumentId/GetInstrumentId");
+                    HttpResponseMessage Res = await client.GetAsync(string.Format("InstrumentId/GetInstrumentId/{0}",pageNumber));
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -303,10 +305,20 @@ namespace Hutech.Controllers
                         else
                         {
                             activities = root["result"].ToObject<List<InstrumentIdViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                return View(activities);
+                var data = new GridData<InstrumentIdViewModel>()
+                {
+                    CurrentPage = pageNumber,
+                    GridRecords = activities,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                return View(data);
             }
             catch (Exception ex)
             {

@@ -76,16 +76,19 @@ namespace Hutech.API.Controllers
             }
         }
         
-        [HttpGet("GetActivity")]
-        public async Task<ApiResponse<List<ActivityViewModel>>> GetActivity()
+        [HttpGet("GetActivity/{pageNumber}")]
+        public async Task<ApiResponse<List<ActivityViewModel>>> GetActivity(int pageNumber)
         {
             var apiResponse = new ApiResponse<List<ActivityViewModel>>();
             try
             {
-                var activity = await activityRepository.GetActivity();
-                var data = mapper.Map<List<Activity>, List<ActivityViewModel>>(activity);
+                var activity = await activityRepository.GetActivity(pageNumber);
+                var data = mapper.Map<List<Activity>, List<ActivityViewModel>>(activity.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
+                apiResponse.CurrentPage = activity.Value.CurrentPage;
+                apiResponse.TotalPage = activity.Value.TotalPages;
+                apiResponse.TotalRecords = activity.Value.TotalRecords;
                 return apiResponse;
             }
             catch (Exception ex)

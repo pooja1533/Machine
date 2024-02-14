@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.Constants;
 using Hutech.Core.Entities;
 using Hutech.Infrastructure.Repository;
 using Hutech.Models;
@@ -23,8 +24,8 @@ namespace Hutech.API.Controllers
             logger = _logger;
         }
         [SkipAuditFilterAttribute]
-        [HttpGet("GetAuditTrail/{startDate}/{endDate}/{keyword}/{pageNumber}")]
-        public async Task<ApiResponse<List<AuditViewModel>>> GetAuditTrail(string startDate, string endDate,string keyword,int pageNumber)
+        [HttpGet("GetAuditTrail/{startDate}/{endDate}/{keyword}/{pageNumber}/{role}/{userId}")]
+        public async Task<ApiResponse<List<AuditViewModel>>> GetAuditTrail(string startDate, string endDate,string keyword,int pageNumber,string role,string userId)
         {
             try
             {
@@ -33,13 +34,26 @@ namespace Hutech.API.Controllers
                     keyword=string.Empty;
                 else
                     keyword = keyword + "%";
-                var activity = await auditTrailRepository.GetAuditTrail(startDate, endDate,keyword,pageNumber);
-                var data = mapper.Map<List<Audit>, List<AuditViewModel>>(activity.Value.GridRecords);
-                apiResponse.Success = true;
-                apiResponse.CurrentPage = activity.Value.CurrentPage;
-                apiResponse.TotalPage = activity.Value.TotalPages;
-                apiResponse.TotalRecords = activity.Value.TotalRecords;
-                apiResponse.Result = data;
+                if (role == UserRole.SUPERADMIN)
+                {
+                    var activity = await auditTrailRepository.GetAuditTrail(startDate, endDate, keyword, pageNumber);
+                    var data = mapper.Map<List<Audit>, List<AuditViewModel>>(activity.Value.GridRecords);
+                    apiResponse.Success = true;
+                    apiResponse.CurrentPage = activity.Value.CurrentPage;
+                    apiResponse.TotalPage = activity.Value.TotalPages;
+                    apiResponse.TotalRecords = activity.Value.TotalRecords;
+                    apiResponse.Result = data;
+                }
+                else
+                {
+                    var activity = await auditTrailRepository.GetUserAuditTrail(startDate, endDate, keyword, pageNumber,userId);
+                    var data = mapper.Map<List<Audit>, List<AuditViewModel>>(activity.Value.GridRecords);
+                    apiResponse.Success = true;
+                    apiResponse.CurrentPage = activity.Value.CurrentPage;
+                    apiResponse.TotalPage = activity.Value.TotalPages;
+                    apiResponse.TotalRecords = activity.Value.TotalRecords;
+                    apiResponse.Result = data;
+                }
                 return apiResponse;
             }
             catch (Exception ex)

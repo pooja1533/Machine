@@ -54,6 +54,9 @@ namespace Hutech.Models
         public string? DocumentId { get; set; }
         [NotMapped]
         public string? Path { get; set; }
+        public int? TotalRecords { get; set; }
+        public int? TotalPages { get; set; }
+        public int? CurrentPage { get; set; }
     }
     public enum FrequencyEnumData
     {

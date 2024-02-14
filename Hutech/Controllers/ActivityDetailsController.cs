@@ -57,7 +57,7 @@ namespace Hutech.Controllers
         //    }
         //    return Json(activityDetails);
         //}
-        public async Task<IActionResult> GetAllActivityDetails(string userId)
+        public async Task<IActionResult> GetAllActivityDetails(string userId,int pageNumber=1)
         {
             try
             {
@@ -68,6 +68,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                int totalRecords = 0;
+                int totalPage = 0;
                 ActivityDetailsViewModel model = new ActivityDetailsViewModel();
                 List<ActivityDetailsViewModel> activityDetails = new List<ActivityDetailsViewModel>();
                 List<UserViewModel> users=new List<UserViewModel>();
@@ -94,7 +96,7 @@ namespace Hutech.Controllers
                         userId = "0";
                         HttpContext.Session.SetString("SelectedUserId", userId.ToString());
                     }
-                    HttpResponseMessage Res = await client.GetAsync(string.Format("ActivityDetails/GetAllActivityDetails/{0}", userId));
+                    HttpResponseMessage Res = await client.GetAsync(string.Format("ActivityDetails/GetAllActivityDetails/{0}/{1}", userId,pageNumber));
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -109,6 +111,9 @@ namespace Hutech.Controllers
                         else
                         {
                             activityDetails = root["result"].ToObject<List<ActivityDetailsViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
                         }
                     }
                 }
@@ -148,10 +153,24 @@ namespace Hutech.Controllers
                     Value = x.Id.ToString()
                 }).ToList();
 
-                model.ActivityDetails = activityDetails;
-                model.User = data;
-                model.UserId= HttpContext.Session.GetString("SelectedUserId").ToString();
-                return View(model);
+                //model.ActivityDetails = activityDetails;
+                //model.User = data;
+                //model.UserId= HttpContext.Session.GetString("SelectedUserId").ToString();
+                var activityDetailsViewModel = new GridData<ActivityDetailsViewModel>()
+                {
+                    CurrentPage = pageNumber,
+                    GridRecords = activityDetails,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                ActivityDetailsViewModel viewModel = new ActivityDetailsViewModel();
+                viewModel.CurrentPage = pageNumber;
+                viewModel.TotalPages = totalPage;
+                viewModel.TotalRecords = totalRecords;
+                viewModel.ActivityDetails = activityDetails;
+                viewModel.User = data;
+                viewModel.UserId = HttpContext.Session.GetString("SelectedUserId").ToString();
+                return View(viewModel);
             }
             catch (Exception ex)
             {

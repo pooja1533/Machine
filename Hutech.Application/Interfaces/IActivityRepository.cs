@@ -1,4 +1,5 @@
-﻿using Hutech.Core.Entities;
+﻿using Hutech.Core.ApiResponse;
+using Hutech.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Hutech.Application.Interfaces
     public interface IActivityRepository
     {
         Task<bool> PostActivity(Activity activity);
-        public Task<List<Activity>> GetActivity();
+        public Task<ExecutionResult<GridData<Activity>>> GetActivity(int pageNumber);
         public Task<List<Activity>> GetActiveActivity();
         public Task<Activity> GetActivityDetail(long Id);
         public Task<String> DeleteActivity(long Id);

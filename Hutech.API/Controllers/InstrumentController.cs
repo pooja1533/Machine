@@ -250,16 +250,19 @@ namespace Hutech.API.Controllers
             }
         }
         
-        [HttpGet("GetInstrument")]
-        public async Task<ApiResponse<List<InstrumentViewModel>>> GetInstrument()
+        [HttpGet("GetInstrument/{pageNumber}")]
+        public async Task<ApiResponse<List<InstrumentViewModel>>> GetInstrument(int pageNumber)
         {
             var apiResponse = new ApiResponse<List<InstrumentViewModel>>();
             try
             {
-                var instrument = await instrumentRepository.GetInstrument();
-                var data = mapper.Map<List<Instrument>, List<InstrumentViewModel>>(instrument);
+                var instrument = await instrumentRepository.GetInstrument(pageNumber);
+                var data = mapper.Map<List<Instrument>, List<InstrumentViewModel>>(instrument.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
+                apiResponse.CurrentPage = instrument.Value.CurrentPage;
+                apiResponse.TotalPage = instrument.Value.TotalPages;
+                apiResponse.TotalRecords = instrument.Value.TotalRecords;
                 return apiResponse;
             }
             catch (Exception ex)

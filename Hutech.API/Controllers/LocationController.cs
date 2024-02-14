@@ -6,6 +6,7 @@ using Hutech.Models;
 using Imputabiliteafro.Api.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Hutech.API.Controllers
 {
@@ -73,16 +74,19 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
-        [HttpGet("GetLocation")]
-        public async Task<ApiResponse<List<LocationViewModel>>> GetLocation()
+        [HttpGet("GetLocation/{pageNumber}")]
+        public async Task<ApiResponse<List<LocationViewModel>>> GetLocation(int pageNumber)
         {
             var apiResponse = new ApiResponse<List<LocationViewModel>>();
             try
             {
-                var location = await locationRepository.GetLocation();
-                var data = mapper.Map<List<Location>, List<LocationViewModel>>(location);
+                var location = await locationRepository.GetLocation(pageNumber);
+                var data = mapper.Map<List<Location>, List<LocationViewModel>>(location.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
+                apiResponse.CurrentPage = location.Value.CurrentPage;
+                apiResponse.TotalPage = location.Value.TotalPages;
+                apiResponse.TotalRecords = location.Value.TotalRecords;
                 return apiResponse;
             }
             catch (Exception ex)

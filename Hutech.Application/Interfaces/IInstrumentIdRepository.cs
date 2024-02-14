@@ -1,4 +1,5 @@
-﻿using Hutech.Core.Entities;
+﻿using Hutech.Core.ApiResponse;
+using Hutech.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Hutech.Application.Interfaces
     public interface IInstrumentIdRepository
     {
         Task<bool> PostInstrumentId(InstrumentsIds instrumentId);
-        public Task<List<InstrumentsIds>> GetInstrumentId();
+        public Task<ExecutionResult<GridData<InstrumentsIds>>> GetInstrumentId(int pageNumber);
         public Task<List<InstrumentsIds>> GetActiveInstrumentId();
         public Task<String> DeleteInstrumentId(long Id);
         public Task<InstrumentsIds> GetInstrumentIdDetail(long Id);

@@ -31,7 +31,7 @@ namespace Hutech.Controllers
             hostingEnv = env;
             languageService = _languageService;
         }
-        public async Task<IActionResult> GetAllInstrument()
+        public async Task<IActionResult> GetAllInstrument(int pageNumber = 1)
         {
             try
             {
@@ -42,6 +42,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                int totalRecords = 10;
+                int totalPage = 0;
                 List<InstrumentViewModel> instruments = new List<InstrumentViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -53,7 +55,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
-                    HttpResponseMessage Res = await client.GetAsync("Instrument/GetInstrument");
+                    HttpResponseMessage Res = await client.GetAsync(string.Format("Instrument/GetInstrument/{0}",pageNumber));
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -68,10 +70,20 @@ namespace Hutech.Controllers
                         else
                         {
                             instruments = root["result"].ToObject<List<InstrumentViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                return View(instruments);
+                var data = new GridData<InstrumentViewModel>()
+                {
+                    CurrentPage = pageNumber,
+                    GridRecords = instruments,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                return View(data);
             }
             catch (Exception ex)
             {

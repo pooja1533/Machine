@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.ApiResponse;
 using Hutech.Core.Entities;
 using Hutech.Sql.Queries;
 using Microsoft.Data.SqlClient;
@@ -37,7 +38,7 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
-        public async Task<List<InstrumentsIds>> GetInstrumentId()
+        public async Task<ExecutionResult<GridData<InstrumentsIds>>> GetInstrumentId(int pageNumber = 1)
         {
             try
             {
@@ -45,7 +46,36 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     var result = await connection.QueryAsync<InstrumentsIds>(InstrumentIdQueries.GetInstrumentId);
-                    return result.ToList();
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var instrumentIdList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var instrumentIds = new GridData<InstrumentsIds>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = instrumentIdList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<InstrumentsIds>>(instrumentIds);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var instrumentIdList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var instrumentIds = new GridData<InstrumentsIds>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = instrumentIdList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<InstrumentsIds>>(instrumentIds);
+                    }
                 }
 
             }

@@ -8,7 +8,7 @@
             <div class="card-body">
                 <div class="form-group">
                     <label for="company">Name</label>
-                    @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Requirement Name", @class = "form-control", maxlength = "50" })
+                    @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Requirement Name", @class = "form-control", maxlength = "50" ,autofocus = "autofocus" })
                     @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
                     @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                 </div>

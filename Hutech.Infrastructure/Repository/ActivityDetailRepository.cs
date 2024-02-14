@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.ApiResponse;
 using Hutech.Core.Entities;
 using Hutech.Sql.Queries;
 using Microsoft.Data.SqlClient;
@@ -21,22 +22,78 @@ namespace Hutech.Infrastructure.Repository
         {
             configuration = _configuration;
         }
-        public async Task<List<ActivityDetails>> GetAllActivityDetails(string userId)
+        public async Task<ExecutionResult<GridData<ActivityDetails>>> GetAllActivityDetails(string userId, int pageNumber)
         {
             try
             {
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    if(!string.IsNullOrEmpty(userId) && userId!="0")
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (!string.IsNullOrEmpty(userId) && userId!="0")
                     {
                         var result = await connection.QueryAsync<ActivityDetails>(ActivityDetailsQueries.GetAllActivityDetails, new { LoggedInUser = userId });
-                        return result.ToList();
+                        if (pageNumber > 0)
+                        {
+                            var totalRecords = result.Count();
+                            var activitydetailsList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                            var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                            var activitydetails = new GridData<ActivityDetails>()
+                            {
+                                CurrentPage = pageNumber,
+                                TotalRecords = totalRecords,
+                                GridRecords = activitydetailsList,
+                                TotalPages = (int)Math.Ceiling(totalPages)
+                            };
+                            return new ExecutionResult<GridData<ActivityDetails>>(activitydetails);
+                        }
+                        else
+                        {
+                            var totalRecords = result.Count();
+                            var activityDetailsList = result.ToList();
+                            var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                            var activityDeatils = new GridData<ActivityDetails>()
+                            {
+                                CurrentPage = pageNumber,
+                                TotalRecords = totalRecords,
+                                GridRecords = activityDetailsList,
+                                TotalPages = (int)Math.Ceiling(totalPages)
+                            };
+                            return new ExecutionResult<GridData<ActivityDetails>>(activityDeatils);
+                        }
                     }
                     else
                     {
                         var result = await connection.QueryAsync<ActivityDetails>(ActivityDetailsQueries.GetAllUsersActivityDetails);
-                        return result.ToList();
+                        if (pageNumber > 0)
+                        {
+                            var totalRecords = result.Count();
+                            var activitydetailsList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                            var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                            var activitydetails = new GridData<ActivityDetails>()
+                            {
+                                CurrentPage = pageNumber,
+                                TotalRecords = totalRecords,
+                                GridRecords = activitydetailsList,
+                                TotalPages = (int)Math.Ceiling(totalPages)
+                            };
+                            return new ExecutionResult<GridData<ActivityDetails>>(activitydetails);
+                        }
+                        else
+                        {
+                            var totalRecords = result.Count();
+                            var activityDetailsList = result.ToList();
+                            var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                            var activityDeatils = new GridData<ActivityDetails>()
+                            {
+                                CurrentPage = pageNumber,
+                                TotalRecords = totalRecords,
+                                GridRecords = activityDetailsList,
+                                TotalPages = (int)Math.Ceiling(totalPages)
+                            };
+                            return new ExecutionResult<GridData<ActivityDetails>>(activityDeatils);
+                        }
                     }
                 }
 

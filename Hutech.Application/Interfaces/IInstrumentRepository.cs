@@ -1,4 +1,5 @@
-﻿using Hutech.Core.Entities;
+﻿using Hutech.Core.ApiResponse;
+using Hutech.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Hutech.Application.Interfaces
     {
         Task<bool> PostInstrument(Instrument instrument);
         Task<bool> AddInstrumentDocumentMapping(InstrumentDocumentMapping instrumentDocumentMapping);
-        public Task<List<Instrument>> GetInstrument();
+        public Task<ExecutionResult<GridData<Instrument>>> GetInstrument(int pageNumber);
         public Task<List<Instrument>> GetActiveInstrument();
         public Task<Instrument> GetInstrumentDetail(long Id);
         public Task<String> DeleteInstrument(long Id);

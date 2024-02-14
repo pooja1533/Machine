@@ -27,21 +27,27 @@
                                     @*<th>Delete</th>*@
                                 </tr>
                             </thead>
+                            @{
+                                int recordsPerPage = 10;
+                                int pageNumber = Model.CurrentPage;
+                                int pageSize = pageNumber + 4;
+                                int rowNo = ((pageNumber - 1) * recordsPerPage);
+                            }
                             <tbody>
-                                @for (int i = 0; i < Model.Count; i++)
+                                @for (int i = 0; i < Model.GridRecords.Count; i++)
                                 {
                                     <tr>
-                                        <td>@Model[i].InstrumentName</td>
-                                        <td>@Model[i].activityName</td>
-                                        <td>@Model[i].InstrumentActivityName</td>
-                                        <td>@Model[i].Frequency</td>
-                                        <td>@Model[i].FrequencyTime</td>
-                                        <td>@Model[i].RequirementName</td>
-                                        <td>@Model[i].DeaprtmentName</td>
-                                        <td>@Model[i].BeforeAlertsTime</td>
-                                        <td>@Model[i].BeforeAlerts</td>
-                                        <td>@Model[i].Days</td>
-                                        @if (Model[i].IsActive)
+                                        <td>@Model.GridRecords[i].InstrumentName</td>
+                                        <td>@Model.GridRecords[i].activityName</td>
+                                        <td>@Model.GridRecords[i].InstrumentActivityName</td>
+                                        <td>@Model.GridRecords[i].Frequency</td>
+                                        <td>@Model.GridRecords[i].FrequencyTime</td>
+                                        <td>@Model.GridRecords[i].RequirementName</td>
+                                        <td>@Model.GridRecords[i].DeaprtmentName</td>
+                                        <td>@Model.GridRecords[i].BeforeAlertsTime</td>
+                                        <td>@Model.GridRecords[i].BeforeAlerts</td>
+                                        <td>@Model.GridRecords[i].Days</td>
+                                        @if (Model.GridRecords[i].IsActive)
                                         {
                                             <td>Active</td>
                                         }
@@ -53,8 +59,8 @@
                                            <div class="btn-group" role="group">
                                                 <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                    <a class="dropdown-item" href="/InstrumentActivity/EditInstrumentActivity?id=@Model[i].Id">Edit</a>
-                                                    <a class="dropdown-item" href="/InstrumentActivity/DeleteInstrumentActivity?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
+                                                    <a class="dropdown-item" href="/InstrumentActivity/EditInstrumentActivity?id=@Model.GridRecords[i].Id">Edit</a>
+                                                    <a class="dropdown-item" href="/InstrumentActivity/DeleteInstrumentActivity?id=@Model.GridRecords[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -63,6 +69,42 @@
 
                             </tbody>
                         </table>
+                        @if (Model.TotalPages > 1)
+                        {
+                            <nav>
+                                <ul class="pagination">
+                                    @if (pageNumber > 1)
+                                    {
+                                        int prevPage = pageNumber - 1;
+                                        <li class="page-item">
+                                            <a class="page-link" href="/InstrumentActivity/GetAllInstrumentActivity?pageNumber=@prevPage">Prev</a>
+                                        </li>
+                                    }
+                                    @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
+                                    {
+                                        if (i == pageNumber)
+                                        {
+                                            <li class="page-item active">
+                                                <a class="page-link" href="/InstrumentActivity/GetAllInstrumentActivity?pageNumber=@i">@i</a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" href="/InstrumentActivity/GetAllInstrumentActivity?pageNumber=@i">@i</a>
+                                            </li>
+                                        }
+                                    }
+                                    @if (pageNumber < Model.TotalPages)
+                                    {
+                                        int nextPage = pageNumber + 1;
+                                        <li class="page-item">
+                                            <a class="page-link" href="/InstrumentActivity/GetAllInstrumentActivity?pageNumber=@nextPage">Next</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        }
                     </div>
                 </div>
             </div>

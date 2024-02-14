@@ -1,6 +1,8 @@
 ﻿using ClosedXML.Excel;
+using Hutech.Core.Constants;
 using Hutech.Models;
 using Irony.Ast;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json.Linq;
@@ -9,6 +11,13 @@ using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text;
+using iText.IO.Source;
+using iText.Kernel.Pdf;
+using iText.Kernel.Geom;
+using iText.Html2pdf;
+using System.Collections;
+using NuGet.Packaging;
+
 
 namespace Hutech.Controllers
 {
@@ -21,7 +30,7 @@ namespace Hutech.Controllers
             configuration = _configuration;
             logger = _logger;
         }
-        public async Task<IActionResult> ExportAuditTrail(string? fdate, string? tdate, string? keyword,int pageNumber=0)
+        public async Task<IActionResult> ExportAuditTrail(string? fdate, string? tdate, string? keyword, int pageNumber = 0)
         {
             DateTime endDate = DateTime.UtcNow;
             DateTime startDate = DateTime.UtcNow.AddDays(-7);
@@ -35,6 +44,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                var role = HttpContext.Session.GetString("UserRole");
+                var userId = HttpContext.Session.GetString("UserId");
                 string fDate = string.Empty;
                 string tDate = string.Empty;
                 List<AuditViewModel> audit = new List<AuditViewModel>();
@@ -67,7 +78,7 @@ namespace Hutech.Controllers
                     //tDate=tDate.Replace("/", "-");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}/{3}", fDate, tDate, keyword,pageNumber);
+                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}/{3}/{4}/{5}", fDate, tDate, keyword, pageNumber, role, userId);
                     apiUrl += url;
 
                     HttpResponseMessage Res = await client.GetAsync(apiUrl);
@@ -138,11 +149,11 @@ namespace Hutech.Controllers
                 Response.Body.Flush();
             }
         }
-        public async Task<IActionResult> GetAllAuditTrail(string? fdate,string? tdate,string? keyword, int pageNumber = 1)
+        public async Task<IActionResult> ExportAuditTrailPDFFormat(string? fdate, string? tdate, string? keyword, int pageNumber = 0)
         {
             DateTime endDate = DateTime.UtcNow;
             DateTime startDate = DateTime.UtcNow.AddDays(-7);
-            
+            var csvBuilder = new StringBuilder();
             try
             {
                 var token = Request.Cookies["jwtCookie"];
@@ -152,17 +163,18 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                var role = HttpContext.Session.GetString("UserRole");
+                var userId = HttpContext.Session.GetString("UserId");
                 string fDate = string.Empty;
                 string tDate = string.Empty;
                 List<AuditViewModel> audit = new List<AuditViewModel>();
-                int totalRecords = 0;
-                int totalPage = 0;
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
-                    if (string.IsNullOrEmpty(fdate)){
+                    if (string.IsNullOrEmpty(fdate))
+                    {
                         fDate = startDate.ToString("yyyy-MM-dd");
                         fDate = fDate.Replace("/", "-");
                     }
@@ -185,7 +197,126 @@ namespace Hutech.Controllers
                     //tDate=tDate.Replace("/", "-");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}/{3}", fDate,tDate,keyword,pageNumber);
+                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}/{3}/{4}/{5}", fDate, tDate, keyword, pageNumber, role, userId);
+                    apiUrl += url;
+
+                    HttpResponseMessage Res = await client.GetAsync(apiUrl);
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        audit = root["result"].ToObject<List<AuditViewModel>>();
+                    }
+                    //Building an HTML string.
+                    StringBuilder sb = new StringBuilder();
+
+                    //Table start.
+                    sb.Append("<table border='1' cellpadding='5' cellspacing='0' style='border: 1px solid #ccc;font-family: Arial; font-size: 10pt;'>");
+
+                    //Building the Header row.
+                    sb.Append("<tr>");
+                    sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>AuditID</th>");
+                    sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Module Name</th>");
+                    sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>UserId</th>");
+                    sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Description</th>");
+                    sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Created Date</th>");
+                    sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Request_Data</th>");
+                    sb.Append("</tr>");
+
+                    //Building the Data rows.
+                    for (int i = 0; i < audit.Count; i++)
+                    {
+                        AuditViewModel model = new AuditViewModel();
+                        model = audit[i];
+                        string[] auditData= new string[6];
+                        auditData[0] = model.AuditId.ToString();
+                        auditData[1] = model.ModuleName;
+                        auditData[2] = model.UserId;
+                        auditData[3] = model.Description;
+                        auditData[4] = model.CreatedDatetime.ToString();
+                        auditData[5] = model.Request_Data;
+                        for (int j = 0; j < auditData.Length; j++)
+                        {
+                            //Append data.
+                            sb.Append("<td style='border: 1px solid #ccc'>");
+                            sb.Append(auditData[j]);
+                            sb.Append("</td>");
+                        }
+                        sb.Append("</tr>");
+                    }
+
+                    //Table end.
+                    sb.Append("</table>");
+                    using (MemoryStream stream = new MemoryStream(Encoding.ASCII.GetBytes(sb.ToString())))
+                    {
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        PdfWriter writer = new PdfWriter(byteArrayOutputStream);
+                        PdfDocument pdfDocument = new PdfDocument(writer);
+                        pdfDocument.SetDefaultPageSize(PageSize.A1);
+                        HtmlConverter.ConvertToPdf(stream, pdfDocument);
+                        pdfDocument.Close();
+                        return File(byteArrayOutputStream.ToArray(), "application/pdf", "Audit.pdf");
+                    }  
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
+                throw ex;
+            }
+        }
+        public async Task<IActionResult> GetAllAuditTrail(string? fdate, string? tdate, string? keyword, int pageNumber = 1)
+        {
+            DateTime endDate = DateTime.UtcNow;
+            DateTime startDate = DateTime.UtcNow.AddDays(-7);
+
+            try
+            {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                var role = HttpContext.Session.GetString("UserRole");
+                var userId = HttpContext.Session.GetString("UserId");
+                string fDate = string.Empty;
+                string tDate = string.Empty;
+                List<AuditViewModel> audit = new List<AuditViewModel>();
+                int totalRecords = 0;
+                int totalPage = 0;
+                string apiUrl = configuration["Baseurl"];
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    if (string.IsNullOrEmpty(fdate))
+                    {
+                        fDate = startDate.ToString("yyyy-MM-dd");
+                        fDate = fDate.Replace("/", "-");
+                    }
+                    else
+                    {
+                        fDate = fdate.Replace("/", "-");
+                    }
+                    if (string.IsNullOrEmpty(tdate))
+                    {
+                        tDate = endDate.ToString("yyyy-MM-dd");
+                        tDate = tDate.Replace("/", "-");
+                    }
+                    else
+                    {
+                        tDate = tdate.Replace("/", "-");
+                    }
+                    if (string.IsNullOrEmpty(keyword))
+                        keyword = "null";
+                    //tDate =endDate.ToShortDateString();
+                    //tDate=tDate.Replace("/", "-");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    string url = string.Format("AuditTrail/GetAuditTrail/{0}/{1}/{2}/{3}/{4}/{5}", fDate, tDate, keyword, pageNumber, role, userId);
                     apiUrl += url;
 
                     HttpResponseMessage Res = await client.GetAsync(apiUrl);
@@ -197,12 +328,12 @@ namespace Hutech.Controllers
                         audit = root["result"].ToObject<List<AuditViewModel>>();
                         pageNumber = (int)root["currentPage"];
                         totalRecords = (int)root["totalRecords"];
-                        totalPage= (int)root["totalPage"];
+                        totalPage = (int)root["totalPage"];
                     }
                 }
                 ViewBag.StartDate = fDate;
-                ViewBag.EndDate= tDate;
-                if(keyword=="null")
+                ViewBag.EndDate = tDate;
+                if (keyword == "null")
                 {
                     keyword = "";
                 }

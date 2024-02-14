@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Hutech.Core.Constants;
-using Hutech.Core.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using Hutech.Resources;
 
@@ -24,7 +23,7 @@ namespace Hutech.Controllers
             logger = _logger;
             languageService = _languageService;
         }
-        public async Task<IActionResult> GetAllActivity()
+        public async Task<IActionResult> GetAllActivity(int pageNumber=1)
         {
             try
             {
@@ -35,6 +34,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                int totalRecords = 0;
+                int totalPage = 0;
                 List<ActivityViewModel> activities = new List<ActivityViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -46,7 +47,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
-                    HttpResponseMessage Res = await client.GetAsync("Activity/GetActivity");
+                    HttpResponseMessage Res = await client.GetAsync(string.Format("Activity/GetActivity/{0}",pageNumber));
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -61,10 +62,20 @@ namespace Hutech.Controllers
                         else
                         {
                             activities = root["result"].ToObject<List<ActivityViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                return View(activities);
+                var data = new GridData<ActivityViewModel>()
+                {
+                    CurrentPage = pageNumber,
+                    GridRecords = activities,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                return View(data);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
-﻿using Hutech.Core.Entities;
+﻿using Hutech.Core.ApiResponse;
+using Hutech.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Hutech.Application.Interfaces
     public interface ILocationRepository
     {
         Task<bool> PostLocation(Location location);
-        public Task<List<Location>> GetLocation();
+        public Task<ExecutionResult<GridData<Location>>> GetLocation(int pageNumber);
         public Task<List<Location>> GetActiveLocation();
         public Task<Location> GetLocationDetail(long Id);
         public Task<String> DeleteLocation(long Id);

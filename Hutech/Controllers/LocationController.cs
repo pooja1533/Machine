@@ -22,7 +22,7 @@ namespace Hutech.Controllers
             logger = _logger;
             languageService = _languageService;
         }
-        public async Task<IActionResult> GetAllLocation()
+        public async Task<IActionResult> GetAllLocation(int pageNumber = 1)
         {
             try
             {
@@ -33,6 +33,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                int totalRecords = 0;
+                int totalPage = 0;
                 List<LocationViewModel> locations = new List<LocationViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -42,9 +44,7 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-
-                    HttpResponseMessage Res = await client.GetAsync("Location/GetLocation");
+                    HttpResponseMessage Res = await client.GetAsync(string.Format("Location/GetLocation/{0}",pageNumber));
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -59,10 +59,20 @@ namespace Hutech.Controllers
                         else
                         {
                             locations = root["result"].ToObject<List<LocationViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                return View(locations);
+                var data = new GridData<LocationViewModel>()
+                {
+                    CurrentPage = pageNumber,
+                    GridRecords = locations,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                return View(data);
             }
             catch (Exception ex)
             {

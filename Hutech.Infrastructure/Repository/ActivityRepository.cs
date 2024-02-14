@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.ApiResponse;
 using Hutech.Core.Entities;
 using Hutech.Sql.Queries;
 using Microsoft.Data.SqlClient;
@@ -38,7 +39,7 @@ namespace Hutech.Infrastructure.Repository
             }
         }
 
-        public async Task<List<Activity>> GetActivity()
+        public async Task<ExecutionResult<GridData<Activity>>> GetActivity(int pageNumber = 1)
         {
             try
             {
@@ -46,7 +47,36 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     var result = await connection.QueryAsync<Activity>(ActivityQueries.GetActivity);
-                    return result.ToList();
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var activityList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var activities = new GridData<Activity>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = activityList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Activity>>(activities);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var activityList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var activities = new GridData<Activity>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = activityList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Activity>>(activities);
+                    }
                 }
 
             }

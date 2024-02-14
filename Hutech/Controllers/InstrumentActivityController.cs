@@ -417,7 +417,7 @@ namespace Hutech.Controllers
                 throw ex;
             }
         }
-        public async Task<IActionResult> GetAllInstrumentActivity()
+        public async Task<IActionResult> GetAllInstrumentActivity(int pageNumber = 1)
         {
             try
             {
@@ -428,6 +428,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                int totalRecords = 0;
+                int totalPage = 0;
                 List<InstrumentActivityViewModel> instrumentactivities = new List<InstrumentActivityViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -439,7 +441,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
-                    HttpResponseMessage Res = await client.GetAsync("InstrumentActivity/GetAllInstrumentActivity");
+                    HttpResponseMessage Res = await client.GetAsync(string.Format("InstrumentActivity/GetAllInstrumentActivity/{0}",pageNumber));
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -454,10 +456,20 @@ namespace Hutech.Controllers
                         else
                         {
                             instrumentactivities = root["result"].ToObject<List<InstrumentActivityViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                return View(instrumentactivities);
+                var data = new GridData<InstrumentActivityViewModel>()
+                {
+                    CurrentPage = pageNumber,
+                    GridRecords = instrumentactivities,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                return View(data);
             }
             catch (Exception ex)
             {
@@ -836,7 +848,6 @@ namespace Hutech.Controllers
                 logger.LogInformation($"Exception Occure.{ex.Message}");
                 throw ex;
             }
-        }
-        
+        }    
     }
 }
