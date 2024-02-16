@@ -1,4 +1,6 @@
-﻿using Hutech.Models;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Hutech.Models;
+using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,10 +20,12 @@ namespace Hutech.Controllers
     {
         private readonly IConfiguration configuration;
         private readonly ILogger<UserController> logger;
-        public UserController(IConfiguration _configuration, ILogger<UserController> _logger)
+        private readonly LanguageService languageService;
+        public UserController(IConfiguration _configuration, ILogger<UserController> _logger, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
+            languageService = _languageService;
         }
         public async Task<IActionResult> GetAllUsers()
         {
@@ -54,7 +58,16 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        users = root["result"].ToObject<List<UserViewModel>>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            users = root["result"].ToObject<List<UserViewModel>>();
+                        }
                     }
                 }
                 logger.LogInformation($"Get All Users method executed successfully by {loggedinuser} {DateTime.Now} at controller level");
@@ -90,6 +103,18 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+
+                        }
+                        else
+                        {
+                            TempData["message"] = languageService.Getkey("User Deleted Successfully");
+                            TempData["RedirectURl"] = "/User/GetAllUsers/";
+                        }
                     }
                 }
                 return RedirectToAction("GetAllUsers");
@@ -129,7 +154,17 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        user = root["result"].ToObject<UserViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["RedirectURl"] = "/User/GetAllUsers/";
+                        }
+                        else
+                        {
+                            user = root["result"].ToObject<UserViewModel>();
+                        }
                     }
                     var loggedinUserRole = HttpContext.Session.GetString("UserRole").ToString();
                     HttpResponseMessage Result = await client.GetAsync(string.Format("Role/GetRoleAccordingToRole/" + loggedinUserRole));
@@ -204,7 +239,21 @@ namespace Hutech.Controllers
                     {
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
-                        user = root["result"].ToObject<UserViewModel>();
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            //TempData["RedirectURl"] = "/Activity/EditActivity/";
+                            return RedirectToAction("EditUser", new { id = userViewModel.Id });
+
+                        }
+                        else
+                        {
+                            user = root["result"].ToObject<UserViewModel>();
+                            TempData["message"] = languageService.Getkey("User Updated Successfully");
+                            TempData["RedirectURl"] = "/User/GetAllUsers/";
+                        }
                     }
                 }
                 return RedirectToAction("GetAllUsers");

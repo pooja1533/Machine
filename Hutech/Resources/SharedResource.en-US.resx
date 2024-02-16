@@ -225,4 +225,10 @@
   <data name="Team Updated Successfully" xml:space="preserve">
     <value>Team Updated Successfully</value>
   </data>
+  <data name="User Deleted Successfully" xml:space="preserve">
+    <value>User Deleted Successfully</value>
+  </data>
+  <data name="User Updated Successfully" xml:space="preserve">
+    <value>User Updated Successfully</value>
+  </data>
 </root>

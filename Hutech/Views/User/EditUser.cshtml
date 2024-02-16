@@ -55,3 +55,14 @@
         </div>
     </div>
 </form>
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            var Id = $("#Id").val();
+            window.location.href = url + "?id=" + Id;
+        };
+    </script>
+}
