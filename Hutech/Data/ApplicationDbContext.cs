@@ -9,6 +9,6 @@ namespace Hutech.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContextOptions):base(dbContextOptions) { }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        //public System.Data.Entity.DbSet<UserDetail> UserDetail { get; set; }
+        
     }
 }

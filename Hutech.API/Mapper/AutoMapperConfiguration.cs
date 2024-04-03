@@ -49,6 +49,10 @@ namespace Hutech.API.Mapper
             CreateMap<DocumentViewModel, Document>();
             CreateMap<Document, DocumentViewModel>();
             CreateMap<DocumentViewModel, Document>();
+            CreateMap<UserTypeViewModel, UserType>();
+            CreateMap<UserType, UserTypeViewModel>();
+            CreateMap<UserViewModel, UserDetail>();
+            CreateMap<UserDetail, UserViewModel>();
         }
     }
 }

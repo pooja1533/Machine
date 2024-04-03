@@ -1,28 +1,27 @@
 ﻿using Hutech.Models;
 using Hutech.Resources;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Hutech.Controllers
 {
-    [Authorize]
-    public class LocationController : Controller
+    public class UserTypeController : Controller
     {
         public IConfiguration configuration { get; set; }
-        private readonly ILogger<LocationController> logger;
+        private readonly ILogger<UserTypeController> logger;
         private readonly LanguageService languageService;
-        public LocationController(IConfiguration _configuration, ILogger<LocationController> _logger, LanguageService _languageService)
+        public UserTypeController(IConfiguration _configuration, ILogger<UserTypeController> _logger, LanguageService _languageService)
         {
             configuration = _configuration;
             logger = _logger;
             languageService = _languageService;
         }
-        public async Task<IActionResult> GetAllLocation(int pageNumber = 1)
+        public async Task<IActionResult> GetAllUserType(int pageNumber=1)
         {
             try
             {
@@ -35,7 +34,7 @@ namespace Hutech.Controllers
                 }
                 int totalRecords = 0;
                 int totalPage = 0;
-                List<LocationViewModel> locations = new List<LocationViewModel>();
+                List<UserTypeViewModel> userTypes = new List<UserTypeViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
@@ -44,7 +43,7 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    HttpResponseMessage Res = await client.GetAsync(string.Format("Location/GetLocation/{0}",pageNumber));
+                    HttpResponseMessage Res = await client.GetAsync(string.Format("UserType/GetUserType/{0}",pageNumber));
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -58,17 +57,17 @@ namespace Hutech.Controllers
                         }
                         else
                         {
-                            locations = root["result"].ToObject<List<LocationViewModel>>();
+                            userTypes = root["result"].ToObject<List<UserTypeViewModel>>();
                             pageNumber = (int)root["currentPage"];
                             totalRecords = (int)root["totalRecords"];
                             totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                var data = new GridData<LocationViewModel>()
+                var data = new GridData<UserTypeViewModel>()
                 {
                     CurrentPage = pageNumber,
-                    GridRecords = locations,
+                    GridRecords = userTypes,
                     TotalPages = totalPage,
                     TotalRecords = totalRecords
                 };
@@ -80,13 +79,13 @@ namespace Hutech.Controllers
                 throw ex;
             }
         }
-        public IActionResult AddLocation()
+        public IActionResult AddUserType()
         {
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddLocation(LocationViewModel locationViewModel)
+        public async Task<IActionResult> AddUserType(UserTypeViewModel model)
         {
             try
             {
@@ -97,8 +96,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
-                var validation = new LocationValidator();
-                var result = validation.Validate(locationViewModel);
+                var validation = new UserTypeValidator();
+                var result = validation.Validate(model);
                 if (!result.IsValid)
                 {
                     return View();
@@ -113,12 +112,12 @@ namespace Hutech.Controllers
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        locationViewModel.IsDeleted = false;
-                        locationViewModel.CreatedByUserId = HttpContext.Session.GetString("UserId");
-                        var json = JsonConvert.SerializeObject(locationViewModel);
+                        model.IsDeleted = false;
+                        model.CreatedByUserId = HttpContext.Session.GetString("UserId");
+                        var json = JsonConvert.SerializeObject(model);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
-                        HttpResponseMessage Res = await client.PostAsync("Location/PostLocation", stringContent);
+                        HttpResponseMessage Res = await client.PostAsync("UserType/PostUserType", stringContent);
 
                         if (Res.IsSuccessStatusCode)
                         {
@@ -129,12 +128,12 @@ namespace Hutech.Controllers
                             {
                                 var Id = root["auditId"].ToString();
                                 TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
-                                TempData["RedirectURl"] = "/Location/AddLocation/";
+                                TempData["RedirectURl"] = "/UserType/AddUserType/";
                             }
                             else
                             {
-                                TempData["message"] = languageService.Getkey("Location Added Successfully");
-                                TempData["RedirectURl"] = "/Location/GetAllLocation/";
+                                TempData["message"] = languageService.Getkey("UserType Added Successfully");
+                                TempData["RedirectURl"] = "/UserType/GetAllUserType/";
                             }
                         }
                     }
@@ -142,123 +141,14 @@ namespace Hutech.Controllers
                     return View();
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 logger.LogInformation($"SQL Exception Occure.{ex.Message}");
                 throw ex;
+
             }
         }
-        public async Task<IActionResult> EditLocation(long id)
-        {
-            try
-            {
-                var token = Request.Cookies["jwtCookie"];
-                if (!string.IsNullOrEmpty(token))
-                {
-                    var handler = new JwtSecurityTokenHandler();
-
-                    token = token.Replace("Bearer ", "");
-                }
-                LocationViewModel locationViewModel = new LocationViewModel();
-                string apiUrl = configuration["Baseurl"];
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    HttpResponseMessage response = await client.GetAsync(string.Format("Location/GetLocationDetail/{0}", id));
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        JObject root = JObject.Parse(content);
-                        var resultData = root["success"].ToString();
-                        if (resultData == "False" || resultData == "false")
-                        {
-                            var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
-                            TempData["RedirectURl"] = "/Location/AddLocation/";
-                        }
-                        else
-                        {
-                            locationViewModel = root["result"].ToObject<LocationViewModel>();
-                        }
-                    }
-                }
-                return View(locationViewModel);
-            }
-            catch (Exception ex)
-            {
-                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
-                throw ex;
-            }
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditLocation(LocationViewModel locationViewModel)
-        {
-            try
-            {
-                var token = Request.Cookies["jwtCookie"];
-                if (!string.IsNullOrEmpty(token))
-                {
-                    var handler = new JwtSecurityTokenHandler();
-
-                    token = token.Replace("Bearer ", "");
-                }
-                var validation = new LocationValidator();
-                var result = validation.Validate(locationViewModel);
-                if (!result.IsValid)
-                {
-                    return View();
-                }
-                else
-                {
-                    string apiUrl = configuration["Baseurl"];
-                    using (var client = new HttpClient())
-                    {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        locationViewModel.CreatedByUserId = HttpContext.Session.GetString("UserId");
-                        var json = JsonConvert.SerializeObject(locationViewModel);
-                        var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        HttpResponseMessage response = await client.PutAsync("Location/PutLocation", stringcontenet);
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var content = await response.Content.ReadAsStringAsync();
-                            JObject root = JObject.Parse(content);
-                            var resultData = root["success"].ToString();
-                            if (resultData == "False" || resultData == "false")
-                            {
-                                var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
-                                TempData["RedirectURl"] = "/Location/EditLocation/";
-                                return RedirectToAction("EditLocation", new { id = locationViewModel.Id });
-
-                            }
-                            else
-                            {
-                                locationViewModel = root["result"].ToObject<LocationViewModel>();
-                                TempData["message"] = languageService.Getkey("Location Updated Successfully");
-                                TempData["RedirectURl"] = "/Location/GetAllLocation/";
-                            }
-                        }
-                    }
-                    return RedirectToAction("GetAllLocation");
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
-                throw ex;
-            }
-
-        }
-        public async Task<IActionResult> DeleteLocation(long id)
+        public async Task<IActionResult> DeleteUserType(int id)
         {
             try
             {
@@ -276,7 +166,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    HttpResponseMessage response = await client.DeleteAsync(string.Format("Location/DeleteLocation/{0}", id));
+                    HttpResponseMessage response = await client.DeleteAsync(string.Format("UserType/DeleteUserType/{0}", id));
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -291,19 +181,65 @@ namespace Hutech.Controllers
                         }
                         else
                         {
-                            TempData["message"] = languageService.Getkey("Location Deleted Successfully");
-                            TempData["RedirectURl"] = "/Location/GetAllLocation/";
+                            TempData["message"] = languageService.Getkey("UserType Deleted Successfully");
+                            TempData["RedirectURl"] = "/UserType/GetAllUserType/";
                         }
                         //var message = root["value"].ToString();
                     }
                 }
-                return RedirectToAction("GetAllLocation");
+                return RedirectToAction("GetAllUserType");
             }
             catch (Exception ex)
             {
                 logger.LogInformation($"SQL Exception Occure.{ex.Message}");
                 throw ex;
 
+            }
+        }
+        public async Task<IActionResult> EditUserType(int Id)
+        {
+            try
+            {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                UserTypeViewModel userTypeViewModel = new UserTypeViewModel();
+                string apiUrl = configuration["Baseurl"];
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    HttpResponseMessage response = await client.GetAsync(string.Format("UserType/GetUserTypeDetail/{0}", Id));
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + id;
+                            TempData["RedirectURl"] = "/UserType/AddUserType/";
+                        }
+                        else
+                        {
+                            userTypeViewModel = root["result"].ToObject<UserTypeViewModel>();
+                        }
+                    }
+                }
+                return View(userTypeViewModel);
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
+                throw ex;
             }
         }
     }

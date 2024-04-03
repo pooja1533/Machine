@@ -8,6 +8,7 @@ namespace Hutech.Models
         public long Id { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+        public string CreatedByUserId { get; set; }
     }
     public class LocationValidator : AbstractValidator<LocationViewModel>
     {

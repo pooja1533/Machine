@@ -1,73 +1,69 @@
-﻿<div class="container-fluid">
+﻿<style>
+    .label {
+        font-weight: bold !important;
+    }
+</style>
+<div class="container-fluid">
     <div class="animated fadeIn">
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-align-justify"></i> Users
-                        @*<a href="/Role/AddRole">Add User</a>*@
+                        <a href="/User/AddUser">Add User</a>
                     </div>
                     <div class="card-body">
                         <table class="table table-responsive-sm">
                             <thead>
                                 <tr>
-                                    <th>FirstName</th>
-                                    <th>LastName</th>
-                                    <th>Username</th>
-                                    <td>Address</td>
-                                    <td>PhoneNumber</td>
+                                    <th>User Type</th>
+                                    <th>Full Name</th>
+                                    <th>User Name</th>
+                                    <th>Email</th>
+                                    <th>Employee Id</th>
+                                    <th>Remark</th>
+                                    <th>Department</th>
                                     <th>User Role</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
                                     <th>Action</th>
-                                    @*<th>Delete</th>*@
                                 </tr>
                             </thead>
                             <tbody>
                                 @for (int i = 0; i < Model.Count; i++)
                                 {
                                     <tr>
-                                        <td>@Model[i].FirstName</td>
-                                        <td>@Model[i].LastName</td>
-                                        <td>@Model[i].UserName</td>
-                                        <td>@Model[i].Address</td>
-                                        <td>@Model[i].PhoneNumber</td>
-                                        <td>@Model[i].UserRole</td>
-                                        <th>
+                                        <td>@Model[i].UserType</td>
+                                        <td>@Model[i].FullName</td>
+                                        <td>@Model[i].WindowsUserName</td>
+                                        <td>@Model[i].Email</td>
+                                        <td>@Model[i].EmployeeId</td>
+                                        <td>@Model[i].Remark</td>
+                                        <td>@Model[i].DepartmentName</td>
+                                        <td>@Model[i].RoleName</td>
+                                        <td>@Model[i].LocationName</td>
+                                        <td>@Model[i].UserstatusName</td>
+                                        <td>
                                             <div class="btn-group" role="group">
                                                 <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                    <a class="dropdown-item" href="/User/EditUser?id=@Model[i].Id">Edit</a>
-                                                    <a class="dropdown-item" href="/User/DeleteUser?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
+                                                    @if (Model[i].UserstatusName != "Performed")
+                                                    {
+                                                        <a class="dropdown-item" href="#" id="@Model[i].UserId" onclick="performAction(this.id)">Perform</a>
+                                                    }
+                                                    <a class="dropdown-item" href="/User/EditUser?Id=@Model[i].UserId">Edit</a>
+                                                    <a class="dropdown-item" href="/User/DeleteUser?Id=@Model[i].UserId" onclick="return confirm('Are you sure want to delete?')">Delete</a>
                                                 </div>
                                             </div>
-                                        </th>
-                                        @*<td><a href="/User/EditUser?id=@Model[i].Id">Edit</a></td>
-                                        <td><a href="/User/DeleteUser?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a></td>*@
+                                        </td>
+
+
                                     </tr>
                                 }
 
                             </tbody>
                         </table>
-                        @* <ul class="pagination">
-                        <li class="page-item">
-                        <a class="page-link" href="#">Prev</a>
-                        </li>
-                        <li class="page-item active">
-                        <a class="page-link" href="#">1</a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">4</a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                        </li>
-                        </ul>*@
+
                     </div>
                 </div>
             </div>
@@ -77,6 +73,154 @@
         <!-- /.row-->
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="userModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Perform User Creation Request</h4>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="userId">
+                @using (Html.BeginForm("AddUser", "User", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "validateForm(event)" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">User Type</label>
+                                            <input type="text" id="userType" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">WindowsName</label>
+                                            <input type="text" id="WindowsUserName" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="userId" />
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">First Name</label>
+                                            <input type="text" id="FirstName" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">Last Name</label>
+                                            <input type="text" id="LastName" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">EmployeeId</label>
+                                            <input type="text" id="EmployeeId" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">Email Id</label>
+                                            <input type="text" id="Email" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">Location</label>
+                                            <input type="text" id="Location" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">Department</label>
+                                            <input type="text" id="Department" class="form-control" readonly />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company" class="label">Role</label>
+                                            <input type="text" id="Role" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="company" class="label">Remark</label>
+                                                <input type="text" id="Remark" class="form-control" readonly />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <input type="text" id="reject" placeholder="Enter Comment for Reject" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn btn-primary" type="button" onclick="ApproveUserModalPopup()">Approve</button>
+                                    <button class="btn btn-secondary" type="button" onclick="RejectUser()">Reject</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            @* <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div> *@
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="approveModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body" id="approveId">
+                @Html.AntiForgeryToken()
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="form-group">
+                                    <label for="company" class="label">Enter Password</label>
+                                    <input type="password" id="password" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-primary" type="button" onclick="ApproveUser()">Save</button>
+                                <button class="btn btn-secondary" type="button" onclick="ClosePopup()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @* <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div> *@
+        </div>
+
+    </div>
+</div>
+
 @if (TempData["message"] != null)
 {
     <script type="text/javascript">
@@ -87,3 +231,109 @@
         };
     </script>
 }
+<script type="text/javascript">
+    function RejectUser() {
+        var rejectComment = $("#reject").val();
+        var userId = $("#userId").val();
+        if (rejectComment == "") {
+            alert("Please enter reason to reject user");
+            $('#userModal').modal('show');
+        }
+        else {
+            $.ajax({
+                type: "GET",
+                url: "/User/RejectUser",
+                data: { comment: rejectComment, userId: userId },
+                success: function (result) {
+                    if (result.isValidPassword == false) {
+                        alert("Plaese enter Correct Password to approve user");
+                        $("#password").val('');
+                        $('#approveModal').modal('show');
+                    }
+                    else {
+                        $('#approveModal').modal('hide');
+                        $('#userModal').modal('hide');
+                        window.location.reload();
+                    }
+                },
+                error: function (result) {
+                    alert("Something went wrong please contact admin");
+                }
+            })
+        }
+        
+    }
+    function ApproveUser() {
+        var password = $("#password").val();
+        var userId = $("#userId").val();
+        if (password == "") {
+            alert("Please enter password to approve user");
+            $("#password").val('');
+            $('#approveModal').modal('show');
+        }
+
+        else {
+            $.ajax({
+                type: "GET",
+                url: "/User/ApproveUser",
+                data: { Password: password, UserId: userId },
+                success: function (result) {
+                    if (result.isValidPassword == false) {
+                        alert("Plaese enter Correct Password to approve user");
+                        $("#password").val('');
+                        $('#approveModal').modal('show');
+                    }
+                    else {
+                        $('#approveModal').modal('hide');
+                        $('#userModal').modal('hide');
+                        window.location.reload();
+                    }
+                },
+                error: function (result) {
+                    alert("Something went wrong please contact admin");
+                }
+            })
+        }
+
+    }
+    function ClosePopup() {
+        $('#approveModal').modal('hide');
+    }
+    function ApproveUserModalPopup() {
+        $("#password").val('');
+        $('#approveModal').modal('show');
+    }
+
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        $('#userModal').modal('hide');
+    }
+    function performAction(Id) {
+        $("#userId").val(Id);
+        $.ajax({
+            type: "GET",
+            url: "/User/GetUserDetail?Id=" + Id,
+            success: function (result) {
+                $("#userType").val(result.userType);
+                $("#FirstName").val(result.firstName);
+                $("#LastName").val(result.lastName);
+                $("#Email").val(result.email);
+                $("#WindowsUserName").val(result.windowsUserName);
+                $("#EmployeeId").val(result.employeeId);
+                $("#Location").val(result.locationName);
+                $("#Role").val(result.roleName);
+                $("#Department").val(result.departmentName);
+                $("#Remark").val(result.remark);
+                $("#reject").val(result.remarkForReject);
+                // $("#reject").val('');
+                $('#userModal').modal('show');
+            },
+            error: function () {
+                alert("fail");
+            }
+        });
+    }
+
+</script>

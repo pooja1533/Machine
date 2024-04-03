@@ -142,14 +142,14 @@ namespace Hutech.Controllers
                 UserViewModel modelData=new UserViewModel();
                 UserViewModel alluser = new UserViewModel();
                 modelData.Id =new Guid(loggedinuserId);
-                modelData.UserName = email;
+                modelData.Email = email;
                 userViewModels.Add(modelData);
                 alluser.Id = new Guid();
-                alluser.UserName = "Select All";
+                alluser.Email = "Select All";
                 userViewModels.Add(alluser);
                 var data = userViewModels.Select(x => new SelectListItem
                 {
-                    Text = x.UserName.ToString(),
+                    Text = x.Email.ToString(),
                     Value = x.Id.ToString()
                 }).ToList();
 

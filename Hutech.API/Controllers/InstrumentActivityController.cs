@@ -202,27 +202,85 @@ namespace Hutech.API.Controllers
                 DateTime lastcommentDate = await activityRepository.GetLastPerformedDateForInstrumentActivity(item.Id);
                 int days = item.Days;
                 bool beforeAlerts = item.BeforeAlerts;
-                int? beforeAlertTime = item.BeforeAlertsTime;
-                
-                DateTime beforeDate = lastcommentDate!=default(DateTime)?lastcommentDate.AddDays(-days):item.CreatedDateTime.AddDays(-days);
-                DateTime afterDate = lastcommentDate!=default(DateTime)?lastcommentDate.AddDays(days):item.CreatedDateTime.AddDays(days);
+                var frequencyUnit = item.Frequency;
+                int frequencyTime = item.FrequencyTime;
+                DateTime nextPerformedDate = lastcommentDate!=default(DateTime)? lastcommentDate:item.CreatedDateTime;
+                DateTime beforenextPerformedDate = default;
+                DateTime afternextPerformedDate = default;
+                lastcommentDate = lastcommentDate != default(DateTime) ? lastcommentDate : item.CreatedDateTime;
+                if (frequencyUnit == Core.Entities.FrequencyEnum.FrequencyDay.ToString())
+                {
+                    nextPerformedDate = lastcommentDate.AddDays(frequencyTime);
+                }
+                else if (frequencyUnit == Core.Entities.FrequencyEnum.FrequencyMonth.ToString())
+                {
+                    nextPerformedDate = lastcommentDate.AddMonths(frequencyTime);
+                }
+                else if (frequencyUnit == Core.Entities.FrequencyEnum.FrequencyYear.ToString())
+                {
+                    nextPerformedDate = lastcommentDate.AddYears(frequencyTime);
+                }
+                if (days > 0)
+                {
+                    beforenextPerformedDate = nextPerformedDate.AddDays(-days);
+                    afternextPerformedDate = nextPerformedDate.AddDays(days);
+                }
                 if (beforeAlerts)
                 {
                     int beforeAlertDay = (int)item.BeforeAlertsTime;
-                    if (beforeAlertDay != null)
-                    {
-                        beforeDate = beforeDate.AddDays(-beforeAlertDay);
-                    }
+                    beforenextPerformedDate = beforenextPerformedDate.AddDays(-beforeAlertDay);
                 }
+                DateTime startDate = beforenextPerformedDate;
+                DateTime endDate = afternextPerformedDate;
                 DateTime todayDate = DateTime.UtcNow;
-                if (todayDate.Date == beforeDate.Date || todayDate.Date == afterDate.Date)
+                if (todayDate.Date >= startDate.Date && todayDate.Date <= endDate.Date)
                 {
-                    emailSenderService.SendEmail(new MessageServiceModel(toEmails, "HuTech – Today's CheckIn",
-                $"Dear {"Pooja"}, <br /> <br/> Service on your Instrument Activity {item.InstrumentActivityName} need to be done today. " +
-                $" <br /> - <br /> <br /> Regards <br /> <br /> Team: HuTech"));
-                }
-            }
+                    if (lastcommentDate.Date <= startDate.Date)
+                    {
+                         emailSenderService.SendEmail(new MessageServiceModel(toEmails, "HuTech – Today's CheckIn",
+                        $"Dear {"Pooja"}, <br /> <br/> Service on your Instrument Activity {item.InstrumentActivityName} need to be done today. " +
+                        $" <br /> - <br /> <br /> Regards <br /> <br /> Team: HuTech"));
+                        //Console.WriteLine("Mail send");
 
+                    }
+
+                }
+
+            }
+            //[HttpGet("SendMail")]
+            //public async void SendMail()
+            //{
+            //    var toEmails = new List<string>() { "thakkarpooja153@gmail.com" };
+            //    List<InstrumentActivityViewModel> list = new List<InstrumentActivityViewModel>();
+            //    var data = await activityRepository.GetActiveInstrumentActivity();
+            //    foreach (var item in data)
+            //    {
+            //        DateTime lastcommentDate = await activityRepository.GetLastPerformedDateForInstrumentActivity(item.Id);
+            //        int days = item.Days;
+            //        bool beforeAlerts = item.BeforeAlerts;
+            //        int? beforeAlertTime = item.BeforeAlertsTime;
+
+            //        DateTime beforeDate = lastcommentDate!=default(DateTime)?lastcommentDate.AddDays(-days):item.CreatedDateTime.AddDays(-days);
+            //        DateTime afterDate = lastcommentDate!=default(DateTime)?lastcommentDate.AddDays(days):item.CreatedDateTime.AddDays(days);
+            //        if (beforeAlerts)
+            //        {
+            //            int beforeAlertDay = (int)item.BeforeAlertsTime;
+            //            if (beforeAlertDay != null)
+            //            {
+            //                beforeDate = beforeDate.AddDays(-beforeAlertDay);
+            //            }
+            //        }
+            //        DateTime todayDate = DateTime.UtcNow;
+            //        //if (lastcommentDate.Date<=beforeDate.Date && lastcommentDate.Date >= afterDate.Date)
+            //        if (lastcommentDate.Date <= beforeDate.Date)
+            //        {
+            //            emailSenderService.SendEmail(new MessageServiceModel(toEmails, "HuTech – Today's CheckIn",
+            //        $"Dear {"Pooja"}, <br /> <br/> Service on your Instrument Activity {item.InstrumentActivityName} need to be done today. " +
+            //        $" <br /> - <br /> <br /> Regards <br /> <br /> Team: HuTech"));
+            //        }
+            //    }
+
+            //}
         }
     }
 }

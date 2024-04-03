@@ -1,12 +1,17 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Hutech.Application.Interfaces;
 using Hutech.Core.Entities;
 using Hutech.Infrastructure.Repository;
 using Hutech.Models;
 using Imputabiliteafro.Api.Model;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using IdentityUser = Microsoft.AspNetCore.Identity.IdentityUser;
 
 namespace Hutech.API.Controllers
 {
@@ -54,7 +59,7 @@ namespace Hutech.API.Controllers
             {
                 logger.LogInformation($"API call For get all Users {DateTime.Now}");
                 var users = await userRepository.GetAllUSers(UserRole, UserId);
-                var data = mapper.Map<List<AspNetUsers>, List<UserViewModel>>(users);
+                var data = mapper.Map<List<UserDetail>, List<UserViewModel>>(users);
                 ApiResponse.Success = true;
                 ApiResponse.Result = data;
                 return ApiResponse;
@@ -79,7 +84,7 @@ namespace Hutech.API.Controllers
                 logger.LogInformation($"API call For delete User {DateTime.Now}");
                 var users = await userRepository.DeleteUser(Id);
                 ApiResponse.Success = true;
-                ApiResponse.Result = "User Deleted Successfully";
+                ApiResponse.Message = "User Deleted Successfully";
                 logger.LogInformation($"API End for delete user {DateTime.Now}");
                 return ApiResponse;
             }
@@ -95,13 +100,13 @@ namespace Hutech.API.Controllers
             }
         }
         [HttpGet("GetUserById/{Id}")]
-        public async Task<ApiResponse<UserViewModel>> GetUserById(string Id)
+        public async Task<ApiResponse<UserViewModel>> GetUserById(long Id)
         {
             var ApiResponse = new ApiResponse<UserViewModel>();
             try
             {
                 var users = await userRepository.GetUserById(Id);
-                var data = mapper.Map<AspNetUsers, UserViewModel>(users);
+                var data = mapper.Map<UserDetail, UserViewModel>(users);
                 ApiResponse.Success = true;
                 ApiResponse.Result = data;
                 return ApiResponse;
@@ -117,6 +122,76 @@ namespace Hutech.API.Controllers
                 return ApiResponse;
             }
         }
+        [HttpGet("GetUserDetail/{Id}")]
+        public async Task<ApiResponse<UserViewModel>> GetUserDetail(long Id)
+        {
+            var ApiResponse = new ApiResponse<UserViewModel>();
+            try
+            {
+                var users = await userRepository.GetUserDetail(Id);
+                var data = mapper.Map<UserDetail, UserViewModel>(users);
+                ApiResponse.Success = true;
+                ApiResponse.Result = data;
+                return ApiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                ApiResponse.Success = false;
+                ApiResponse.AuditId = auditId;
+                return ApiResponse;
+            }
+        }
+        [HttpGet("ApproveUser/{UserId}")]
+        public async Task<ApiResponse<string>> ApproveUser(long UserId)
+        {
+            var ApiResponse = new ApiResponse<string>();
+            try
+            {
+                bool result = await userRepository.ApproveUser(UserId);
+                ApiResponse.Success = result;
+                ApiResponse.Message = "User Approved successfully";
+                return ApiResponse;
+
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                ApiResponse.Success = false;
+                ApiResponse.AuditId = auditId;
+                return ApiResponse;
+            }
+        }
+        [HttpGet("RejectUser/{comment}/{userId}")]
+        public async Task<ApiResponse<string>> RejectUser(string comment,long userId)
+        {
+            var ApiResponse = new ApiResponse<string>();
+            try
+            {
+                bool result = await userRepository.RejectUser(comment,userId);
+                ApiResponse.Success = result;
+                ApiResponse.Message = "User Approved successfully";
+                return ApiResponse;
+
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                ApiResponse.Success = false;
+                ApiResponse.AuditId = auditId;
+                return ApiResponse;
+            }
+        }
+
         [HttpPut("UpdateUser")]
         public async Task<ApiResponse<string>> UpdateUser(UserViewModel userViewModel)
         {
@@ -139,6 +214,44 @@ namespace Hutech.API.Controllers
                 ApiResponse.Success = false;
                 ApiResponse.AuditId = auditId;
                 return ApiResponse;
+            }
+        }
+        private IdentityUser CreateUser()
+        {
+            try
+            {
+                return Activator.CreateInstance<IdentityUser>();
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
+                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+            }
+        }
+        [HttpPost("PostUser")]
+        public async Task<ApiResponse<string>> PostUser(UserViewModel userViewModel)
+        {
+            try
+            {
+
+                var apiResponse = new ApiResponse<string>();
+                var userdata = mapper.Map<UserViewModel, UserDetail>(userViewModel);
+                bool data = await userRepository.PostUser(userdata);
+                apiResponse.Result = "User added successfully";
+                apiResponse.Success = true;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                var apiResponse = new ApiResponse<string>();
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
             }
         }
     }

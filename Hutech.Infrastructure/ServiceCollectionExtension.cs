@@ -30,6 +30,7 @@ namespace Hutech.Infrastructure
             service.AddTransient<IAuditTrailRepository, AuditTrailRepository>();
             service.AddTransient<IConfigurationRepository, ConfigurationRepository>();
             service.AddTransient<IDocumentRepository, DocumentRepository>();
+            service.AddTransient<IUserTypeRepository, UserTypeRepository>();
         }
     }
 }

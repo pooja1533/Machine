@@ -1,0 +1,32 @@
+﻿@model Hutech.Models.UserTypeViewModel;
+<form class="horizontal" method="post" asp-controller="UserType" asp-action="AddUserType" asp-antiforgery="true">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Add UserType</strong>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="company">Name</label>
+                    @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter User Type", @class = "form-control", maxlength = "50", autofocus = "autofocus" })
+                    @Html.ValidationMessageFor(x => x.Name, "", new { @class = "text-danger" })
+                    @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            window.location.href = url;
+        };
+    </script>
+}

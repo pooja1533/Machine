@@ -1,4 +1,5 @@
 ﻿@model Hutech.Models.UserViewModel;
+@* <form class="horizontal" method="post" asp-controller="ActivityDetails" asp-action="AddActivityDetails"> *@
 @using (Html.BeginForm("AddUser", "User", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "validateForm(event)" }))
 {
     @Html.AntiForgeryToken()
@@ -11,20 +12,26 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">User Type</label>
+                            <label for="company">User Type*</label>
                             @Html.DropDownListFor(x => x.UserTypeId, Model.UserTypesId, "Please select User Type", new { @class = "form-control processbank", onchange = "changeUserType()", @Id = "UserTypeId", @name = "UserTypeId" })
                             @Html.ValidationMessageFor(x => x.UserTypeId, "", new { @class = "text-danger" })
                         </div>
                     </div>
-                    <div class="col-md-4" id="windowsUserName" style="display:none;">
+                    <div class="col-md-4" style="display:none;" id="windowsUserName">
+                        @* <div class="form-group">
+                    <label for="company">Windows User Name</label>
+                    @Html.DropDownListFor(x => x.WindowsUserName, Model.WindowsUserNamesId, "Please select Windows UserName", new { @class = "form-control processbank"})
+                    @Html.ValidationMessageFor(x => x.UserTypeId, "", new { @class = "text-danger" })
+                    </div> *@
                         <div class="form-group">
                             <div class="col-md-12">
                                 <div class="col-md-9" style="float:left">
-                                    <label for="company">Windows User Name</label>
-                                    @Html.TextBoxFor(x => x.WindowsUserName, new { Placeholder = "Enter Window User Name", @class = "form-control", @readonly = "true" ,@id="userName"})
+                                    <label for="company">Windows User Name*</label>
+                                    @Html.TextBoxFor(x => x.WindowsUserName, new { Placeholder = "Enter Window User Name", @class = "form-control", @readonly = "true" })
                                     @Html.ValidationMessageFor(x => x.WindowsUserName, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="col-md-3" style="float:right">
+                                    <label></label>
                                     <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Search</button>
                                 </div>
                             </div>
@@ -32,14 +39,14 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">First Name</label>
+                            <label for="company">First Name*</label>
                             @Html.TextBoxFor(x => x.FirstName, new { Placeholder = "Enter First Name", @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Last Name</label>
+                            <label for="company">Last Name*</label>
                             @Html.TextBoxFor(x => x.LastName, new { Placeholder = "Enter Last Name", @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
                         </div>
@@ -48,21 +55,21 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">EmployeeId</label>
+                            <label for="company">EmployeeId*</label>
                             @Html.TextBoxFor(x => x.EmployeeId, new { Placeholder = "Enter Employee Id", @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.EmployeeId, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Email Id</label>
+                            <label for="company">Email Id*</label>
                             @Html.TextBoxFor(x => x.Email, new { Placeholder = "Enter Email Id", @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.Email, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Location</label>
+                            <label for="company">Location*</label>
                             @Html.DropDownListFor(x => x.LocationId, Model.LocationsId, "Please select Location", new { @class = "form-control processbank" })
                             @Html.ValidationMessageFor(x => x.LocationId, "", new { @class = "text-danger" })
                         </div>
@@ -71,20 +78,18 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Department</label>
+                            <label for="company">Department*</label>
                             @Html.DropDownListFor(x => x.DepartmentId, Model.DepartmentsId, "Please select Department", new { @class = "form-control processbank" })
                             @Html.ValidationMessageFor(x => x.DepartmentId, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Role</label>
-                            @Html.ListBoxFor(x => x.SelectedUserRoleId, new SelectList(Model.UserRolesId, "Value", "Text"),
-                                     new { style = "width: 100%", @class = "selectpicker", multiple = "multiple", id = "role" })
-                            @Html.ValidationMessageFor(x => x.SelectedUserRoleId, "", new { @class = "text-danger" })
-                            @*  @Html.ListBoxFor(model => model.SelectedUserRoleId, new MultiSelectList(Model.UserRolesId, "Value", "Text"), new { @class = "form-control", multiple = "multiple", id = "role" }) *@
+                            <label for="company">Role*</label>
+                            @Html.ListBoxFor(model => model.SelectedUserRoleId, new MultiSelectList(Model.UserRolesId, "Value", "Text"), new { @class = "form-control", multiple = "multiple", id = "role" })
+                            @Html.ValidationMessageFor(x => x.SelectedUserRoleId, "", new { @class = "text-danger" }) 
                             @*  @Html.DropDownListFor(x => x.UserRoleId, Model.UserRolesId, "Please select User Role", new { @class = "form-control processbank" })
-                        @Html.ValidationMessageFor(x => x.UserRoleId, "", new { @class = "text-danger" }) *@
+                            @Html.ValidationMessageFor(x => x.UserRoleId, "", new { @class = "text-danger" }) *@
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -93,8 +98,7 @@
                             @Html.TextBoxFor(x => x.Remark, new { Placeholder = "Enter Remark", @class = "form-control" })
                         </div>
                     </div>
-                </div>
-                <div class="row">
+                </div><div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">Login Validity In Days</label>
@@ -102,8 +106,6 @@
                         </div>
                     </div>
                 </div>
-                @Html.HiddenFor(x=>x.UserId)
-                @Html.HiddenFor(x=>x.AspNetUserId)
                 @Html.HiddenFor(x => x.UserType)
                 <div class="form-actions">
                     <input class="btn btn-primary" type="submit" value="Save changes">
@@ -119,9 +121,13 @@
 
         <!-- Modal content-->
         <div class="modal-content">
-            <div class="modal-header">
+           @*  <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Users</h4>
+            </div> *@
+            <div class="modal-header">
+                <h4 class="modal-title">Users</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body" id="userId">
                 <table id="item">
@@ -133,12 +139,12 @@
                     {
                         <tr>
                             <td>
-                                @item.Text
+                                    @item.Text
                             </td>
-                            @if (item.Text == Model.WindowsUserName)
+                            @if (Model.WindowsUserName == item.Text)
                             {
                                 <td>
-                                    <input type="checkbox" value=@item.Text checked="checked" />
+                                    <input type="checkbox" value=@item.Text checked="checked"/>
                                 </td>
                             }
                             else
@@ -146,25 +152,22 @@
                                 <td>
                                     <input type="checkbox" value=@item.Text />
                                 </td>
-
                             }
-
                         </tr>
                     }
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
+            </table>
         </div>
-
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
     </div>
+
+</div>
 </div>
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('#role').multiselect();
-
             var selectedUserType = $("#UserTypeId option:selected").text();
             if (selectedUserType == "clintha") {
                 $("#windowsUserName").show();
@@ -173,6 +176,7 @@
             else {
                 $("#windowsUserName").hide();
                 $("#UserType").val('');
+
             }
         });
     </script>
@@ -183,43 +187,29 @@
         window.onload = function () {
             alert("@TempData["message"]");
             var url = "@TempData["RedirectURl"]";
-            var Id = $("#Id").val();
-            window.location.href = url + "?id=" + Id;
+            window.location.href = url;
         };
     </script>
 }
+<@* /form> *@
 <script type="text/javascript">
-    $(document).ready(function(){
-        var selectedUserType = $("#UserTypeId option:selected").text();
-        if (selectedUserType == "clintha") {
-            $("#windowsUserName").show();
-            $("#UserType").val("clintha");
-        }
-        else {
-            $("#windowsUserName").hide();
-            $("#UserType").val('');
-        }
-    })
-    $("#userId").click(function () {
-        var selectedIds = $("#item :checkbox:checked").val()
-        $("#myModal .close").click();
-        $("#userName").val(selectedIds);
-        $("#windowsUserName").val($("#userName").val(selectedIds));
-    });
-    function changeUserType() {
-        var selectedUserType = $("#UserTypeId option:selected").text();
-        if (selectedUserType == "clintha") {
-            $("#windowsUserName").show();
-            $("#UserType").val("clintha");
-        }
-        else {
-            $("#userName").val('');
-            var selectedIds = $("#item :checkbox:checked").val();
-            $('#item tr td input[type="checkbox"]').each(function () {
-                $(this).prop('checked', false);
-            });
-            $("#UserType").val('');
-            $("#windowsUserName").hide();
-        }
+$("#userId").click(function () {
+    var selectedIds = $("#item :checkbox:checked").val()
+    $("#myModal .close").click();
+    $("#WindowsUserName").val(selectedIds);
+});
+function changeUserType() {
+    var selectedUserType = $("#UserTypeId option:selected").text();
+    if (selectedUserType == "clintha") {
+        $("#windowsUserName").show();
+        $("#UserType").val("clintha");
     }
+    else {
+        $("#windowsUserName").hide();
+        $("#UserType").val('');
+    }
+}
+
+
+
 </script>

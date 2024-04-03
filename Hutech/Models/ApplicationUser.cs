@@ -1,18 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Hutech.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Hutech.Models
 {
     public class ApplicationUser:IdentityUser
     {
-       //public virtual UserDetail UserDetail { get; set; }
+        
     }
-    //public class UserDetail
-    //{
-    //    public long Id { get; set; }
-    //    public string UserId { get; set; }
-    //    public string FirstName { get; set; }
-    //    public string LastName { get; set; }
-    //    public string PhoneNumber { get; set; }
-    //    public string Address { get; set; }
-    //}
 }
