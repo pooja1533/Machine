@@ -16,6 +16,7 @@ namespace Hutech.Application.Interfaces
         public Task<Location> GetLocationDetail(long Id);
         public Task<String> DeleteLocation(long Id);
         public Task<String> PutLocation(Location aspNetRole);
+        public Task<ExecutionResult<GridData<Location>>> GetAllFilterLocation(string? LocationName,int pageNumber,string? updatedBy,string? status,string? updatedDate);
 
     }
 }

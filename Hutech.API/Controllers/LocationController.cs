@@ -25,6 +25,40 @@ namespace Hutech.API.Controllers
             logger = _logger;
             auditRepository = _auditRepository;
         }
+        [HttpPost("GetAllFilterLocation")]
+        public async Task<ApiResponse<List<LocationViewModel>>> GetAllFilterLocation(LocationModel locationModel)
+        {
+            var apiResponse = new ApiResponse<List<LocationViewModel>>();
+            try
+            {
+                string? locationName = locationModel.locationName;
+                int pageNumber = locationModel.pageNumber;
+                string? updatedBy=locationModel.updatedBy;
+                string? status=locationModel.status;
+                DateTime? updatedDate=locationModel.updatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+
+                var location = await locationRepository.GetAllFilterLocation(locationName,pageNumber,updatedBy,status, formattedDate);
+                var data = mapper.Map<List<Location>, List<LocationViewModel>>(location.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = location.Value.CurrentPage;
+                apiResponse.TotalPage = location.Value.TotalPages;
+                apiResponse.TotalRecords = location.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
         [HttpPost("PostLocation")]
         public async Task<ApiResponse<string>> PostLocation(LocationViewModel locationViewModel)
         {

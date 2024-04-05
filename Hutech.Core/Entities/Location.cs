@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,5 +17,9 @@ namespace Hutech.Core.Entities
         public DateTime DatecreatedUtc { get; set; }
         public DateTime? DateModifiedUtc { get; set; }
         public string? ModifiedByUserId { get; set; }
+        [NotMapped]
+        public string? FullName { get; set; }
+        [NotMapped]
+        public string? Role { get; set; }
     }
 }

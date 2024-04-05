@@ -19,6 +19,7 @@
                         @Html.RadioButtonFor(x => x.IsActive, "false")<label for="company" class="status frequencyUnit">InActive</label>
                     </div>
                 </div>
+                @Html.HiddenFor(x=>x.CreatedByUserId)
                 <div class="form-actions">
                     <button class="btn btn-primary" type="submit">Save changes</button>
                     <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>

@@ -29,7 +29,6 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     location.IsActive = true;
-                    location.DatecreatedUtc = DateTime.UtcNow;
                     var result = await connection.QueryAsync<string>(LocationQueries.PostLocation, location);
                     return true;
                 }
@@ -38,6 +37,55 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
 
+        }
+        public async Task<ExecutionResult<GridData<Location>>> GetAllFilterLocation(string? LocationName,int pageNumber, string? updatedBy,string? status, string? updatedDate)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy ="%"+ updatedBy + "%" : updatedBy;
+                    bool isactive = status=="1"?true:false;
+                    LocationName = !string.IsNullOrEmpty(LocationName) ? LocationName = LocationName + "%" : LocationName;
+                    var result = await connection.QueryAsync<Location>(LocationQueries.GetAllFilterLocation, new { Name = LocationName,UpdatedBy=updatedBy,Status= isactive, UpdatedDate= updatedDate });
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var locationList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var locations = new GridData<Location>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = locationList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Location>>(locations);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var locationList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var locations = new GridData<Location>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = locationList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Location>>(locations);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         public async Task<ExecutionResult<GridData<Location>>> GetLocation(int pageNumber)
         {
@@ -142,8 +190,7 @@ namespace Hutech.Infrastructure.Repository
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    location.DatecreatedUtc = DateTime.UtcNow;
-                    var result = await connection.QueryAsync<AspNetRole>(LocationQueries.UpdateLocation, new { Id = location.Id, Name = location.Name,IsActive=location.IsActive});
+                    var result = await connection.QueryAsync<AspNetRole>(LocationQueries.UpdateLocation, new { Id = location.Id, Name = location.Name,IsActive=location.IsActive, ModifiedByUserId =location.ModifiedByUserId, DateModifiedUtc =location.DateModifiedUtc});
                     return result.ToString();
                 }
 
@@ -152,6 +199,6 @@ namespace Hutech.Infrastructure.Repository
             {
                 throw ex;
             }
-        }
+        } 
     }
 }

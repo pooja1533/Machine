@@ -1,10 +1,13 @@
-﻿using Hutech.Models;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Hutech.Models;
 using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -21,6 +24,80 @@ namespace Hutech.Controllers
             configuration = _configuration;
             logger = _logger;
             languageService = _languageService;
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetAllLocation([FromBody]LocationModel locationModel)
+        {
+            locationModel.pageNumber = 1;
+            int pageNumber = 1;
+            try
+            {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                int totalRecords = 0;
+                int totalPage = 0;
+                List<LocationViewModel> locations = new List<LocationViewModel>();
+                string apiUrl = configuration["Baseurl"];
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var json = JsonConvert.SerializeObject(locationModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+
+                    HttpResponseMessage Res = await client.PostAsync("Location/GetAllFilterLocation", stringContent);
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            locations = root["result"].ToObject<List<LocationViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
+                        }
+                    }
+                }
+                var data = new GridData<LocationViewModel>()
+                {
+                    CurrentPage = pageNumber,
+                    GridRecords = locations,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                ViewBag.LocationName = locationModel.locationName;
+                ViewBag.UpdatedBy = locationModel.updatedBy;
+                ViewBag.status = locationModel.status;
+                //string date = string.Empty;
+                //if (locationModel.updatedDate!= null)
+                //{
+                //    date= locationModel.updatedDate?.ToString("MM-dd-yyyy");
+                //}
+                ViewBag.updatedDate = locationModel.updatedDate;
+                string requestedWithHeader = Request.Headers["X-Requested-With"];
+                return View("GetAllLocation",data);
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
+                throw ex;
+            }
         }
         public async Task<IActionResult> GetAllLocation(int pageNumber = 1)
         {
@@ -114,6 +191,8 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         locationViewModel.IsDeleted = false;
+                        locationViewModel.DatecreatedUtc = DateTime.UtcNow;
+                        locationViewModel.DateModifiedUtc= DateTime.UtcNow;
                         locationViewModel.CreatedByUserId = HttpContext.Session.GetString("UserId");
                         var json = JsonConvert.SerializeObject(locationViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
@@ -221,7 +300,8 @@ namespace Hutech.Controllers
                         client.BaseAddress = new Uri(apiUrl);
                         client.DefaultRequestHeaders.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        locationViewModel.CreatedByUserId = HttpContext.Session.GetString("UserId");
+                        locationViewModel.DateModifiedUtc = DateTime.UtcNow;
+                        locationViewModel.ModifiedByUserId = HttpContext.Session.GetString("UserId");
                         var json = JsonConvert.SerializeObject(locationViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
