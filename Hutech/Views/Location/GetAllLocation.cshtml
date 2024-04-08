@@ -1,7 +1,7 @@
 ﻿@{
     Layout = !Context.Request.Headers["X-Requested-With"].ToString().Equals("XMLHttpRequest", StringComparison.OrdinalIgnoreCase) ? "_Layout" : null;
 }
-
+@model Hutech.Models.LocationsViewModel
 <div id="content">
     <div class="container-fluid">
         <div class="animated fadeIn">
@@ -33,49 +33,33 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            @Html.TextBox("LocationName", null, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.LocationName != null ? @ViewBag.LocationName : "" })
+                                            @Html.TextBoxFor(x => x.LocationName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.LocationName != null ? @ViewBag.LocationName : "" })
                                         </td>
-                                        <td>@Html.TextBox("updatedBy", null, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })</td>
-                                        <td><input type="date" class="form-control" id="updatedDate" name="updatedDate" onchange="Filter()" value='@((ViewBag.updatedDate != null) ? ViewBag.updatedDate.ToString("yyyy-MM-dd") : "")'></td>
                                         <td>
-                                            @if (ViewBag.status == "1")
-                                            {
-                                                <select id="status" name="Status" class="form-control" onchange="Filter()">
-                                                <option value="1" selected>Active</option>
-                                                <option value="0" >Inactive</option>
-                                                </select>
-                                            }
-                                            else if(ViewBag.status=="0")
-                                            {
-                                                <select id="status" name="Status" class="form-control" onchange="Filter()">
-                                                    <option value="1" >Active</option>
-                                                    <option value="0" selected>Inactive</option>
-                                                </select>
-                                                
-                                            }
-                                            else
-                                            {
-                                                <select id="status" name="Status" class="form-control" onchange="Filter()">
-                                                <option value="1" >Active</option>
-                                                <option value="0" >Inactive</option>
-                                            </select>
-                                            }
+                                            @Html.TextBoxFor(x=>x.UpdatedBy, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })
+                                       </td>
+                                        <td>
+                                            <input asp-for="@Model.UpdatedDate" class="form-control" onchange="Filter()" />
                                         </td>
+                                        <td>
+                                            @Html.DropDownListFor(x => x.SelectedStatus, Model.Status, new { @class = "form-control processbank", @onchange = "Filter()" })
+                                        </td>
+                                        
                                     </tr>
-                                    @for (int i = 0; i < Model.GridRecords.Count; i++)
+                                    @for (int i = 0; i < Model.locationViewModel.Count; i++)
                                     {
                                         <tr>
-                                            <td>@Model.GridRecords[i].Name</td>
-                                            <td>@Model.GridRecords[i].FullName (@Model.GridRecords[i].Role)</td>
-                                            @if (Model.GridRecords[i].DateModifiedUtc != null)
+                                            <td>@Model.locationViewModel[i].Name</td>
+                                            <td>@Model.locationViewModel[i].FullName (@Model.locationViewModel[i].Role)</td>
+                                            @if (Model.locationViewModel[i].DateModifiedUtc != null)
                                             {
-                                                <td>@Model.GridRecords[i].DateModifiedUtc.ToString("dd MMM yyyy HH:mm")</td>
+                                                <td>@Model.locationViewModel[i].DateModifiedUtc.ToString("dd MMM yyyy HH:mm")</td>
                                             }
                                             else
                                             {
-                                                <td>@Model.GridRecords[i].DatecreatedUtc.ToString("dd MMM yyyy HH:mm")</td>
+                                                <td>@Model.locationViewModel[i].DatecreatedUtc.ToString("dd MMM yyyy HH:mm")</td>
                                             }
-                                            @if (Model.GridRecords[i].IsActive)
+                                            @if (Model.locationViewModel[i].IsActive)
                                             {
                                                 <td>Active</td>
                                             }
@@ -87,8 +71,8 @@
                                                 <div class="btn-group" role="group">
                                                     <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                        <a class="dropdown-item" href="/Location/EditLocation?id=@Model.GridRecords[i].Id">Edit</a>
-                                                        <a class="dropdown-item" href="/Location/DeleteLocation?id=@Model.GridRecords[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
+                                                        <a class="dropdown-item" href="/Location/EditLocation?id=@Model.locationViewModel[i].Id">Edit</a>
+                                                        <a class="dropdown-item" href="/Location/DeleteLocation?id=@Model.locationViewModel[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -183,11 +167,11 @@
     })
     function Filter() {
         let locationName = $("#LocationName").val();
-        let updatebyOrRole = $("#updatedBy").val();
-        var selectElement = document.getElementById("status");
+        let updatebyOrRole = $("#UpdatedBy").val();
+        var selectElement = document.getElementById("SelectedStatus");
         var selectedValue = selectElement.value;
         let status = selectedValue;
-        let date = $("#updatedDate").val();
+        let date = $("#UpdatedDate").val();
         if (locationName == "" && locationName.length == 0)
             locationName = null;
         if (updatebyOrRole == "" && updatebyOrRole.length == 0)

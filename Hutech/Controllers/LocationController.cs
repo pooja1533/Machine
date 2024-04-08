@@ -4,6 +4,7 @@ using Hutech.Models;
 using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
@@ -74,22 +75,28 @@ namespace Hutech.Controllers
                         }
                     }
                 }
-                var data = new GridData<LocationViewModel>()
+                var data = new LocationsViewModel()
                 {
                     CurrentPage = pageNumber,
-                    GridRecords = locations,
+                    locationViewModel = locations,
                     TotalPages = totalPage,
                     TotalRecords = totalRecords
                 };
-                ViewBag.LocationName = locationModel.locationName;
-                ViewBag.UpdatedBy = locationModel.updatedBy;
-                ViewBag.status = locationModel.status;
-                //string date = string.Empty;
-                //if (locationModel.updatedDate!= null)
-                //{
-                //    date= locationModel.updatedDate?.ToString("MM-dd-yyyy");
-                //}
-                ViewBag.updatedDate = locationModel.updatedDate;
+                data.LocationName = !string.IsNullOrEmpty(locationModel.locationName)?locationModel.locationName:"";
+                data.UpdatedBy = !string.IsNullOrEmpty(locationModel.updatedBy)?locationModel.updatedBy:"";
+                //data.Status = locationModel.status;
+                data.UpdatedDate = locationModel.updatedDate;
+                var items = new List<SelectListItem>();
+                foreach (int value in Enum.GetValues(typeof(StatusViewModel)))
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Text = Enum.GetName(typeof(StatusViewModel), value),
+                        Value = value.ToString(),
+                    });
+                }
+                data.Status = items;
+                data.SelectedStatus = System.Convert.ToInt32(locationModel.status);
                 string requestedWithHeader = Request.Headers["X-Requested-With"];
                 return View("GetAllLocation",data);
             }
@@ -112,6 +119,7 @@ namespace Hutech.Controllers
                 }
                 int totalRecords = 0;
                 int totalPage = 0;
+                LocationsViewModel locationsViewModel = new LocationsViewModel(); 
                 List<LocationViewModel> locations = new List<LocationViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -142,13 +150,24 @@ namespace Hutech.Controllers
                         }
                     }
                 }
-                var data = new GridData<LocationViewModel>()
+                locationsViewModel.locationViewModel = locations;
+                var data = new LocationsViewModel()
                 {
                     CurrentPage = pageNumber,
-                    GridRecords = locations,
+                    locationViewModel = locationsViewModel.locationViewModel,
                     TotalPages = totalPage,
                     TotalRecords = totalRecords
                 };
+                var items = new List<SelectListItem>();
+                foreach (int value in Enum.GetValues(typeof(StatusViewModel)))
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Text = Enum.GetName(typeof(StatusViewModel), value),
+                        Value = value.ToString()
+                    }); 
+                }
+                data.Status = items;
                 return View(data);
             }
             catch (Exception ex)
