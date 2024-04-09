@@ -169,7 +169,7 @@ namespace Hutech.Infrastructure.Repository
                         isactive = true;
                     DepartmentName = !string.IsNullOrEmpty(DepartmentName) ? DepartmentName = DepartmentName + "%" : DepartmentName;
                     var result = await connection.QueryAsync<Department>(DepartmentQueries.GetAllFilterDepartment, new { Name = DepartmentName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
-                    var recordsPerPage = 2;
+                    var recordsPerPage = 10;
                     var skipRecords = (pagenumber - 1) * recordsPerPage;
                     if (pagenumber > 0)
                     {

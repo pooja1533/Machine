@@ -85,13 +85,18 @@
                             </table>
                             @if (Model.TotalPages > 1)
                             {
+                                string formattedDate = string.Empty;
+                                @if (Model.UpdatedDate != null)
+                                {
+                                    formattedDate = Model.UpdatedDate.Value.ToString("yyyy-MM-dd");
+                                }
                                 <nav>
                                     <ul class="pagination">
                                         @if (pageNumber > 1)
                                         {
                                             int prevPage = pageNumber - 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/Location/GetAllLocation?pageNumber=@prevPage">Prev</a>
+                                                <a class="page-link" href="/Location/GetAllLocation?pageNumber=@prevPage&locationName=@Model.LocationName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Prev</a>
                                             </li>
                                         }
                                         @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
@@ -99,13 +104,13 @@
                                             if (i == pageNumber)
                                             {
                                                 <li class="page-item active">
-                                                    <a class="page-link" href="/Location/GetAllLocation?pageNumber=@i">@i</a>
+                                                    <a class="page-link" href="/Location/GetAllLocation?pageNumber=@i&locationName=@Model.LocationName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@i</a>
                                                 </li>
                                             }
                                             else
                                             {
                                                 <li class="page-item">
-                                                    <a class="page-link" href="/Location/GetAllLocation?pageNumber=@i">@i</a>
+                                                    <a class="page-link" href="/Location/GetAllLocation?pageNumber=@i&locationName=@Model.LocationName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@i</a>
                                                 </li>
                                             }
                                         }
@@ -113,32 +118,12 @@
                                         {
                                             int nextPage = pageNumber + 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/Location/GetAllLocation?pageNumber=@nextPage">Next</a>
+                                                <a class="page-link" href="/Location/GetAllLocation?pageNumber=@nextPage&locationName=@Model.LocationName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Next</a>
                                             </li>
                                         }
                                     </ul>
                                 </nav>
                             }
-                            @* <ul class="pagination">
-                            <li class="page-item">
-                            <a class="page-link" href="#">Prev</a>
-                            </li>
-                            <li class="page-item active">
-                            <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                            <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                            <a class="page-link" href="#">4</a>
-                            </li>
-                            <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                            </li>
-                            </ul>*@
                         </div>
                     </div>
                 </div>

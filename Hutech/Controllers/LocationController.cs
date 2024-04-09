@@ -106,7 +106,7 @@ namespace Hutech.Controllers
                 throw ex;
             }
         }
-        public async Task<IActionResult> GetAllLocation(int pageNumber = 1)
+        public async Task<IActionResult> GetAllLocation(int pageNumber = 1,string? locationName=null,string? updatedBy=null,string? updatedDate=null,string? SelectedStatus=null)
         {
             try
             {
@@ -122,6 +122,7 @@ namespace Hutech.Controllers
                 LocationsViewModel locationsViewModel = new LocationsViewModel(); 
                 List<LocationViewModel> locations = new List<LocationViewModel>();
                 string apiUrl = configuration["Baseurl"];
+                LocationModel locationModel=new LocationModel();
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
@@ -129,7 +130,15 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    HttpResponseMessage Res = await client.GetAsync(string.Format("Location/GetLocation/{0}",pageNumber));
+                    locationModel.pageNumber = pageNumber;
+                    locationModel.locationName = locationName;
+                    locationModel.updatedBy = updatedBy;
+                    if (!string.IsNullOrEmpty(updatedDate))
+                        locationModel.updatedDate = DateTime.Parse(updatedDate);
+                    locationModel.status = SelectedStatus;
+                    var json = JsonConvert.SerializeObject(locationModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                    HttpResponseMessage Res = await client.PostAsync("Location/GetAllFilterLocation", stringContent);
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -167,6 +176,13 @@ namespace Hutech.Controllers
                     }); 
                 }
                 data.Status = items;
+                if (SelectedStatus == null)
+                    data.SelectedStatus = (int)StatusViewModel.Active;
+                else if (!string.IsNullOrEmpty(SelectedStatus))
+                    data.SelectedStatus = System.Convert.ToInt32(SelectedStatus);
+                data.LocationName = !string.IsNullOrEmpty(locationModel.locationName) ? locationModel.locationName : "";
+                data.UpdatedBy = !string.IsNullOrEmpty(locationModel.updatedBy) ? locationModel.updatedBy : "";
+                data.UpdatedDate = locationModel.updatedDate;
                 return View(data);
             }
             catch (Exception ex)

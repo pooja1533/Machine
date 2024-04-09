@@ -46,7 +46,9 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy ="%"+ updatedBy + "%" : updatedBy;
-                    bool isactive = status=="1"?true:false;
+                    bool isactive = false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
                     LocationName = !string.IsNullOrEmpty(LocationName) ? LocationName = LocationName + "%" : LocationName;
                     var result = await connection.QueryAsync<Location>(LocationQueries.GetAllFilterLocation, new { Name = LocationName,UpdatedBy=updatedBy,Status= isactive, UpdatedDate= updatedDate });
                     var recordsPerPage = 10;
