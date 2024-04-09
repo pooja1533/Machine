@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Hutech.Application.Interfaces;
 using Hutech.Core.Entities;
 using Hutech.Infrastructure.Repository;
@@ -26,6 +27,36 @@ namespace Hutech.API.Controllers
             logger = _logger;
             auditRepository = _auditRepository;
         }
+        [HttpPost("GetAllFilterDepartment")]
+        public async Task<ApiResponse<List<DepartmentViewModel>>> GetAllFilterDepartment(DepartmentModel departmentModel)
+        {
+            var apiResponse = new ApiResponse<List<DepartmentViewModel>>();
+            try
+            {
+                string? departmentName = departmentModel.departmentName;
+                string? updatedBy = departmentModel.updatedBy;
+                string? status = departmentModel.status;
+                DateTime? updatedDate = departmentModel.updatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+
+                var departments = await departmentRepository.GetAllFilterDepartment(departmentName, updatedBy, status, formattedDate);
+                var data = mapper.Map<List<Department>, List<DepartmentViewModel>>(departments);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
         [HttpPost("PostDepartment")]
         public async Task<ApiResponse<string>> PostDepartment(DepartmentViewModel departmentViewModel)
         {
@@ -51,16 +82,19 @@ namespace Hutech.API.Controllers
             }
         }
         
-        [HttpGet("GetDepartment")]
-        public async Task<ApiResponse<List<DepartmentViewModel>>> GetDepartment()
+        [HttpGet("GetDepartment/{pageNumber}")]
+        public async Task<ApiResponse<List<DepartmentViewModel>>> GetDepartment(int pageNumber)
         {
             var apiResponse = new ApiResponse<List<DepartmentViewModel>>();
             try
             {
-                var department = await departmentRepository.GetDepartment();
-                var data = mapper.Map<List<Department>, List<DepartmentViewModel>>(department);
+                var department = await departmentRepository.GetDepartment(pageNumber);
+                var data = mapper.Map<List<Department>, List<DepartmentViewModel>>(department.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
+                apiResponse.CurrentPage = department.Value.CurrentPage;
+                apiResponse.TotalPage = department.Value.TotalPages;
+                apiResponse.TotalRecords = department.Value.TotalRecords;
                 return apiResponse;
             }
             catch (Exception ex)

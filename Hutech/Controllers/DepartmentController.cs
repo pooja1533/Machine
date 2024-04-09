@@ -9,6 +9,7 @@ using Hutech.Core.Constants;
 using Hutech.Core.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using Hutech.Resources;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Hutech.Controllers
 {
@@ -24,8 +25,11 @@ namespace Hutech.Controllers
             logger = _logger;
             languageService = _languageService;
         }
-        public async Task<IActionResult> GetAllDepartment()
+        [HttpPost]
+        public async Task<IActionResult> GetAllDepartment([FromBody] DepartmentModel departmentModel)
         {
+            departmentModel.pageNumber = 1;
+            int pageNumber = 1;
             try
             {
                 var token = Request.Cookies["jwtCookie"];
@@ -35,6 +39,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                int totalRecords = 0;
+                int totalPage = 0;
                 List<DepartmentViewModel> departments = new List<DepartmentViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -44,9 +50,10 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var json = JsonConvert.SerializeObject(departmentModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
-
-                    HttpResponseMessage Res = await client.GetAsync("Department/GetDepartment");
+                    HttpResponseMessage Res = await client.PostAsync("Department/GetAllFilterDepartment", stringContent);
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -61,10 +68,106 @@ namespace Hutech.Controllers
                         else
                         {
                             departments = root["result"].ToObject<List<DepartmentViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                return View(departments);
+                var data = new DepartmentsViewModel()
+                {
+                    CurrentPage = pageNumber,
+                    DepartmentViewModels = departments,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                data.DepartmentName = !string.IsNullOrEmpty(departmentModel.departmentName)?departmentModel.departmentName:"";
+                data.UpdatedBy = !string.IsNullOrEmpty(departmentModel.updatedBy)? departmentModel.updatedBy:"";
+                data.UpdatedDate = departmentModel.updatedDate;
+                var items = new List<SelectListItem>();
+                foreach (int value in Enum.GetValues(typeof(StatusViewModel)))
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Text = Enum.GetName(typeof(StatusViewModel), value),
+                        Value = value.ToString(),
+                    });
+                }
+                data.Status = items;
+                data.SelectedStatus = System.Convert.ToInt32(departmentModel.status);
+                string requestedWithHeader = Request.Headers["X-Requested-With"];
+                return View("GetAllDepartment", data);
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
+                throw ex;
+            }
+        }
+        public async Task<IActionResult> GetAllDepartment(int pageNumber = 1)
+        {
+            try
+            {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                int totalRecords = 0;
+                int totalPage = 0;
+                DepartmentsViewModel departmentsViewModel=new DepartmentsViewModel();
+                List<DepartmentViewModel> departments = new List<DepartmentViewModel>();
+                string apiUrl = configuration["Baseurl"];
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+
+                    HttpResponseMessage Res = await client.GetAsync(string.Format("Department/GetDepartment/{0}", pageNumber));
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
+                            departments = root["result"].ToObject<List<DepartmentViewModel>>();
+                        }
+                    }
+                }
+                var data = new DepartmentsViewModel()
+                {
+                    CurrentPage = pageNumber,
+                    DepartmentViewModels = departments,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                var items = new List<SelectListItem>();
+                foreach (int value in Enum.GetValues(typeof(StatusViewModel)))
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Text = Enum.GetName(typeof(StatusViewModel), value),
+                        Value = value.ToString()
+                    });
+                }
+                data.Status = items;
+                return View(data);
             }
             catch (Exception ex)
             {
@@ -106,6 +209,9 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         departmentViewModel.IsDeleted = false;
+                        departmentViewModel.DatecreatedUtc = DateTime.UtcNow;
+                        departmentViewModel.DateModifiedUtc = DateTime.UtcNow;
+                        departmentViewModel.CreatedByUserId = HttpContext.Session.GetString("UserId");
                         var json = JsonConvert.SerializeObject(departmentViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
@@ -211,7 +317,8 @@ namespace Hutech.Controllers
                         client.BaseAddress = new Uri(apiUrl);
                         client.DefaultRequestHeaders.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
+                        departmentViewModel.DateModifiedUtc = DateTime.UtcNow;
+                        departmentViewModel.ModifiedByUserId = HttpContext.Session.GetString("UserId");
                         var json = JsonConvert.SerializeObject(departmentViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

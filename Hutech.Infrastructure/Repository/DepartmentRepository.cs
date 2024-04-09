@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.ApiResponse;
 using Hutech.Core.Entities;
 using Hutech.Sql.Queries;
 using Microsoft.Data.SqlClient;
@@ -39,7 +40,7 @@ namespace Hutech.Infrastructure.Repository
             }
         }
 
-        public async Task<List<Department>> GetDepartment()
+        public async Task<ExecutionResult<GridData<Department>>> GetDepartment(int pageNumber)
         {
             try
             {
@@ -47,7 +48,36 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     var result = await connection.QueryAsync<Department>(DepartmentQueries.GetDepartment);
-                    return result.ToList();
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var departmentlist = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var departments = new GridData<Department>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = departmentlist,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Department>>(departments);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var departmentlist = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var departments = new GridData<Department>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = departmentlist,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Department>>(departments);
+                    }
                 }
 
             }
@@ -90,15 +120,15 @@ namespace Hutech.Infrastructure.Repository
             }
         }
 
-        public async Task<bool> PostDepartment(Department location)
+        public async Task<bool> PostDepartment(Department department)
         {
             try
             {
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    location.IsActive = true;
-                    var result = await connection.QueryAsync<string>(DepartmentQueries.PostDepartment, location);
+                    department.IsActive = true;
+                    var result = await connection.QueryAsync<string>(DepartmentQueries.PostDepartment, department);
                     return true;
                 }
             }
@@ -115,9 +145,31 @@ namespace Hutech.Infrastructure.Repository
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    var result = await connection.QueryAsync<Department>(DepartmentQueries.UpdateDepartment, new { Id = department.Id, Name = department.Name,IsActive=department.IsActive });
+                    var result = await connection.QueryAsync<Department>(DepartmentQueries.UpdateDepartment, new { Id = department.Id, Name = department.Name, IsActive = department.IsActive, DateModifiedUtc = department.DateModifiedUtc, ModifiedByUserId = department.ModifiedByUserId });
                     return result.ToString();
                 }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<Department>> GetAllFilterDepartment(string? DepartmentName, string? updatedBy, string? status, string? updatedDate)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy = "%" + updatedBy + "%" : updatedBy;
+                    bool isactive = status == "1" ? true : false;
+                    DepartmentName = !string.IsNullOrEmpty(DepartmentName) ? DepartmentName = DepartmentName + "%" : DepartmentName;
+                    var result = await connection.QueryAsync<Department>(DepartmentQueries.GetAllFilterDepartment, new { Name = DepartmentName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
+                    return result.ToList();
+                }
+
 
             }
             catch (Exception ex)

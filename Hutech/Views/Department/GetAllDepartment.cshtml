@@ -1,89 +1,173 @@
-﻿<div class="container-fluid">
-    <div class="animated fadeIn">
-        <div class="row">
-            <div class="col-lg-12">
+﻿@{
+    Layout = !Context.Request.Headers["X-Requested-With"].ToString().Equals("XMLHttpRequest", StringComparison.OrdinalIgnoreCase) ? "_Layout" : null;
+}
+@model Hutech.Models.DepartmentsViewModel
+<div id="content">
+    <div class="container-fluid">
+        <div class="animated fadeIn">
+            <div class="row">
+                <div class="col-lg-12">
 
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Department
-                        <a href="/Department/AddDepartment">Add Department</a>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-responsive-sm">
-                            <thead>
-                                <tr>
-                                    <th>Department Name</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                    @*<th>Delete</th>*@
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.Count; i++)
-                                {
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fa fa-align-justify"></i> Department
+                            <a href="/Department/AddDepartment">Add Department</a>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-responsive-sm">
+                                <thead>
                                     <tr>
-                                        <td>@Model[i].Name</td>
-
-                                        @if (Model[i].IsActive)
-                                        {
-                                            <td>Active</td>
-                                        }
-                                        else
-                                        {
-                                            <td>InActive</td>
-                                        }
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
-                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                    <a class="dropdown-item" href="/Department/EditDepartment?id=@Model[i].Id">Edit</a>
-                                                    <a class="dropdown-item" href="/Department/DeleteDepartment?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        @*<td><a href="/Role/EditRole?id=@Model[i].Id">Edit</a></td>
-                                    <td><a href="/Role/DeleteRole?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a></td>*@
+                                        <th>Department Name</th>
+                                        <th>Updated By/Role</th>
+                                        <th>Updated On</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                        @*<th>Delete</th>*@
                                     </tr>
+                                </thead>
+                                @{
+                                    int recordsPerPage = 10;
+                                    int pageNumber = Model.CurrentPage;
+                                    int pageSize = pageNumber + 4;
+                                    int rowNo = ((pageNumber - 1) * recordsPerPage);
                                 }
+                                <tbody>
+                                    <tr>
+                                        <td>@Html.TextBoxFor(x=>x.DepartmentName, null, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.DepartmentName != null ? @ViewBag.DepartmentName : "" })</td>
+                                        <td>@Html.TextBoxFor(x=>x.UpdatedBy, null, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })</td>
+                                        <td>
+                                            <input asp-for="@Model.UpdatedDate" class="form-control" onchange="Filter()" />
+                                        <td>
+                                                @Html.DropDownListFor(x => x.SelectedStatus, Model.Status, new { @class = "form-control processbank", @onchange = "Filter()" })
+                                        </td>
+                                    </tr>
+                                    @for (int i = 0; i < Model.DepartmentViewModels.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>@Model.DepartmentViewModels[i].Name</td>
+                                            <td>@Model.DepartmentViewModels[i].FullName (@Model.DepartmentViewModels[i].Role)</td>
+                                            @if (Model.DepartmentViewModels[i].DateModifiedUtc != null)
+                                            {
+                                                <td>@Model.DepartmentViewModels[i].DateModifiedUtc.ToString("dd MMM yyyy HH:mm")</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Model.DepartmentViewModels[i].DatecreatedUtc.ToString("dd MMM yyyy HH:mm")</td>
+                                            }
+                                            @if (Model.DepartmentViewModels[i].IsActive)
+                                            {
+                                                <td>Active</td>
+                                            }
+                                            else
+                                            {
+                                                <td>InActive</td>
+                                            }
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                        <a class="dropdown-item" href="/Department/EditDepartment?id=@Model.DepartmentViewModels[i].Id">Edit</a>
+                                                        <a class="dropdown-item" href="/Department/DeleteDepartment?id=@Model.DepartmentViewModels[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            @*<td><a href="/Role/EditRole?id=@Model[i].Id">Edit</a></td>
+                                        <td><a href="/Role/DeleteRole?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a></td>*@
+                                        </tr>
+                                    }
 
-                            </tbody>
-                        </table>
-                        @* <ul class="pagination">
-                        <li class="page-item">
-                        <a class="page-link" href="#">Prev</a>
-                        </li>
-                        <li class="page-item active">
-                        <a class="page-link" href="#">1</a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">4</a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                        </li>
-                        </ul>*@
+                                </tbody>
+                            </table>
+                            @if (Model.TotalPages > 1)
+                            {
+                                <nav>
+                                    <ul class="pagination">
+                                        @if (pageNumber > 1)
+                                        {
+                                            int prevPage = pageNumber - 1;
+                                            <li class="page-item">
+                                                <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@prevPage">Prev</a>
+                                            </li>
+                                        }
+                                        @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
+                                        {
+                                            if (i == pageNumber)
+                                            {
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@i">@i</a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@i">@i</a>
+                                                </li>
+                                            }
+                                        }
+                                        @if (pageNumber < Model.TotalPages)
+                                        {
+                                            int nextPage = pageNumber + 1;
+                                            <li class="page-item">
+                                                <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@nextPage">Next</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- /.col-->
+                <!-- /.col-->
 
+            </div>
+            <!-- /.row-->
         </div>
-        <!-- /.row-->
     </div>
 </div>
-@if (TempData["message"] != null)
-{
+    @if (TempData["message"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@TempData["message"]");
+                var url = "@TempData["RedirectURl"]";
+                window.location.href = url;
+            };
+        </script>
+    }
     <script type="text/javascript">
-        window.onload = function () {
-            alert("@TempData["message"]");
-            var url = "@TempData["RedirectURl"]";
-            window.location.href = url;
-        };
+        function Filter() {
+            let departmentName = $("#DepartmentName").val();
+        let updatebyOrRole = $("#UpdatedBy").val();
+        var selectElement = document.getElementById("SelectedStatus");
+            var selectedValue = selectElement.value;
+            let status = selectedValue;
+        let date = $("#UpdatedDate").val();
+            if (departmentName == "" && departmentName.length == 0)
+                departmentName = null;
+            if (updatebyOrRole == "" && updatebyOrRole.length == 0)
+                updatebyOrRole = null;
+            if (date == "")
+                date = null;
+            var model = {
+                departmentName: departmentName,
+                updatedBy: updatebyOrRole,
+                status: status,
+                updatedDate: date
+            };
+            $.ajax({
+                url: '/Department/GetAllDepartment',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (response) {
+                    // Handle successful response from the server
+                    var div = document.getElementById("content");
+                    div.innerHTML = response;
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response from the server
+                    console.error(xhr.responseText);
+                }
+            });
+        }
     </script>
-}

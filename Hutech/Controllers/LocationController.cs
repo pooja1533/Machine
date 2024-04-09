@@ -150,11 +150,10 @@ namespace Hutech.Controllers
                         }
                     }
                 }
-                locationsViewModel.locationViewModel = locations;
                 var data = new LocationsViewModel()
                 {
                     CurrentPage = pageNumber,
-                    locationViewModel = locationsViewModel.locationViewModel,
+                    locationViewModel = locations,
                     TotalPages = totalPage,
                     TotalRecords = totalRecords
                 };
