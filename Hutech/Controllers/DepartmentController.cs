@@ -104,7 +104,7 @@ namespace Hutech.Controllers
                 throw ex;
             }
         }
-        public async Task<IActionResult> GetAllDepartment(int pageNumber = 1)
+        public async Task<IActionResult> GetAllDepartment(int pageNumber = 1,string? DepartmentName=null,string? UpdatedBy = null,string? UpdatedDate = null,string? SelectedStatus = null)
         {
             try
             {
@@ -115,6 +115,7 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
+                DepartmentModel departmentModel = new DepartmentModel();
                 int totalRecords = 0;
                 int totalPage = 0;
                 DepartmentsViewModel departmentsViewModel=new DepartmentsViewModel();
@@ -127,9 +128,16 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    departmentModel.pageNumber= pageNumber;
+                    departmentModel.departmentName=DepartmentName;
+                    departmentModel.updatedBy = UpdatedBy;
+                    if (!string.IsNullOrEmpty(UpdatedDate))
+                        departmentModel.updatedDate = DateTime.Parse(UpdatedDate);
+                    departmentModel.status = SelectedStatus;
+                    var json = JsonConvert.SerializeObject(departmentModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
-
-                    HttpResponseMessage Res = await client.GetAsync(string.Format("Department/GetDepartment/{0}", pageNumber));
+                    HttpResponseMessage Res = await client.PostAsync("Department/GetAllFilterDepartment", stringContent);
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -167,6 +175,14 @@ namespace Hutech.Controllers
                     });
                 }
                 data.Status = items;
+                
+                if (SelectedStatus == null)
+                    data.SelectedStatus = (int)StatusViewModel.Active;
+                else if (!string.IsNullOrEmpty(SelectedStatus))
+                    data.SelectedStatus = System.Convert.ToInt32(SelectedStatus);
+                data.DepartmentName = !string.IsNullOrEmpty(departmentModel.departmentName) ? departmentModel.departmentName : "";
+                data.UpdatedBy = !string.IsNullOrEmpty(departmentModel.updatedBy) ? departmentModel.updatedBy : "";
+                data.UpdatedDate = departmentModel.updatedDate;
                 return View(data);
             }
             catch (Exception ex)

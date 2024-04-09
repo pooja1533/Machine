@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Hutech.Models
@@ -30,6 +31,8 @@ namespace Hutech.Models
         public string? departmentName { get; set; }
         public string? updatedBy { get; set; }
         public string? status { get; set; }
+        [Display(Name = "Date")]
+        [DataType(DataType.Date)]
         public DateTime? updatedDate { get; set; }
         public int pageNumber { get; set; }
     }

@@ -156,7 +156,7 @@ namespace Hutech.Infrastructure.Repository
             }
         }
 
-        public async Task<List<Department>> GetAllFilterDepartment(string? DepartmentName, string? updatedBy, string? status, string? updatedDate)
+        public async Task<ExecutionResult<GridData<Department>>> GetAllFilterDepartment(string? DepartmentName, string? updatedBy, string? status, string? updatedDate,int pagenumber)
         {
             try
             {
@@ -164,10 +164,41 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy = "%" + updatedBy + "%" : updatedBy;
-                    bool isactive = status == "1" ? true : false;
+                    bool isactive =false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
                     DepartmentName = !string.IsNullOrEmpty(DepartmentName) ? DepartmentName = DepartmentName + "%" : DepartmentName;
                     var result = await connection.QueryAsync<Department>(DepartmentQueries.GetAllFilterDepartment, new { Name = DepartmentName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
-                    return result.ToList();
+                    var recordsPerPage = 2;
+                    var skipRecords = (pagenumber - 1) * recordsPerPage;
+                    if (pagenumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var departmentlist = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var departments = new GridData<Department>()
+                        {
+                            CurrentPage = pagenumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = departmentlist,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Department>>(departments);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var departmentlist = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var departments = new GridData<Department>()
+                        {
+                            CurrentPage = pagenumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = departmentlist,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Department>>(departments);
+                    }
                 }
 
 

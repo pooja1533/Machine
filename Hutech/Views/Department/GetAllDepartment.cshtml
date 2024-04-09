@@ -80,13 +80,18 @@
                             </table>
                             @if (Model.TotalPages > 1)
                             {
+                                string formattedDate = string.Empty;
+                                @if (Model.UpdatedDate != null)
+                                {
+                                    formattedDate = Model.UpdatedDate.Value.ToString("yyyy-MM-dd");
+                                }
                                 <nav>
                                     <ul class="pagination">
                                         @if (pageNumber > 1)
                                         {
                                             int prevPage = pageNumber - 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@prevPage">Prev</a>
+                                                <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@prevPage&DepartmentName=@Model.DepartmentName&UpdatedBy=@Model.UpdatedBy&UpdatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Prev</a>
                                             </li>
                                         }
                                         @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
@@ -94,13 +99,13 @@
                                             if (i == pageNumber)
                                             {
                                                 <li class="page-item active">
-                                                    <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@i">@i</a>
+                                                    <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@i&DepartmentName=@Model.DepartmentName&UpdatedBy=@Model.UpdatedBy&UpdatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@i</a>
                                                 </li>
                                             }
                                             else
                                             {
                                                 <li class="page-item">
-                                                    <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@i">@i</a>
+                                                    <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@i&DepartmentName=@Model.DepartmentName&UpdatedBy=@Model.UpdatedBy&UpdatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@i</a>
                                                 </li>
                                             }
                                         }
@@ -108,7 +113,7 @@
                                         {
                                             int nextPage = pageNumber + 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@nextPage">Next</a>
+                                                <a class="page-link" href="/Department/GetAllDepartment?pageNumber=@nextPage&DepartmentName=@Model.DepartmentName&UpdatedBy=@Model.UpdatedBy&UpdatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Next</a>
                                             </li>
                                         }
                                     </ul>

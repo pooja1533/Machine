@@ -38,11 +38,14 @@ namespace Hutech.API.Controllers
                 string? status = departmentModel.status;
                 DateTime? updatedDate = departmentModel.updatedDate;
                 string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
-
-                var departments = await departmentRepository.GetAllFilterDepartment(departmentName, updatedBy, status, formattedDate);
-                var data = mapper.Map<List<Department>, List<DepartmentViewModel>>(departments);
+                int pagenumber = departmentModel.pageNumber;
+                var departments = await departmentRepository.GetAllFilterDepartment(departmentName, updatedBy, status, formattedDate,pagenumber);
+                var data = mapper.Map<List<Department>, List<DepartmentViewModel>>(departments.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
+                apiResponse.CurrentPage = departments.Value.CurrentPage;
+                apiResponse.TotalPage = departments.Value.TotalPages;
+                apiResponse.TotalRecords = departments.Value.TotalRecords;
                 return apiResponse;
             }
             catch (Exception ex)
