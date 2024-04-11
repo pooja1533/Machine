@@ -20,6 +20,7 @@ namespace Hutech.Application.Interfaces
         public Task<string> DeleteExistingInstrumentDocument(long Id);
         public Task<String> PutInstrument(Instrument instrument);
         Task<long> GetLastInsertedInstrumentId();
+        public Task<ExecutionResult<GridData<Instrument>>> GetAllFilterInstrument(string? InstrumentName, int pageNumber, string? updatedBy, string? status, string? updatedDate);
         //Task<bool> UploadInstrumentDocument(List<Document> document);
         //Task<bool> UpdateInstrumentDocument(List<Document> documents, long instrumentId);
     }

@@ -18,6 +18,14 @@ namespace Hutech.Core.Entities
         public string? DocumentId { get; set; }
         [NotMapped]
         public string? Path { get; set; }
+        public string CreatedByUserId { get; set; }
+        public string? ModifiedByUserId { get; set; }
+        public DateTime DatecreatedUtc { get; set; }
+        public DateTime DateModifiedUtc { get; set; }
+        [NotMapped]
+        public string? FullName { get; set; }
+        [NotMapped]
+        public string? Role { get; set; }
     }
     public class InstrumentDocument
     {

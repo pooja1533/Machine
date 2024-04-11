@@ -14,6 +14,14 @@ namespace Hutech.Models
         public string? DocumentId { get; set; }
         [NotMapped]
         public string? Path { get; set; }
+        public string? CreatedByUserId { get; set; }
+        public string? ModifiedByUserId { get; set; }
+        public DateTime DatecreatedUtc { get; set; }
+        public DateTime DateModifiedUtc { get; set; }
+        [NotMapped]
+        public string? FullName { get; set; }
+        [NotMapped]
+        public string? Role { get; set; }
     }
     public class InstrumentDocumentViewModel
     {
@@ -22,12 +30,13 @@ namespace Hutech.Models
             UplodedFile = new List<FileViewModel>();
         }
         public long Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
-        public List<IFormFile> Files { get; set; }
+        public List<IFormFile>? Files { get; set; }
         public List<FileViewModel>? UplodedFile { get; set; }
         public string? FileName { get; set; }
+
     }
     public class FileViewModel
     {
@@ -40,7 +49,15 @@ namespace Hutech.Models
 
         public InstrumentValidator() 
         {
-            RuleFor(x => x.Name).NotEmpty().WithMessage("Please Enter Name");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Please Enter Name of Instrument");
         }
+    }
+    public class InstrumentModel
+    {
+        public string? InstrumentName { get; set; }
+        public string? UpdatedBy { get; set; }
+        public int PageNumber { get; set; }
+        public string? Status { get; set; }
+        public DateTime? UpdatedDate { get; set; }
     }
 }

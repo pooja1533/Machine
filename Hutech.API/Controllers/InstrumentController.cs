@@ -299,5 +299,40 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
+        
+       [HttpPost("GetAllFilterInstrument")]
+        public async Task<ApiResponse<List<InstrumentViewModel>>> GetAllFilterInstrument(InstrumentModel instrumentModel)
+        {
+            var apiResponse = new ApiResponse<List<InstrumentViewModel>>();
+            try
+            {
+                string? instrumentName = instrumentModel.InstrumentName;
+                int pageNumber = instrumentModel.PageNumber;
+                string? updatedBy = instrumentModel.UpdatedBy;
+                string? status = instrumentModel.Status;
+                DateTime? updatedDate = instrumentModel.UpdatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+
+                var instrument = await instrumentRepository.GetAllFilterInstrument(instrumentName, pageNumber, updatedBy, status, formattedDate);
+                var data = mapper.Map<List<Instrument>, List<InstrumentViewModel>>(instrument.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = instrument.Value.CurrentPage;
+                apiResponse.TotalPage = instrument.Value.TotalPages;
+                apiResponse.TotalRecords = instrument.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
     }
 }
