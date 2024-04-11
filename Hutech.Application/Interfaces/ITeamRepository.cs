@@ -1,4 +1,5 @@
-﻿using Hutech.Core.Entities;
+﻿using Hutech.Core.ApiResponse;
+using Hutech.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,6 @@ namespace Hutech.Application.Interfaces
         public Task<Team> GetTeamDetail(long Id);
         public Task<String> UpdateTeam(Team team);
         public Task<String> DeleteTeam(long Id);
-
+        public Task<ExecutionResult<GridData<Team>>> GetAllFilterTeam(string? TeamName, int pageNumber, string? updatedBy, string? status, string? updatedDate,string? LocationName);
     }
 }

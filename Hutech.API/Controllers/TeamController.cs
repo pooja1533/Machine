@@ -164,5 +164,39 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
+        [HttpPost("GetAllFilterTeam")]
+        public async Task<ApiResponse<List<TeamViewModel>>> GetAllFilterTeam(TeamModel teamModel)
+        {
+            var apiResponse = new ApiResponse<List<TeamViewModel>>();
+            try
+            {
+                string? teamName = teamModel.TeamName;
+                int pageNumber = teamModel.PageNumber;
+                string? updatedBy = teamModel.UpdatedBy;
+                string? status = teamModel.Status;
+                DateTime? updatedDate = teamModel.UpdatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+                string? locationName = teamModel.LocationName;
+                var team = await teamRepository.GetAllFilterTeam(teamName, pageNumber, updatedBy, status, formattedDate,locationName);
+                var data = mapper.Map<List<Team>, List<TeamViewModel>>(team.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = team.Value.CurrentPage;
+                apiResponse.TotalPage = team.Value.TotalPages;
+                apiResponse.TotalRecords = team.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
     }
 }

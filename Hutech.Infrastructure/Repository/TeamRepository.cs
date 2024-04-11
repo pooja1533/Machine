@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.ApiResponse;
 using Hutech.Core.Entities;
 using Hutech.Sql.Queries;
 using Microsoft.Data.SqlClient;
@@ -117,6 +118,58 @@ namespace Hutech.Infrastructure.Repository
                     connection.Open();
                     var result = await connection.QueryAsync<Team>(TeamQueries.UpdateTeam, new { Id = team.Id, Name = team.Name, LocationId = team.LocationId, IsActive = team.IsActive, DateModifiedUtc=team.DateModifiedUtc, ModifiedByUserId=team.ModifiedByUserId });
                     return result.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<ExecutionResult<GridData<Team>>> GetAllFilterTeam(string? TeamName, int pageNumber, string? updatedBy, string? status, string? updatedDate,string? LocationName)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy = "%" + updatedBy + "%" : updatedBy;
+                    bool isactive = false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
+                    LocationName = !string.IsNullOrEmpty(LocationName) ? LocationName + "%" : LocationName;
+                    TeamName = !string.IsNullOrEmpty(TeamName) ? TeamName = TeamName + "%" : TeamName;
+                    var result = await connection.QueryAsync<Team>(TeamQueries.GetAllFilterTeam, new { Name = TeamName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate, LocationName=LocationName });
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var teamList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var teams = new GridData<Team>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = teamList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Team>>(teams);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var teamList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var teams = new GridData<Team>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = teamList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Team>>(teams);
+                    }
                 }
 
             }

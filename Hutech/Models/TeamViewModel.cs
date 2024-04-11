@@ -20,7 +20,7 @@ namespace Hutech.Models
         public string? LocationName { get; set; }
         public DateTime? DatecreatedUtc { get; set; }
         public string? CreatedByUserId { get; set; }
-        public DateTime? DateModifiedUtc { get; set; }
+        public DateTime DateModifiedUtc { get; set; }
         public string? ModifiedByUserId { get; set; }
         [NotMapped]
         public string? fullname { get; set; }
@@ -35,5 +35,14 @@ namespace Hutech.Models
             RuleFor(x => x.LocationId).NotNull().NotEmpty().WithMessage("Please select Location");
 
         }
+    }
+    public class TeamModel
+    {
+        public string? TeamName { get; set; }
+        public string? UpdatedBy { get; set; }
+        public int PageNumber { get; set; }
+        public string? Status { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string? LocationName { get; set; }
     }
 }
