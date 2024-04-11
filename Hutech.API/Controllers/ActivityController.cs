@@ -75,7 +75,7 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
-        
+
         [HttpGet("GetActivity/{pageNumber}")]
         public async Task<ApiResponse<List<ActivityViewModel>>> GetActivity(int pageNumber)
         {
@@ -192,6 +192,41 @@ namespace Hutech.API.Controllers
                 apiResponse.AuditId = auditId;
                 return apiResponse;
             }
+        }
+
+        [HttpPost("GetAllFilterActivity")]
+        public async Task<ApiResponse<List<ActivityViewModel>>> GetAllFilterActivity(ActivityModel activityModel)
+        {
+            var apiResponse = new ApiResponse<List<ActivityViewModel>>();
+            try
+            {
+                string? activityName = activityModel.ActivityName;
+                int pageNumber = activityModel.PageNumber;
+                string? updatedBy = activityModel.UpdatedBy;
+                string? status = activityModel.Status;
+                DateTime? updatedDate = activityModel.UpdatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+
+                var activities = await activityRepository.GetAllFilterActivity(activityName, pageNumber, updatedBy, status, formattedDate);
+                var data = mapper.Map<List<Activity>, List<ActivityViewModel>>(activities.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = activities.Value.CurrentPage;
+                apiResponse.TotalPage = activities.Value.TotalPages;
+                apiResponse.TotalRecords = activities.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                _auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
         }
     }
 }

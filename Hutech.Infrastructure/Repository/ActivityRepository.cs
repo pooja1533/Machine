@@ -145,8 +145,59 @@ namespace Hutech.Infrastructure.Repository
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    var result = await connection.QueryAsync<Activity>(ActivityQueries.UpdateActivity, new { Id = activity.Id, Name = activity.Name, IsActive = activity.IsActive });
+                    var result = await connection.QueryAsync<Activity>(ActivityQueries.UpdateActivity, new { Id = activity.Id, Name = activity.Name, IsActive = activity.IsActive, DateModifiedUtc=activity.DateModifiedUtc, ModifiedByUserId=activity.ModifiedByUserId });
                     return result.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<ExecutionResult<GridData<Activity>>> GetAllFilterActivity(string? ActivityName, int pageNumber, string? updatedBy, string? status, string? updatedDate)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy = "%" + updatedBy + "%" : updatedBy;
+                    bool isactive = false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
+                    ActivityName = !string.IsNullOrEmpty(ActivityName) ? ActivityName = ActivityName + "%" : ActivityName;
+                    var result = await connection.QueryAsync<Activity>(ActivityQueries.GetAllFilterActivity, new { Name = ActivityName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var activityList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var activities = new GridData<Activity>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = activityList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Activity>>(activities);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var activityList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var activities = new GridData<Activity>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = activityList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Activity>>(activities);
+                    }
                 }
 
             }

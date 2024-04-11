@@ -16,5 +16,6 @@ namespace Hutech.Application.Interfaces
         public Task<Activity> GetActivityDetail(long Id);
         public Task<String> DeleteActivity(long Id);
         public Task<String> PutActivity(Activity activity);
+        public Task<ExecutionResult<GridData<Activity>>> GetAllFilterActivity(string? ActivityName, int pageNumber, string? updatedBy, string? status, string? updatedDate);
     }
 }
