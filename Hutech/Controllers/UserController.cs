@@ -136,7 +136,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                    HttpResponseMessage Res = await client.GetAsync("Role/GetRoles");
+                    HttpResponseMessage Res = await client.GetAsync("Role/GetAllRoles");
                     if (Res.IsSuccessStatusCode)
                     {
                         var content = await Res.Content.ReadAsStringAsync();
@@ -281,7 +281,7 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                        HttpResponseMessage Res = await client.GetAsync("Role/GetRoles");
+                        HttpResponseMessage Res = await client.GetAsync("Role/GetAllRoles");
                         if (Res.IsSuccessStatusCode)
                         {
                             var content = await Res.Content.ReadAsStringAsync();
@@ -733,7 +733,7 @@ namespace Hutech.Controllers
                     user.DepartmentsId = departmentData;
 
                     List<RoleViewModel> roles = new List<RoleViewModel>();
-                    HttpResponseMessage RolesRes = await client.GetAsync("Role/GetRoles");
+                    HttpResponseMessage RolesRes = await client.GetAsync("Role/GetAllRoles");
                     if (RolesRes.IsSuccessStatusCode)
                     {
                         var content = await RolesRes.Content.ReadAsStringAsync();

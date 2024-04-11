@@ -7,15 +7,15 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="company">Name</label>
+                    <label for="company">Name*</label>
                     @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Team Name", @class = "form-control", maxlength = "50",autofocus = "autofocus" })
                     @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
                     @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                 </div>
                 <div class="form-group">
-                    <label for="company">Location</label>
+                    <label for="company">Location*</label>
                     @Html.DropDownListFor(x=>x.LocationId,Model.locations,"Please select Location",new {@class="form-control processbank"})
-                    @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
+                    @Html.ValidationMessageFor(x=>x.LocationId,"", new { @class = "text-danger"})
                     @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                 </div>
                 <div class="form-actions">

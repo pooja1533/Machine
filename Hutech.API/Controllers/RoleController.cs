@@ -27,6 +27,39 @@ namespace Hutech.API.Controllers
             logger = _logger;
             auditRepository = _auditRepository;
         }
+        [HttpPost("GetAllFilterRoles")]
+        public async Task<ApiResponse<List<RoleViewModel>>> GetAllFilterRoles(RoleModel roleModel)
+        {
+            var apiResponse = new ApiResponse<List<RoleViewModel>>();
+            try
+            {
+                string? roleName = roleModel.roleName;
+                int pageNumber = roleModel.pageNumber;
+                string? updatedBy = roleModel.updatedBy;
+                DateTime? updatedDate = roleModel.updatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+
+                var role = await roleRepository.GetAllFilterRoles(roleName, pageNumber, updatedBy,formattedDate);
+                var data = mapper.Map<List<AspNetRole>, List<RoleViewModel>>(role.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = role.Value.CurrentPage;
+                apiResponse.TotalPage = role.Value.TotalPages;
+                apiResponse.TotalRecords = role.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
         [HttpPost("PostRole")]
         public async Task<ApiResponse<string>> PostRole(RoleViewModel aspNetRole)
         {
@@ -76,16 +109,19 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
-        [HttpGet("GetRoles")]
-        public async Task<ApiResponse<List<RoleViewModel>>> GetRoles()
+        [HttpGet("GetRoles/{pageNumber}")]
+        public async Task<ApiResponse<List<RoleViewModel>>> GetRoles(int pageNumber)
         {
             var apiResponse = new ApiResponse<List<RoleViewModel>>();
             try
             {
-                var role = await roleRepository.GetAllRoles();
-                var data = mapper.Map<List<AspNetRole>, List<RoleViewModel>>(role);
+                var role = await roleRepository.GetAllRoles(pageNumber);
+                var data = mapper.Map<List<AspNetRole>, List<RoleViewModel>>(role.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
+                apiResponse.CurrentPage = role.Value.CurrentPage;
+                apiResponse.TotalPage = role.Value.TotalPages;
+                apiResponse.TotalRecords = role.Value.TotalRecords;
                 return apiResponse;
             }
             catch (Exception ex)
@@ -169,6 +205,29 @@ namespace Hutech.API.Controllers
                 apiResponse.Success = false;
                 apiResponse.Result = id.ToString();
                 apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+        }
+        [HttpGet("GetAllRoles")]
+        public async Task<ApiResponse<List<RoleViewModel>>> GetAllRoles()
+        {
+            var apiResponse = new ApiResponse<List<RoleViewModel>>();
+            try
+            {
+                var role = await roleRepository.GetAllRoles();
+                var data = mapper.Map<List<AspNetRole>, List<RoleViewModel>>(role);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.AuditId = auditId;
+                apiResponse.Success = false;
                 return apiResponse;
             }
         }

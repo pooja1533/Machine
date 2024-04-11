@@ -14,8 +14,16 @@ namespace Hutech.Core.Entities
         public long LocationId { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+        public DateTime? DatecreatedUtc { get; set; }
+        public string? CreatedByUserId { get; set; }
+        public DateTime? DateModifiedUtc { get; set; }
+        public string? ModifiedByUserId { get; set; }
 
         [NotMapped]
         public string LocationName { get; set; }
+        [NotMapped]
+        public string? fullname { get; set; }
+        [NotMapped]
+        public string? Role { get; set; }
     }
 }

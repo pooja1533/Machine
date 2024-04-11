@@ -9,6 +9,7 @@ using NuGet.Common;
 using System.Configuration;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -101,7 +102,8 @@ namespace Hutech.Controllers
                         client.BaseAddress = new Uri(BaseUrl);
                         client.DefaultRequestHeaders.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
+                        roleViewModel.DateModifiedUtc = DateTime.UtcNow;
+                        roleViewModel.ModifiedByUserId = HttpContext.Session.GetString("UserId");
                         var json = JsonConvert.SerializeObject(roleViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -186,8 +188,11 @@ namespace Hutech.Controllers
                 throw ex;
             }
         }
-        public async Task<IActionResult> GetAllRoles()
+        [HttpPost]
+        public async Task<IActionResult> GetAllRoles([FromBody] RoleModel roleModel)
         {
+            roleModel.pageNumber = 1;
+            int pageNumber = 1;
             try
             {
                 var token = Request.Cookies["jwtCookie"];
@@ -197,8 +202,8 @@ namespace Hutech.Controllers
 
                     token = token.Replace("Bearer ", "");
                 }
-                var loggedinuser = HttpContext.Session.GetString("LoogedInUser");
-                //logger.LogInformation($"Get All Roles method call by {loggedinuser} {DateTime.Now} at controller level");
+                int totalRecords = 0;
+                int totalPage = 0;
                 List<RoleViewModel> roles = new List<RoleViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -208,9 +213,10 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var json = JsonConvert.SerializeObject(roleModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
-
-                    HttpResponseMessage Res = await client.GetAsync("Role/GetRoles");
+                    HttpResponseMessage Res = await client.PostAsync("Role/GetAllFilterRoles", stringContent);
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -225,10 +231,95 @@ namespace Hutech.Controllers
                         else
                         {
                             roles = root["result"].ToObject<List<RoleViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                return View(roles);
+                var data = new RolesViewModel()
+                {
+                    CurrentPage = pageNumber,
+                    Roles = roles,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                data.RoleName = !string.IsNullOrEmpty(roleModel.roleName) ? roleModel.roleName : "";
+                data.UpdatedBy = !string.IsNullOrEmpty(roleModel.updatedBy) ? roleModel.updatedBy : "";
+                //data.Status = locationModel.status;
+                data.UpdatedDate = roleModel.updatedDate;
+                string requestedWithHeader = Request.Headers["X-Requested-With"];
+                return View("GetAllRoles", data);
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
+                throw ex;
+            }
+        }
+        public async Task<IActionResult> GetAllRoles(int pageNumber = 1,string? roleName = null, string? updatedBy = null, string? updatedDate = null)
+        {
+            try
+            {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                int totalRecords = 0;
+                int totalPage = 0;
+                var loggedinuser = HttpContext.Session.GetString("LoogedInUser");
+                RoleModel roleModel = new RoleModel();
+                List<RoleViewModel> roles = new List<RoleViewModel>();
+                string apiUrl = configuration["Baseurl"];
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    roleModel.pageNumber = pageNumber;
+                    roleModel.roleName = roleName;
+                    roleModel.updatedBy = updatedBy;
+                    if (!string.IsNullOrEmpty(updatedDate))
+                        roleModel.updatedDate = DateTime.Parse(updatedDate);
+                    var json = JsonConvert.SerializeObject(roleModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                    HttpResponseMessage Res = await client.PostAsync("Role/GetAllFilterRoles", stringContent);
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            roles = root["result"].ToObject<List<RoleViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
+                        }
+                    }
+                }
+                var data = new RolesViewModel()
+                {
+                    CurrentPage = pageNumber,
+                    Roles = roles,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                data.RoleName = !string.IsNullOrEmpty(roleModel.roleName) ? roleModel.roleName : "";
+                data.UpdatedBy = !string.IsNullOrEmpty(roleModel.updatedBy) ? roleModel.updatedBy : "";
+                data.UpdatedDate = roleModel.updatedDate;
+                return View(data);
             }
             catch (Exception ex)
             {
@@ -270,7 +361,9 @@ namespace Hutech.Controllers
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
+                        roleViewModel.CreatedByUserId = HttpContext.Session.GetString("UserId");
+                        roleViewModel.DatecreatedUtc = DateTime.UtcNow;
+                        roleViewModel.DateModifiedUtc=DateTime.UtcNow;
                         var json = JsonConvert.SerializeObject(roleViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 

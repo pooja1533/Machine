@@ -14,6 +14,8 @@
                                 <tr>
                                     <th>Team Name</th>
                                     <th>Location Name</th>
+                                    <th>Updated By/Role</th>
+                                    <th>Updated On</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                     @*<th>Delete</th>*@
@@ -25,6 +27,8 @@
                                     <tr>
                                         <td>@Model[i].Name</td>
                                         <td>@Model[i].LocationName</td>
+                                        <td>@Model[i].fullname (@Model[i].Role)</td>
+                                        <td>@Model[i].DateModifiedUtc.ToString("dd MMM yyyy HH:mm")</td>
                                         @if (Model[i].IsActive)
                                         {
                                             <td>Active</td>

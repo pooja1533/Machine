@@ -127,6 +127,9 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         teamViewModel.IsDeleted = false;
+                        teamViewModel.DatecreatedUtc = DateTime.UtcNow;
+                        teamViewModel.DateModifiedUtc= DateTime.UtcNow;
+                        teamViewModel.CreatedByUserId = HttpContext.Session.GetString("UserId");
                         var json = JsonConvert.SerializeObject(teamViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
@@ -332,7 +335,8 @@ namespace Hutech.Controllers
                         client.BaseAddress = new Uri(apiUrl);
                         client.DefaultRequestHeaders.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
+                        teamViewModel.DateModifiedUtc = DateTime.UtcNow;
+                        teamViewModel.ModifiedByUserId = HttpContext.Session.GetString("UserId");
                         var json = JsonConvert.SerializeObject(teamViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
