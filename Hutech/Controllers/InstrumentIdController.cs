@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -233,6 +234,9 @@ namespace Hutech.Controllers
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        instrumentIdViewModel.DatecreatedUtc = DateTime.UtcNow;
+                        instrumentIdViewModel.DateModifiedUtc = DateTime.UtcNow;
+                        instrumentIdViewModel.CreatedByUserId= HttpContext.Session.GetString("UserId");
                         var json = JsonConvert.SerializeObject(instrumentIdViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
@@ -266,8 +270,11 @@ namespace Hutech.Controllers
                 }
             }
         }
-        public async Task<IActionResult> GetAllInstrumentId(int pageNumber=1)
+        [HttpPost]
+        public async Task<IActionResult> GetAllInstrumentId([FromBody] InstrumentIdModel instrumentIdModel)
         {
+            instrumentIdModel.PageNumber = 1;
+            int pageNumber = 1;
             try
             {
                 var token = Request.Cookies["jwtCookie"];
@@ -279,7 +286,7 @@ namespace Hutech.Controllers
                 }
                 int totalRecords = 0;
                 int totalPage = 0;
-                List<InstrumentIdViewModel> activities = new List<InstrumentIdViewModel>();
+                List<InstrumentIdViewModel> instrumentIdViewModels = new List<InstrumentIdViewModel>();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
@@ -288,9 +295,10 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var json = JsonConvert.SerializeObject(instrumentIdModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
-
-                    HttpResponseMessage Res = await client.GetAsync(string.Format("InstrumentId/GetInstrumentId/{0}",pageNumber));
+                    HttpResponseMessage Res = await client.PostAsync("InstrumentId/GetAllFilterInstrumentId", stringContent);
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -304,20 +312,143 @@ namespace Hutech.Controllers
                         }
                         else
                         {
-                            activities = root["result"].ToObject<List<InstrumentIdViewModel>>();
+                            instrumentIdViewModels = root["result"].ToObject<List<InstrumentIdViewModel>>();
                             pageNumber = (int)root["currentPage"];
                             totalRecords = (int)root["totalRecords"];
                             totalPage = (int)root["totalPage"];
                         }
                     }
                 }
-                var data = new GridData<InstrumentIdViewModel>()
+                var data = new InstrumentIdsViewModel()
                 {
                     CurrentPage = pageNumber,
-                    GridRecords = activities,
+                    instrumentIdViewModels = instrumentIdViewModels,
                     TotalPages = totalPage,
                     TotalRecords = totalRecords
                 };
+                data.InstrumentIdName = !string.IsNullOrEmpty(instrumentIdModel.InstrumentIdName) ? instrumentIdModel.InstrumentIdName : "";
+                data.Model = !string.IsNullOrEmpty(instrumentIdModel.Model) ? instrumentIdModel.Model : "";
+                data.InstrumentName = !string.IsNullOrEmpty(instrumentIdModel.InstrumentName) ? instrumentIdModel.InstrumentName : "";
+                data.InstrumentSerial = !string.IsNullOrEmpty(instrumentIdModel.InstrumentSerial) ? instrumentIdModel.InstrumentSerial : "";
+                data.InstrumentLocation = !string.IsNullOrEmpty(instrumentIdModel.InstrumentLocation) ? instrumentIdModel.InstrumentLocation : "";
+                data.TeamName = !string.IsNullOrEmpty(instrumentIdModel.TeamName) ? instrumentIdModel.TeamName : "";
+                data.UpdatedBy = !string.IsNullOrEmpty(instrumentIdModel.UpdatedBy) ? instrumentIdModel.UpdatedBy : "";
+                //data.Status = locationModel.status;
+                data.UpdatedDate = instrumentIdModel.UpdatedDate;
+                var items = new List<SelectListItem>();
+                foreach (int value in Enum.GetValues(typeof(StatusViewModel)))
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Text = Enum.GetName(typeof(StatusViewModel), value),
+                        Value = value.ToString(),
+                    });
+                }
+                data.Status = items;
+                data.SelectedStatus = System.Convert.ToInt32(instrumentIdModel.Status);
+                string requestedWithHeader = Request.Headers["X-Requested-With"];
+                data.InstrumentIdName = !string.IsNullOrEmpty(instrumentIdModel.InstrumentIdName) ? instrumentIdModel.InstrumentIdName : "";
+                data.Model = !string.IsNullOrEmpty(instrumentIdModel.Model) ? instrumentIdModel.Model : "";
+                data.InstrumentName = !string.IsNullOrEmpty(instrumentIdModel.InstrumentName) ? instrumentIdModel.InstrumentName : "";
+                data.InstrumentSerial = !string.IsNullOrEmpty(instrumentIdModel.InstrumentSerial) ? instrumentIdModel.InstrumentSerial : "";
+                data.InstrumentLocation = !string.IsNullOrEmpty(instrumentIdModel.InstrumentLocation) ? instrumentIdModel.InstrumentLocation : "";
+                data.TeamName = !string.IsNullOrEmpty(instrumentIdModel.TeamName) ? instrumentIdModel.TeamName : "";
+                data.UpdatedBy = !string.IsNullOrEmpty(instrumentIdModel.UpdatedBy) ? instrumentIdModel.UpdatedBy : "";
+                data.UpdatedDate = instrumentIdModel.UpdatedDate;
+                return View("GetAllInstrumentId", data);
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
+                throw ex;
+            }
+        }
+        public async Task<IActionResult> GetAllInstrumentId(int pageNumber = 1, string? instrumentIdName = null, string? model = null, string? instrumentName = null, string? instrumentSerial = null,string? instrumentLocation=null,string? teamName=null, string? updatedBy = null, string? updatedDate = null, string? Status = null)
+        {
+            try
+            {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                int totalRecords = 0;
+                int totalPage = 0;
+                InstrumentIdsViewModel instrumentIdsViewModel=new InstrumentIdsViewModel();
+                List<InstrumentIdViewModel> instrumentIds = new List<InstrumentIdViewModel>();
+                string apiUrl = configuration["Baseurl"];
+                InstrumentIdModel instrumentIdModel=new InstrumentIdModel();
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    instrumentIdModel.InstrumentIdName = instrumentIdName;
+                    instrumentIdModel.Model = model;
+                    instrumentIdModel.InstrumentName = instrumentName;
+                    instrumentIdModel.InstrumentSerial = instrumentSerial;
+                    instrumentIdModel.InstrumentLocation = instrumentLocation;
+                    instrumentIdModel.TeamName = teamName;
+                    instrumentIdModel.UpdatedBy = updatedBy;
+                    instrumentIdModel.PageNumber = pageNumber;
+                    if (!string.IsNullOrEmpty(updatedDate))
+                        instrumentIdModel.UpdatedDate = DateTime.Parse(updatedDate);
+                    instrumentIdModel.Status = Status;
+                    var json = JsonConvert.SerializeObject(instrumentIdModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                    HttpResponseMessage Res = await client.PostAsync("InstrumentId/GetAllFilterInstrumentId", stringContent);
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            instrumentIds = root["result"].ToObject<List<InstrumentIdViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
+                        }
+                    }
+                }
+                var data = new InstrumentIdsViewModel()
+                {
+                    CurrentPage = pageNumber,
+                    instrumentIdViewModels = instrumentIds,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                var items = new List<SelectListItem>();
+                foreach (int value in Enum.GetValues(typeof(StatusViewModel)))
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Text = Enum.GetName(typeof(StatusViewModel), value),
+                        Value = value.ToString()
+                    });
+                }
+                data.Status = items;
+                if (Status == null)
+                    data.SelectedStatus = (int)StatusViewModel.Active;
+                else if (!string.IsNullOrEmpty(Status))
+                    data.SelectedStatus = System.Convert.ToInt32(Status);
+                data.InstrumentIdName = !string.IsNullOrEmpty(instrumentIdModel.InstrumentIdName) ? instrumentIdModel.InstrumentIdName : "";
+                data.Model = !string.IsNullOrEmpty(instrumentIdModel.Model) ? instrumentIdModel.Model : "";
+                data.InstrumentName = !string.IsNullOrEmpty(instrumentIdModel.InstrumentName) ? instrumentIdModel.InstrumentName : "";
+                data.InstrumentSerial = !string.IsNullOrEmpty(instrumentIdModel.InstrumentSerial) ? instrumentIdModel.InstrumentSerial : "";
+                data.InstrumentLocation = !string.IsNullOrEmpty(instrumentIdModel.InstrumentLocation) ? instrumentIdModel.InstrumentLocation : "";
+                data.TeamName = !string.IsNullOrEmpty(instrumentIdModel.TeamName) ? instrumentIdModel.TeamName : "";
+                data.UpdatedBy = !string.IsNullOrEmpty(instrumentIdModel.UpdatedBy) ? instrumentIdModel.UpdatedBy : "";
+                data.UpdatedDate = instrumentIdModel.UpdatedDate;
                 return View(data);
             }
             catch (Exception ex)
@@ -502,7 +633,7 @@ namespace Hutech.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditInstrumentId(InstrumentIdViewModel activityViewModel)
+        public async Task<IActionResult> EditInstrumentId(InstrumentIdViewModel instrumentIdViewModel)
         {
             string apiUrl = configuration["Baseurl"];
             try
@@ -515,7 +646,7 @@ namespace Hutech.Controllers
                     token = token.Replace("Bearer ", "");
                 }
                 var validation = new InstrumentIdViewModelValidator();
-                var result = validation.Validate(activityViewModel);
+                var result = validation.Validate(instrumentIdViewModel);
                 if (!result.IsValid)
                 {
                     List<InstrumentViewModel> instrument = new List<InstrumentViewModel>();
@@ -596,10 +727,10 @@ namespace Hutech.Controllers
                         Text = x.Name,
                         Value = x.Id.ToString()
                     }).ToList();
-                    activityViewModel.Teams = team;
-                    activityViewModel.Instruments = data;
-                    activityViewModel.Locations = location;
-                    return View(activityViewModel);
+                    instrumentIdViewModel.Teams = team;
+                    instrumentIdViewModel.Instruments = data;
+                    instrumentIdViewModel.Locations = location;
+                    return View(instrumentIdViewModel);
                 }
                 else
                 {
@@ -608,8 +739,9 @@ namespace Hutech.Controllers
                         client.BaseAddress = new Uri(apiUrl);
                         client.DefaultRequestHeaders.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        var json = JsonConvert.SerializeObject(activityViewModel);
+                        instrumentIdViewModel.DateModifiedUtc= DateTime.UtcNow;
+                        instrumentIdViewModel.ModifiedByUserId= HttpContext.Session.GetString("UserId");
+                        var json = JsonConvert.SerializeObject(instrumentIdViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await client.PutAsync("InstrumentId/PutInstrumentId", stringcontenet);
@@ -624,12 +756,12 @@ namespace Hutech.Controllers
                                 var Id = root["auditId"].ToString();
                                 TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
                                 TempData["RedirectURl"] = "/InstrumentId/EditInstrumentId/";
-                                return RedirectToAction("InstrumentId", new { id = activityViewModel.Id });
+                                return RedirectToAction("InstrumentId", new { id = instrumentIdViewModel.Id });
 
                             }
                             else
                             {
-                                activityViewModel = root["result"].ToObject<InstrumentIdViewModel>();
+                                instrumentIdViewModel = root["result"].ToObject<InstrumentIdViewModel>();
                                 TempData["message"] = languageService.Getkey("InstrumentId Updated Successfully");
                                 TempData["RedirectURl"] = "/InstrumentId/GetAllInstrumentId/";
                             }

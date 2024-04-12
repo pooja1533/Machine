@@ -20,17 +20,18 @@ namespace Hutech.Models
         public List<SelectListItem> Activities { get; set; }
         public List<SelectListItem> Requirement { get; set; }
         public List<SelectListItem> Department { get; set; }
-        public long InstrumentId { get; set; }
-        public long ActivityId { get; set; }
-        public long RequirementId { get; set; }
-        public long DepartmentId { get; set; }
+        public string? InstrumentActivityId { get; set; }
+        public long? InstrumentId { get; set; }
+        public long? ActivityId { get; set; }
+        public long? RequirementId { get; set; }
+        public long? DepartmentId { get; set; }
         public string InstrumentActivityName { get; set; }
-        public int Days { get; set; }
+        public int? Days { get; set; }
         public bool BeforeAlerts { get; set; }
         public List<SelectListItem>? EmailList { get; set; }
-        public List<string> SelectedEmailListInt { get; set; }
-        public string Frequency { get; set; }
-        public int FrequencyTime { get; set; }
+        public List<string>? SelectedEmailListInt { get; set; }
+        public string? Frequency { get; set; }
+        public int? FrequencyTime { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public string MyEumJson
@@ -53,28 +54,22 @@ namespace Hutech.Models
         public string? InstrumentActivityGroup { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public DateTime? ModifiedDateTime { get; set; }
+        public string? CreatedByUserId { get; set; }
+        public string? ModifiedByUserId { get; set; }
     }
     public class InstrumentActivityValidator : AbstractValidator<InstrumentActivityViewModel>
     {
         public InstrumentActivityValidator()
         {
-            //RuleFor(x => x.InstrumentId).GreaterThan(0).
-            //WithMessage("Please select Instrument");
-            //RuleFor(x => x.ActivityId).GreaterThan(0).
-            //WithMessage("Please select Activity");
-            RuleFor(x => x.Frequency)
-               .NotNull()
-               .WithMessage("Please select Frequency");
-            RuleFor(x => x.FrequencyTime).GreaterThan(0).WithMessage("Enter Frequency Time");
-            RuleFor(x => x.Days).GreaterThan(0).WithMessage("Enter Days");
-            //RuleFor(x => x.RequirementId).GreaterThan(0).
-            //WithMessage("Please select Requirement");
-            //RuleFor(x => x.DepartmentId).GreaterThan(0).
-            //WithMessage("Please select Department");
-            RuleFor(x => x.SelectedEmailListInt).NotEmpty().
-            WithMessage("Please select User Group");
-            RuleFor(x => x.BeforeAlertsTime).NotEmpty().When(x => x.BeforeAlerts == true).WithMessage("Please enter Before alert time");
-
+            RuleFor(x => x.InstrumentActivityId).NotEmpty().WithMessage("Please enter InstrumentActivityId").NotNull().WithMessage("Please enter InstrumentActivityId");
+            RuleFor(x => x.InstrumentId).NotNull().WithMessage("Please Select Instrument").NotEmpty().WithMessage("Please Select Instrument");
+            RuleFor(x => x.ActivityId).NotNull().WithMessage("Please select Activity").NotEmpty().WithMessage("Please select Activity");
+            RuleFor(x => x.Frequency).NotEmpty().WithMessage("Select Frequency").NotNull().WithMessage("Select Frequency");
+            RuleFor(x => x.FrequencyTime).NotEmpty().WithMessage("Enter Frequency Time").NotNull().WithMessage("Enter Frequency Time");
+            RuleFor(x => x.Days).NotEmpty().WithMessage("Please Enter Days").NotNull().WithMessage("Please Enter Days");
+            RuleFor(x => x.RequirementId).NotNull().WithMessage("Please select Requirement").NotEmpty().WithMessage("Please select Requirement");
+            RuleFor(x => x.DepartmentId).NotEmpty().WithMessage("Please select Department").NotNull().WithMessage("Please select Department");
+            RuleFor(x => x.SelectedEmailListInt).NotEmpty().WithMessage("Please select User group").NotNull().WithMessage("Please select User group");
         }
     }
     public enum FrequencyEnum

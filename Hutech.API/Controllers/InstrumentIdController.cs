@@ -164,5 +164,45 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
+        
+       [HttpPost("GetAllFilterInstrumentId")]
+        public async Task<ApiResponse<List<InstrumentIdViewModel>>> GetAllFilterInstrumentId(InstrumentIdModel instrumentIdModel)
+        {
+            var apiResponse = new ApiResponse<List<InstrumentIdViewModel>>();
+            try
+            {
+                string? instrumentIdName = instrumentIdModel.InstrumentIdName;
+                string? model = instrumentIdModel.Model;
+                string? instrumentName = instrumentIdModel.InstrumentName;
+                string? instrumentSerial = instrumentIdModel.InstrumentSerial;
+                string? instrumentLocation = instrumentIdModel.InstrumentLocation;
+                string? teamName = instrumentIdModel.TeamName;
+                int pageNumber = instrumentIdModel.PageNumber;
+                string? updatedBy = instrumentIdModel.UpdatedBy;
+                string? status = instrumentIdModel.Status;
+                DateTime? updatedDate = instrumentIdModel.UpdatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+
+                var instrumentId = await instrumentIdRepository.GetAllFilterInstrumentId(instrumentIdName,model,instrumentName,instrumentSerial,instrumentLocation,teamName, pageNumber, updatedBy, status, formattedDate);
+                var data = mapper.Map<List<InstrumentsIds>, List<InstrumentIdViewModel>>(instrumentId.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = instrumentId.Value.CurrentPage;
+                apiResponse.TotalPage = instrumentId.Value.TotalPages;
+                apiResponse.TotalRecords = instrumentId.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
     }
 }

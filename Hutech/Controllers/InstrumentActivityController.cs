@@ -336,6 +336,9 @@ namespace Hutech.Controllers
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        instrumentActivityViewModel.CreatedByUserId = HttpContext.Session.GetString("UserId");
+                        instrumentActivityViewModel.CreatedDateTime = DateTime.UtcNow;
+                        instrumentActivityViewModel.ModifiedDateTime = DateTime.UtcNow;
                         var json = JsonConvert.SerializeObject(instrumentActivityViewModel);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
@@ -657,7 +660,7 @@ namespace Hutech.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditInstrumentActivity(InstrumentActivityViewModel activityViewModel)
+        public async Task<IActionResult> EditInstrumentActivity(InstrumentActivityViewModel instrumentActivityViewModel)
         {
             try
             {
@@ -670,7 +673,7 @@ namespace Hutech.Controllers
                 }
                 string apiUrl = configuration["Baseurl"];
                 var validation = new InstrumentActivityValidator();
-                var result = validation.Validate(activityViewModel);
+                var result = validation.Validate(instrumentActivityViewModel);
                 if (!result.IsValid)
                 {
                     List<GroupViewModel> group = new List<GroupViewModel>();
@@ -799,12 +802,12 @@ namespace Hutech.Controllers
                         Text = x.Name,
                         Value = x.Id.ToString()
                     }).ToList();
-                    activityViewModel.EmailList = userData;
-                    activityViewModel.Requirement = requirementdata;
-                    activityViewModel.Instruments = data;
-                    activityViewModel.Activities = activity;
-                    activityViewModel.Department = departmentdata;
-                    return View(activityViewModel);
+                    instrumentActivityViewModel.EmailList = userData;
+                    instrumentActivityViewModel.Requirement = requirementdata;
+                    instrumentActivityViewModel.Instruments = data;
+                    instrumentActivityViewModel.Activities = activity;
+                    instrumentActivityViewModel.Department = departmentdata;
+                    return View(instrumentActivityViewModel);
                 }
                 else
                 {
@@ -813,8 +816,9 @@ namespace Hutech.Controllers
                         client.BaseAddress = new Uri(apiUrl);
                         client.DefaultRequestHeaders.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        var json = JsonConvert.SerializeObject(activityViewModel);
+                        instrumentActivityViewModel.ModifiedDateTime = DateTime.UtcNow;
+                        instrumentActivityViewModel.ModifiedByUserId= HttpContext.Session.GetString("UserId");
+                        var json = JsonConvert.SerializeObject(instrumentActivityViewModel);
                         var stringcontenet = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await client.PutAsync("InstrumentActivity/PutInstrumentActivity", stringcontenet);
@@ -829,12 +833,12 @@ namespace Hutech.Controllers
                                 var Id = root["auditId"].ToString();
                                 TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
                                 TempData["RedirectURl"] = "/InstrumentActivity/EditInstrumentActivity/";
-                                return RedirectToAction("EditInstrumentActivity", new { id = activityViewModel.Id });
+                                return RedirectToAction("EditInstrumentActivity", new { id = instrumentActivityViewModel.Id });
 
                             }
                             else
                             {
-                                activityViewModel = root["result"].ToObject<InstrumentActivityViewModel>();
+                                instrumentActivityViewModel = root["result"].ToObject<InstrumentActivityViewModel>();
                                 TempData["message"] = languageService.Getkey("InstrumentActivity Updated Successfully");
                                 TempData["RedirectURl"] = "/InstrumentActivity/GetAllInstrumentActivity/";
                             }

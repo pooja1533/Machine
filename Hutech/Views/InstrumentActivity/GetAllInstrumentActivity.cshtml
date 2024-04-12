@@ -12,6 +12,7 @@
                         <table class="table table-responsive-sm">
                             <thead>
                                 <tr>
+                                    <th>Instrument ActivityId</th>
                                     <th>Instrument Name</th>
                                     <th>Activity Name</th>
                                     <th>InstrumentActivity Name</th>
@@ -37,6 +38,7 @@
                                 @for (int i = 0; i < Model.GridRecords.Count; i++)
                                 {
                                     <tr>
+                                        <td>@Model.GridRecords[i].InstrumentActivityId</td>
                                         <td>@Model.GridRecords[i].InstrumentName</td>
                                         <td>@Model.GridRecords[i].activityName</td>
                                         <td>@Model.GridRecords[i].InstrumentActivityName</td>

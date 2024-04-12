@@ -29,5 +29,13 @@ namespace Hutech.Core.Entities
         public string? InstrumentName { get; set; }
         [NotMapped]
         public string? TeamName { get; set;}
+        public string CreatedByUserId { get; set; }
+        public string? ModifiedByUserId { get; set; }
+        public DateTime DatecreatedUtc { get; set; }
+        public DateTime DateModifiedUtc { get; set; }
+        [NotMapped]
+        public string? FullName { get; set; }
+        [NotMapped]
+        public string? Role { get; set; }
     }
 }

@@ -32,7 +32,14 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Instrument Name</label>
+                            <label for="company">Instrument ActivityId*</label>
+                            @Html.TextBoxFor(x => x.InstrumentActivityId, new { @class = "form-control"})                            
+                            @Html.ValidationMessageFor(x => x.InstrumentActivityId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Instrument Name*</label>
                             @Html.DropDownListFor(x=>x.InstrumentId,Model.Instruments,"Please select Instrument",new {@class="form-control processbank",onchange="handleInstrumentChange()"})
                             @Html.ValidationMessageFor(x=>x.InstrumentId,"", new { @class = "text-danger"})
 
@@ -40,23 +47,22 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Activity Name</label>
+                            <label for="company">Activity Name*</label>
                             @Html.DropDownListFor(x=>x.ActivityId,Model.Activities,"Please select Activity",new {@class="form-control processbank",onchange="handleActivityChange()"})
                             @Html.ValidationMessageFor(x=>x.ActivityId,"", new { @class = "text-danger"})
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="company">Instrument+Activity</label>
-                            @Html.TextBoxFor(x=>x.InstrumentActivityName,new{@class="form-control" ,@readonly = true })
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Frequency Period</label>
+                            <label for="company">Instrument+Activity*</label>
+                            @Html.TextBoxFor(x => x.InstrumentActivityName, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Frequency Period*</label>
                         </div>
                         @foreach (var c in System.Enum.GetValues(typeof(FrequencyEnum)))
                         {
@@ -67,42 +73,42 @@
                         @Html.ValidationMessageFor(x=>x.Frequency,"", new { @class = "text-danger"})
                     </div>
                     <div class="col-md-4">
-                        <label for="company">Frequency Value(Only digits allow)</label>
+                        <label for="company">Frequency Value(Only digits allow)*</label>
                         @Html.TextBoxFor(x=>x.FrequencyTime,"1",new{@class="form-control",onkeypress="return isNumber(event)" })
                         @Html.ValidationMessageFor(x=>x.FrequencyTime,"", new { @class = "text-danger"})
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="company">+-Days</label>
-                            @Html.TextBoxFor(x=>x.Days,"1",new{@class="form-control",onkeypress="return isNumber(event)" })
-                            @Html.ValidationMessageFor(x=>x.Days,"", new { @class = "text-danger"})
-                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Requirement</label>
+                            <label for="company">+-Days*</label>
+                            @Html.TextBoxFor(x => x.Days, "1", new { @class = "form-control", onkeypress = "return isNumber(event)" })
+                            @Html.ValidationMessageFor(x => x.Days, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">Requirement*</label>
                             @Html.DropDownListFor(x=>x.RequirementId,Model.Requirement,"Please select Requirement",new {@class="form-control processbank"})
                             @Html.ValidationMessageFor(x=>x.RequirementId,"", new { @class = "text-danger"})
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Department</label>
+                            <label for="company">Department*</label>
                             @Html.DropDownListFor(x=>x.DepartmentId,Model.Department,"Please select Department",new {@class="form-control processbank"})
                             @Html.ValidationMessageFor(x=>x.DepartmentId,"", new { @class = "text-danger"})
                         </div>
                     </div>
-                   <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Email Required</label><br />
-                            @Html.ListBoxFor(model=> model.SelectedEmailListInt,Model.EmailList, new {@class="form-control",id="Emails", multiple="multiple" })
-                            @Html.ValidationMessageFor(x=>x.SelectedEmailListInt,"", new { @class = "text-danger"})
-                        </div>
-                    </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Email Required</label><br />
+                            @Html.ListBoxFor(model => model.SelectedEmailListInt, Model.EmailList, new { @class = "form-control", id = "Emails", multiple = "multiple" })
+                            @Html.ValidationMessageFor(x => x.SelectedEmailListInt, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">Before Alerts</label>

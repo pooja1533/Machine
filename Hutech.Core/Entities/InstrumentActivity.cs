@@ -24,6 +24,7 @@ namespace Hutech.Core.Entities
         public List<SelectListItem> Activities { get; set; }
         public List<SelectListItem> Requirement { get; set; }
         public List<SelectListItem> Department { get; set; }
+        public string? InstrumentActivityId { get; set; }
         public long InstrumentId { get; set; }
         public long ActivityId { get; set; }
         public long RequirementId { get; set; }
@@ -57,6 +58,8 @@ namespace Hutech.Core.Entities
         public string? InstrumentActivityGroup { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public DateTime? ModifiedDateTime { get; set; }
+        public string CreatedByUserId { get; set; }
+        public string? ModifiedByUserId { get; set; }
     }
     public enum FrequencyEnum
     {

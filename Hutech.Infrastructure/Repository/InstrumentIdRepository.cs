@@ -135,15 +135,71 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
-        public async Task<string> PutInstrumentId(InstrumentsIds activity)
+        public async Task<string> PutInstrumentId(InstrumentsIds instrumentsIds)
         {
             try
             {
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    var result = await connection.ExecuteAsync(InstrumentIdQueries.UpdateInstrumentId, activity);
+                    var result = await connection.ExecuteAsync(InstrumentIdQueries.UpdateInstrumentId, instrumentsIds);
                     return result.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<ExecutionResult<GridData<InstrumentsIds>>> GetAllFilterInstrumentId(string? instrumentIdName, string? model, string? instrumentName, string? instrumentSerial, string? instrumentLocation, string? teamName, int pageNumber, string? updatedBy, string? status, string? updatedDate)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy = "%" + updatedBy + "%" : updatedBy;
+                    bool isactive = false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
+                    instrumentName = !string.IsNullOrEmpty(instrumentName) ? instrumentName +"%": null;
+                    instrumentLocation = !string.IsNullOrEmpty(instrumentLocation) ? instrumentLocation+"%" : null;
+                    teamName = !string.IsNullOrEmpty(teamName) ? teamName+"%" : null;
+                    instrumentSerial = !string.IsNullOrEmpty(instrumentSerial) ? instrumentSerial = instrumentSerial + "%" : instrumentSerial;
+                    model = !string.IsNullOrEmpty(model) ? model = model + "%" : model;
+                    instrumentIdName = !string.IsNullOrEmpty(instrumentIdName) ? instrumentIdName = instrumentIdName + "%" : instrumentIdName;
+                    var result = await connection.QueryAsync<InstrumentsIds>(InstrumentIdQueries.GetAllFilterInstrumentId, new { Name = instrumentIdName,Model=model,InstrumentName=instrumentName,InstrumentSerial=instrumentSerial,InstrumentLocation=instrumentLocation,TeamName=teamName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var instrumentIdList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var instrumentIds = new GridData<InstrumentsIds>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = instrumentIdList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<InstrumentsIds>>(instrumentIds);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var instrumentIdList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var instrumentIds = new GridData<InstrumentsIds>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = instrumentIdList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<InstrumentsIds>>(instrumentIds);
+                    }
                 }
 
             }

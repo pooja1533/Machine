@@ -9,7 +9,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Instrument Id</label>
+                            <label for="company">Instrument Id Name*</label>
                             @Html.TextBoxFor(x => x.InstrumentsId, new { Placeholder = "Enter Instrument Id", @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.InstrumentsId,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
@@ -18,7 +18,7 @@
                     @Html.HiddenFor(x=>x.Id)
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Model</label>
+                            <label for="company">Model*</label>
                             @Html.TextBoxFor(x => x.Model, new { Placeholder = "Enter Model", @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.Model,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
@@ -26,7 +26,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Instrument Serial</label>
+                            <label for="company">Instrument Serial*</label>
                             @Html.TextBoxFor(x => x.InstrumentSerial, new { Placeholder = "Enter InstrumentSerial", @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.InstrumentSerial,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
@@ -36,21 +36,21 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Instrument Name</label>
+                            <label for="company">Instrument Name*</label>
                             @Html.DropDownListFor(x=>x.InstrumentId,Model.Instruments,"Please select Instrument",new {@class="form-control processbank",onchange="handleActivityChange()"})
                             @Html.ValidationMessageFor(x=>x.InstrumentId,"", new { @class = "text-danger"})
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Location</label>
+                            <label for="company">Location*</label>
                             @Html.DropDownListFor(x=>x.LocationId,Model.Locations,"Please select Location",new {@class="form-control processbank",onchange="handleLocationChange()"})
                             @Html.ValidationMessageFor(x=>x.LocationId,"", new { @class = "text-danger"})
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Team</label>
+                            <label for="company">Team*</label>
                             @Html.DropDownListFor(x=>x.TeamId,Model.Teams,"Please select Team",new {@class="form-control processbank",onchange="handleTeamChange()"})
                             @Html.ValidationMessageFor(x=>x.TeamId,"", new { @class = "text-danger"})
                         </div>
