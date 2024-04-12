@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.ApiResponse;
 using Hutech.Core.Entities;
 using Hutech.Sql.Queries;
 using Microsoft.Data.SqlClient;
@@ -116,8 +117,59 @@ namespace Hutech.Infrastructure.Repository
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    var result = await connection.QueryAsync<Requirement>(RequirementQueries.UpdateRequirement, new { Id = requirement.Id, Name = requirement.Name, IsActive = requirement.IsActive });
+                    var result = await connection.QueryAsync<Requirement>(RequirementQueries.UpdateRequirement, new { Id = requirement.Id, Name = requirement.Name, IsActive = requirement.IsActive, DateModifiedUtc= requirement.DateModifiedUtc, ModifiedByUserId=requirement.ModifiedByUserId });
                     return result.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<ExecutionResult<GridData<Requirement>>> GetAllFilterRequirement(string? RequirementName, int pageNumber, string? updatedBy, string? status, string? updatedDate)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy = "%" + updatedBy + "%" : updatedBy;
+                    bool isactive = false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
+                    RequirementName = !string.IsNullOrEmpty(RequirementName) ? RequirementName = RequirementName + "%" : RequirementName;
+                    var result = await connection.QueryAsync<Requirement>(RequirementQueries.GetAllFilterRequirement, new { Name = RequirementName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var requirementList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var requirements = new GridData<Requirement>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = requirementList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Requirement>>(requirements);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var requirementList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var requirements = new GridData<Requirement>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = requirementList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<Requirement>>(requirements);
+                    }
                 }
 
             }

@@ -1,4 +1,5 @@
-﻿using Hutech.Core.Entities;
+﻿using Hutech.Core.ApiResponse;
+using Hutech.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace Hutech.Application.Interfaces
         public Task<Requirement> GetRequirementDetail(long Id);
         public Task<String> DeleteRequirement(long Id);
         public Task<String> PutRequirement(Requirement requirement);
+        public Task<ExecutionResult<GridData<Requirement>>> GetAllFilterRequirement(string? RequirementName, int pageNumber, string? updatedBy, string? status, string? updatedDate);
     }
 }

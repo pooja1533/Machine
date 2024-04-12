@@ -7,7 +7,7 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="company">Name</label>
+                    <label for="company">Name*</label>
                     @Html.HiddenFor(x=>x.Id)
                     @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Requirement Name", @class = "form-control", maxlength = "50" })
                     @Html.ValidationMessageFor(x=>x.Name,"",new {@class="text-danger"})

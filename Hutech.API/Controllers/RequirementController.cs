@@ -24,6 +24,40 @@ namespace Hutech.API.Controllers
             logger = _logger;
             auditRepository = _auditRepository;
         }
+        [HttpPost("GetAllFilterRequirement")]
+        public async Task<ApiResponse<List<RequirementViewModel>>> GetAllFilterRequirement(RequirementModel requirementModel)
+        {
+            var apiResponse = new ApiResponse<List<RequirementViewModel>>();
+            try
+            {
+                string? requirementName = requirementModel.RequirementName;
+                int pageNumber = requirementModel.PageNumber;
+                string? updatedBy = requirementModel.UpdatedBy;
+                string? status = requirementModel.Status;
+                DateTime? updatedDate = requirementModel.UpdatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+
+                var requirement = await requirementRepository.GetAllFilterRequirement(requirementName, pageNumber, updatedBy, status, formattedDate);
+                var data = mapper.Map<List<Requirement>, List<RequirementViewModel>>(requirement.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = requirement.Value.CurrentPage;
+                apiResponse.TotalPage = requirement.Value.TotalPages;
+                apiResponse.TotalRecords = requirement.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
         [HttpPost("PostRequirement")]
         public async Task<ApiResponse<string>> PostRequirement(RequirementViewModel requirementViewModel)
         {
