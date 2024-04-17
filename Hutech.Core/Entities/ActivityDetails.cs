@@ -21,7 +21,7 @@ namespace Hutech.Core.Entities
         public string TeamName { get; set; }
         public string TeamLocation { get; set; }
         public string RequirementName { get; set; }
-        public string DeaprtmentName { get; set; }
+        public string DepartmentName { get; set; }
         public string Remark { get; set; }
         public string CreatedByUserId { get; set; }
         public DateTime PerformedDate { get; set; }
@@ -34,5 +34,11 @@ namespace Hutech.Core.Entities
         public string? DocumentId { get; set; }
         [NotMapped]
         public string? Path { get; set; }
+        [NotMapped]
+        public string? InstrumentIdName { get; set; }
+        [NotMapped]
+        public string? fullname { get; set; }
+        [NotMapped]
+        public string? Role { get; set; }
     }
 }

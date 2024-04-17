@@ -26,6 +26,44 @@ namespace Hutech.API.Controllers
             emailSenderService = _emailSenderService;
             auditRepository = _auditRepository;
         }
+        [HttpPost("GetAllFilterInstrumentActivity")]
+        public async Task<ApiResponse<List<InstrumentActivityViewModel>>> GetAllFilterInstrumentActivity(InstrumentActivityModel instrumentActivityModel)
+        {
+            var apiResponse = new ApiResponse<List<InstrumentActivityViewModel>>();
+            try
+            {
+                string? instrumentActivityId = instrumentActivityModel.InstrumentActivityId;
+                string? activityName = instrumentActivityModel.ActivityName;
+                string? instrumentName = instrumentActivityModel.InstrumentName;
+                string? requirementName = instrumentActivityModel.RequirementName;
+                string? departmentName = instrumentActivityModel.DepartmentName;
+                int pageNumber = instrumentActivityModel.pageNumber;
+                string? updatedBy = instrumentActivityModel.UpdatedBy;
+                string? status = instrumentActivityModel.Status;
+                DateTime? updatedDate = instrumentActivityModel.UpdatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+
+                var instrumentActivity = await activityRepository.GetAllFilterInstrumentActivity(instrumentActivityId,activityName,instrumentName,requirementName,departmentName, pageNumber, updatedBy, status, formattedDate);
+                var data = mapper.Map<List<InstrumentActivity>, List<InstrumentActivityViewModel>>(instrumentActivity.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = instrumentActivity.Value.CurrentPage;
+                apiResponse.TotalPage = instrumentActivity.Value.TotalPages;
+                apiResponse.TotalRecords = instrumentActivity.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
         [HttpPost("PostInstrumentActivity")]
         public async Task<ApiResponse<string>> PostInstrumentActivity(InstrumentActivityViewModel instrumentActivityViewModel)
         {

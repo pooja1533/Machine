@@ -12,6 +12,7 @@ namespace Hutech.Application.Interfaces
     {
         Task<bool> PostActivityDetail(ActivityDetails activityDetails);
         public Task<ExecutionResult<GridData<ActivityDetails>>> GetAllActivityDetails(string userId,int pageNumber);
+        public Task<ExecutionResult<GridData<ActivityDetails>>> GetAllFilterActivityDetail(string? InstrumentIdName,string instrumentName,string InstrumentSerial,string Model,string Location,string Department, int pageNumber, string? updatedBy, string? status, string? updatedDate,string LoggedInUser);
 
         public Task<ActivityDetails> GetActivityDetails(long Id);
         public Task<String> DeleteActivityDetails(long Id);

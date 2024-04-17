@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Hutech.Models
@@ -45,7 +46,7 @@ namespace Hutech.Models
         public string? InstrumentName { get; set; }
         public string? activityName { get; set; }
         public string? RequirementName { get; set; }
-        public string? DeaprtmentName { get; set; }
+        public string? DepartmentName { get; set; }
         public int? BeforeAlertsTime { get; set; }
         [NotMapped]
         public string? SelectedGroups { get; set; }
@@ -53,9 +54,13 @@ namespace Hutech.Models
         [NotMapped]
         public string? InstrumentActivityGroup { get; set; }
         public DateTime CreatedDateTime { get; set; }
-        public DateTime? ModifiedDateTime { get; set; }
+        public DateTime ModifiedDateTime { get; set; }
         public string? CreatedByUserId { get; set; }
         public string? ModifiedByUserId { get; set; }
+        [NotMapped]
+        public string? Role { get; set; }
+        [NotMapped]
+        public string? fullname { get; set; }
     }
     public class InstrumentActivityValidator : AbstractValidator<InstrumentActivityViewModel>
     {
@@ -78,4 +83,25 @@ namespace Hutech.Models
         FrequencyMonth = 2,
         FrequencyYear = 3,
     }
+    public class  InstrumentActivityModel
+    {
+        //public List<InstrumentActivityViewModel> instrumentActivityViewModels { get; set; }
+        public string? InstrumentActivityId { get; set; }
+        public string? ActivityName { get; set; }
+        public string? InstrumentName { get; set; }
+        public string? RequirementName { get; set; }
+        public string? DepartmentName { get; set; }
+        public string? UpdatedBy { get; set; }
+        public int SelectedStatus { get; set; }
+        [Display(Name = "Date")]
+        // [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [DataType(DataType.Date)]
+        public DateTime? UpdatedDate { get; set; }
+        public int TotalRecords { get; set; }
+        public int TotalPages { get; set; }
+        public int CurrentPage { get; set; }
+        public int pageNumber { get; set; }
+
+        public string? Status { get; set; }
+    } 
 }

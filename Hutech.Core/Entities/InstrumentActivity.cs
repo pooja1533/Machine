@@ -49,7 +49,7 @@ namespace Hutech.Core.Entities
         public string? InstrumentName { get; set; }
         public string? activityName { get; set; }
         public string? RequirementName { get; set; }
-        public string? DeaprtmentName { get; set; }
+        public string? DepartmentName { get; set; }
         public int? BeforeAlertsTime { get; set; }
         [NotMapped]
         public string? SelectedGroups { get; set; }
@@ -60,6 +60,10 @@ namespace Hutech.Core.Entities
         public DateTime? ModifiedDateTime { get; set; }
         public string CreatedByUserId { get; set; }
         public string? ModifiedByUserId { get; set; }
+        [NotMapped]
+        public string? Role { get; set; }
+        [NotMapped]
+        public string? fullname { get; set; }
     }
     public enum FrequencyEnum
     {

@@ -1,13 +1,16 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Hutech.Models;
 using Hutech.Resources;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -57,7 +60,105 @@ namespace Hutech.Controllers
         //    }
         //    return Json(activityDetails);
         //}
-        public async Task<IActionResult> GetAllActivityDetails(string userId,int pageNumber=1)
+        [HttpPost]
+        public async Task<IActionResult> GetAllActivityDetails([FromBody] ActivityDetailModel activityDetailModel)
+        {
+            activityDetailModel.PageNumber = 1;
+            int pageNumber = 1;
+            try
+            {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+                int totalRecords = 0;
+                int totalPage = 0;
+                List<ActivityDetailsViewModel> activityDetailsViewModels = new List<ActivityDetailsViewModel>();
+                string apiUrl = configuration["Baseurl"];
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    if (string.IsNullOrEmpty(activityDetailModel.UserId))
+                    {
+                        activityDetailModel.UserId = HttpContext.Session.GetString("SelectedUserId");
+                        if (string.IsNullOrEmpty(activityDetailModel.UserId))
+                            activityDetailModel.UserId = HttpContext.Session.GetString("UserId");
+                        HttpContext.Session.SetString("SelectedUserId", activityDetailModel.UserId.ToString());
+                    }
+                    else if (new Guid(activityDetailModel.UserId) == new Guid())
+                    {
+                        activityDetailModel.UserId = "0";
+                        HttpContext.Session.SetString("SelectedUserId", activityDetailModel.UserId.ToString());
+                    }
+                    var json = JsonConvert.SerializeObject(activityDetailModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+
+                    HttpResponseMessage Res = await client.PostAsync("ActivityDetails/GetAllFilterActivityDetail", stringContent);
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        if (resultData == "False" || resultData == "false")
+                        {
+                            var Id = root["auditId"].ToString();
+                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        }
+                        else
+                        {
+                            activityDetailsViewModels = root["result"].ToObject<List<ActivityDetailsViewModel>>();
+                            pageNumber = (int)root["currentPage"];
+                            totalRecords = (int)root["totalRecords"];
+                            totalPage = (int)root["totalPage"];
+                        }
+                    }
+                }
+                var data = new ActivitiesDetailsViewModel()
+                {
+                    CurrentPage = pageNumber,
+                    activityDetailsViewModels = activityDetailsViewModels,
+                    TotalPages = totalPage,
+                    TotalRecords = totalRecords
+                };
+                data.InstrumentIdName = !string.IsNullOrEmpty(activityDetailModel.InstrumentIdName) ? activityDetailModel.InstrumentIdName : "";
+                data.InstrumentName = !string.IsNullOrEmpty(activityDetailModel.InstrumentName) ? activityDetailModel.InstrumentName : "";
+                data.InstrumentSerial = !string.IsNullOrEmpty(activityDetailModel.InstrumentSerial) ? activityDetailModel.InstrumentSerial : "";
+                //data.Status = activityDetailModel.Status;
+                data.UpdatedDate = activityDetailModel.UpdatedDate;
+                data.LocationName = !string.IsNullOrEmpty(activityDetailModel.Location) ? activityDetailModel.Location : "";
+                data.Model = !string.IsNullOrEmpty(activityDetailModel.Model) ? activityDetailModel.Model : "";
+                data.DepartmentName = !string.IsNullOrEmpty(activityDetailModel.Department) ? activityDetailModel.Department : "";
+                var items = new List<SelectListItem>();
+                foreach (int value in Enum.GetValues(typeof(StatusViewModel)))
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Text = Enum.GetName(typeof(StatusViewModel), value),
+                        Value = value.ToString(),
+                    });
+                }
+                data.Status = items;
+                data.SelectedStatus = System.Convert.ToInt32(activityDetailModel.Status);
+                data.UpdatedBy = !string.IsNullOrEmpty(activityDetailModel.UpdatedBy) ? activityDetailModel.UpdatedBy : "";
+                data.PerformedDate = activityDetailModel.UpdatedDate;
+                string requestedWithHeader = Request.Headers["X-Requested-With"];
+                return View("GetAllActivityDetails", data);
+            }
+            catch (Exception ex)
+            {
+                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
+                throw ex;
+            }
+        }
+        public async Task<IActionResult> GetAllActivityDetails(string? userId = null, int pageNumber=1,string? instrumentIdName=null,string? instrumentName=null,string? instrumentSerial=null,string? modelName=null,string? location=null,string? department=null,string? updatedBy=null, string? updatedDate = null, string? SelectedStatus = null)
         {
             try
             {
@@ -70,12 +171,12 @@ namespace Hutech.Controllers
                 }
                 int totalRecords = 0;
                 int totalPage = 0;
-                ActivityDetailsViewModel model = new ActivityDetailsViewModel();
+                ActivitiesDetailsViewModel model = new ActivitiesDetailsViewModel();
                 List<ActivityDetailsViewModel> activityDetails = new List<ActivityDetailsViewModel>();
                 List<UserViewModel> users=new List<UserViewModel>();
                 var loggedinuserId = HttpContext.Session.GetString("UserId").ToString();
                 var email = HttpContext.Session.GetString("LoogedInUser".ToString());
-
+                ActivityDetailModel activityDetailModel = new ActivityDetailModel();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
                 {
@@ -84,19 +185,34 @@ namespace Hutech.Controllers
 
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    if (string.IsNullOrEmpty(userId))
-                    {
-                        userId = HttpContext.Session.GetString("SelectedUserId");
-                        if(string.IsNullOrEmpty(userId))
-                            userId = HttpContext.Session.GetString("UserId");
-                        HttpContext.Session.SetString("SelectedUserId", userId.ToString());
-                    }
-                    else if (new Guid(userId) == new Guid())
-                    {
-                        userId = "0";
-                        HttpContext.Session.SetString("SelectedUserId", userId.ToString());
-                    }
-                    HttpResponseMessage Res = await client.GetAsync(string.Format("ActivityDetails/GetAllActivityDetails/{0}/{1}", userId,pageNumber));
+                    //if (string.IsNullOrEmpty(userId))
+                    //{
+                    //    userId = HttpContext.Session.GetString("SelectedUserId");
+                        //if(string.IsNullOrEmpty(userId))
+                            //userId = HttpContext.Session.GetString("UserId");
+                    //    HttpContext.Session.SetString("SelectedUserId", userId.ToString());
+                    //}
+                    //else if (new Guid(userId) == new Guid())
+                    //{
+                    //    userId = "0";
+                    //    HttpContext.Session.SetString("SelectedUserId", userId.ToString());
+                    //}
+                    activityDetailModel.PageNumber = pageNumber;
+                    activityDetailModel.InstrumentIdName = instrumentIdName;
+                    activityDetailModel.InstrumentName = instrumentName;
+                    activityDetailModel.InstrumentSerial = instrumentSerial;
+                    activityDetailModel.Model = modelName;
+                    activityDetailModel.Location = location;
+                    activityDetailModel.Department = department;
+                    activityDetailModel.UpdatedBy = updatedBy;
+                    activityDetailModel.UserId= userId;
+                    if (!string.IsNullOrEmpty(updatedDate))
+                        activityDetailModel.UpdatedDate = DateTime.Parse(updatedDate);
+                    activityDetailModel.Status = SelectedStatus;
+                    var json = JsonConvert.SerializeObject(activityDetailModel);
+                    var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                    HttpResponseMessage Res = await client.PostAsync("ActivityDetails/GetAllFilterActivityDetail", stringContent);
+                    //HttpResponseMessage Res = await client.GetAsync(string.Format("ActivityDetails/GetAllActivityDetails/{0}/{1}", userId,pageNumber));
 
                     if (Res.IsSuccessStatusCode)
                     {
@@ -163,13 +279,35 @@ namespace Hutech.Controllers
                     TotalPages = totalPage,
                     TotalRecords = totalRecords
                 };
-                ActivityDetailsViewModel viewModel = new ActivityDetailsViewModel();
+                var items = new List<SelectListItem>();
+                foreach (int value in Enum.GetValues(typeof(StatusViewModel)))
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Text = Enum.GetName(typeof(StatusViewModel), value),
+                        Value = value.ToString()
+                    });
+                }
+                ActivitiesDetailsViewModel viewModel = new ActivitiesDetailsViewModel();
                 viewModel.CurrentPage = pageNumber;
                 viewModel.TotalPages = totalPage;
                 viewModel.TotalRecords = totalRecords;
-                viewModel.ActivityDetails = activityDetails;
-                viewModel.User = data;
-                viewModel.UserId = HttpContext.Session.GetString("SelectedUserId").ToString();
+                viewModel.activityDetailsViewModels = activityDetails;
+                //viewModel.User = data;
+                viewModel.Status = items;
+                viewModel.InstrumentIdName = !string.IsNullOrEmpty(activityDetailModel.InstrumentIdName) ? activityDetailModel.InstrumentIdName : "";
+                viewModel.InstrumentName = !string.IsNullOrEmpty(activityDetailModel.InstrumentName) ? activityDetailModel.InstrumentName : "";
+                viewModel.InstrumentSerial = !string.IsNullOrEmpty(activityDetailModel.InstrumentSerial) ? activityDetailModel.InstrumentSerial : "";
+                viewModel.LocationName = !string.IsNullOrEmpty(activityDetailModel.Location) ? activityDetailModel.Location : "";
+                viewModel.Model = !string.IsNullOrEmpty(activityDetailModel.Model) ? activityDetailModel.Model : "";
+                viewModel.DepartmentName = !string.IsNullOrEmpty(activityDetailModel.Department) ? activityDetailModel.Department : "";
+                viewModel.UpdatedBy = !string.IsNullOrEmpty(activityDetailModel.UpdatedBy) ? activityDetailModel.UpdatedBy : "";
+                viewModel.PerformedDate = activityDetailModel.UpdatedDate;
+                //viewModel.UserId = HttpContext.Session.GetString("SelectedUserId").ToString();
+                if (SelectedStatus == null)
+                    viewModel.SelectedStatus = (int)StatusViewModel.Active;
+                else if (!string.IsNullOrEmpty(SelectedStatus))
+                    viewModel.SelectedStatus = System.Convert.ToInt32(SelectedStatus);
                 return View(viewModel);
             }
             catch (Exception ex)
@@ -255,7 +393,7 @@ namespace Hutech.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddActivityDetails(ActivityDetailsDocumentViewModel activityDetailsViewModel)
+        public async Task<IActionResult> AddActivityDetails(ActivityDetailsDocumentViewModel activityDetailsdocumentViewModel)
         {
             try
             {
@@ -271,26 +409,27 @@ namespace Hutech.Controllers
                 }
                 var activityDetail = new ActivityDetailsViewModel()
                 {
-                    Id = activityDetailsViewModel.Id,
-                    InstrumentId = activityDetailsViewModel.InstrumentId,
+                    Id = activityDetailsdocumentViewModel.Id,
+                    InstrumentId = activityDetailsdocumentViewModel.InstrumentId,
                     IsActive = true,
                     IsDeleted = false,
-                    InstrumentName = activityDetailsViewModel.InstrumentName,
-                    InstrumentSerial = activityDetailsViewModel.InstrumentSerial,
-                    Model = activityDetailsViewModel.Model,
-                    LocationName = activityDetailsViewModel.LocationName,
-                    InstrumentActivityId = activityDetailsViewModel.InstrumentActivityId,
-                    Days = activityDetailsViewModel.Days,
-                    Frequency = activityDetailsViewModel.Frequency,
-                    TeamName = activityDetailsViewModel.TeamName,
-                    TeamLocation = activityDetailsViewModel.TeamLocation,
-                    RequirementName = activityDetailsViewModel.RequirementName,
-                    DeaprtmentName = activityDetailsViewModel.DeaprtmentName,
-                    Remark = activityDetailsViewModel.Remark,
-                    PerformedDate = activityDetailsViewModel.PerformedDate,
+                    InstrumentName = activityDetailsdocumentViewModel.InstrumentName,
+                    InstrumentSerial = activityDetailsdocumentViewModel.InstrumentSerial,
+                    Model = activityDetailsdocumentViewModel.Model,
+                    LocationName = activityDetailsdocumentViewModel.LocationName,
+                    InstrumentActivityId = activityDetailsdocumentViewModel.InstrumentActivityId,
+                    Days = activityDetailsdocumentViewModel.Days,
+                    Frequency = activityDetailsdocumentViewModel.Frequency,
+                    TeamName = activityDetailsdocumentViewModel.TeamName,
+                    TeamLocation = activityDetailsdocumentViewModel.TeamLocation,
+                    RequirementName = activityDetailsdocumentViewModel.RequirementName,
+                    DepartmentName = activityDetailsdocumentViewModel.DepartmentName,
+                    Remark = activityDetailsdocumentViewModel.Remark,
+                    PerformedDate = activityDetailsdocumentViewModel.PerformedDate,
                 };
-                var validation = new ActivityDetailsValidator();
-                var result = validation.Validate(activityDetail);
+
+                var validation = new ActivityDetailsDocumentValidator();
+                var result = validation.Validate(activityDetailsdocumentViewModel);
                 if (!result.IsValid)
                 {
                     List<InstrumentIdViewModel> instrumentId = new List<InstrumentIdViewModel>();
@@ -342,13 +481,13 @@ namespace Hutech.Controllers
                         Text = x.InstrumentActivityName.ToString(),
                         Value = x.Id.ToString()
                     }).ToList();
-                    activityDetailsViewModel.InstrumentsActivity = instrumentActivities;
-                    activityDetailsViewModel.InstrumentNameId = data;
-                    activityDetailsViewModel.PerformedDate = DateTime.UtcNow;
-                    if (activityDetailsViewModel.Id > 0)
-                        return View("EditActivityDetails", activityDetailsViewModel);
+                    activityDetailsdocumentViewModel.InstrumentsActivity = instrumentActivities;
+                    activityDetailsdocumentViewModel.InstrumentNameId = data;
+                    activityDetailsdocumentViewModel.PerformedDate = DateTime.UtcNow;
+                    if (activityDetailsdocumentViewModel.Id > 0)
+                        return View("EditActivityDetails", activityDetailsdocumentViewModel);
                     else
-                        return View(activityDetailsViewModel);
+                        return View(activityDetailsdocumentViewModel);
                 }
                 else
                 {
@@ -359,7 +498,6 @@ namespace Hutech.Controllers
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    
                         var json = JsonConvert.SerializeObject(activityDetail);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 
@@ -368,9 +506,9 @@ namespace Hutech.Controllers
                         if (Res.IsSuccessStatusCode)
                         {
                             var contentDataResult = await Res.Content.ReadAsStringAsync();
-                        if (activityDetailsViewModel.Files != null)
+                        if (activityDetailsdocumentViewModel.Files != null)
                         {
-                            if (activityDetailsViewModel.Files.Count > 0)
+                            if (activityDetailsdocumentViewModel.Files.Count > 0)
                             {
                                 var FileDic = "Documents/ActivityDetails/Image/";
                                 string FilePath = Path.Combine(hostingEnv.ContentRootPath, FileDic);
@@ -384,9 +522,9 @@ namespace Hutech.Controllers
                                 if (!Directory.Exists(FileDocumentPath))
                                     Directory.CreateDirectory(FileDocumentPath);
 
-                                if (activityDetailsViewModel.Files != null)
+                                if (activityDetailsdocumentViewModel.Files != null)
                                 {
-                                    foreach (var data in activityDetailsViewModel.Files)
+                                    foreach (var data in activityDetailsdocumentViewModel.Files)
                                     {
                                         if (data.ContentType.Contains("image"))
                                         {
@@ -408,19 +546,19 @@ namespace Hutech.Controllers
                                 }
                                 var formData = new Dictionary<string, string>()
                                     {
-                            { "IsActive", activityDetail.IsActive.ToString()},
-                            { "IsDeleted", activityDetail.IsDeleted.ToString()},
-                            { "InstrumentName", activityDetail.InstrumentName},
-                            {"InstrumentSerial",activityDetail.InstrumentSerial },
-                            {"Model" ,activityDetail.Model},
-                            {"LocationName" ,activityDetail.LocationName},
-                            { "TeamName",activityDetail.TeamName},
-                            {"TeamLocation",activityDetail.TeamLocation },
-                            {"Days",activityDetail.Days.ToString() },
-                            { "Frequency", activityDetail.Frequency },
-                            {"Remark",activityDetail.Remark },
-                            {"PerformedDate" ,activityDetail.PerformedDate.ToString()},
-                            {"myeumjson",activityDetail.myeumjson },
+                            { "IsActive", activityDetailsdocumentViewModel.IsActive.ToString()},
+                            { "IsDeleted", activityDetailsdocumentViewModel.IsDeleted.ToString()},
+                            { "InstrumentName", activityDetailsdocumentViewModel.InstrumentName},
+                            {"InstrumentSerial",activityDetailsdocumentViewModel.InstrumentSerial },
+                            {"Model" ,activityDetailsdocumentViewModel.Model},
+                            {"LocationName" ,activityDetailsdocumentViewModel.LocationName},
+                            { "TeamName",activityDetailsdocumentViewModel.TeamName},
+                            {"TeamLocation",activityDetailsdocumentViewModel.TeamLocation },
+                            {"Days",activityDetailsdocumentViewModel.Days.ToString() },
+                            { "Frequency", activityDetailsdocumentViewModel.Frequency },
+                            {"Remark",!string.IsNullOrEmpty(activityDetailsdocumentViewModel.Remark)? activityDetailsdocumentViewModel.Remark:""},
+                            {"PerformedDate" ,activityDetailsdocumentViewModel.PerformedDate.ToString()},
+                            {"myeumjson",activityDetailsdocumentViewModel.myeumjson },
                                 };
                                 var formContent = new MultipartFormDataContent();
 
@@ -429,7 +567,7 @@ namespace Hutech.Controllers
                                     formContent.Add(new StringContent(keyValuePair.Value), keyValuePair.Key);
                                 }
 
-                                foreach (var file in activityDetailsViewModel.Files)
+                                foreach (var file in activityDetailsdocumentViewModel.Files)
                                 {
                                     formContent.Add(new StreamContent(file.OpenReadStream())
                                     {
@@ -461,7 +599,7 @@ namespace Hutech.Controllers
                             }
                         }
                     }
-                    return View(activityDetailsViewModel);
+                    return View(activityDetailsdocumentViewModel);
                 }
             }
             catch (Exception ex)
@@ -649,7 +787,7 @@ namespace Hutech.Controllers
                 activityDetailsDocumentViewModel.Frequency=activityViewModel.Frequency;
                 activityDetailsDocumentViewModel.Remark=activityViewModel.Remark;
                 activityDetailsDocumentViewModel.PerformedDate=activityViewModel.PerformedDate;
-                activityDetailsDocumentViewModel.DeaprtmentName=activityViewModel.DeaprtmentName;
+                activityDetailsDocumentViewModel.DepartmentName=activityViewModel.DepartmentName;
                 activityDetailsDocumentViewModel.IsActive=activityViewModel.IsActive;
                 activityDetailsDocumentViewModel.IsDeleted  =activityViewModel.IsDeleted;
                 activityDetailsDocumentViewModel.myeumjson=activityViewModel.myeumjson;

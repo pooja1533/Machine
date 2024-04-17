@@ -1,135 +1,244 @@
-﻿@model Hutech.Models.ActivityDetailsViewModel;
-<div class="container-fluid">
-    <div class="animated fadeIn">
-        <div class="row">
-            <div class="col-lg-12">
+﻿@{
+    Layout = !Context.Request.Headers["X-Requested-With"].ToString().Equals("XMLHttpRequest", StringComparison.OrdinalIgnoreCase) ? "_Layout" : null;
+}
+@model Hutech.Models.ActivitiesDetailsViewModel;
+<div id="content">
+    <div class="container-fluid">
+        <div class="animated fadeIn">
+            <div class="row">
+                <div class="col-lg-12">
 
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Activity Detail
-                        <a href="/ActivityDetails/AddActivityDetails">Add Activity Detail</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="col-lg-12">
-                            @*<div class="card">*@
-                                <div class="form-group">
-                                    <label for="company">Serach Activity Detail By User</label>
-                                    @Html.DropDownListFor(x=>x.UserId,Model.User,"Please select Instrument",new {@class="form-control processbank",onchange="changeUser()"})
-                                </div>
-                            @*</div>*@
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fa fa-align-justify"></i> Activity Detail
+                            <a href="/ActivityDetails/AddActivityDetails">Add Activity Detail</a>
                         </div>
-                        <table class="table table-responsive-sm" id="activity">
-                            <thead>
-                                <tr>
-                                    <th>Instrument Name</th>
-                                    <th>Instrument Serial</th>
-                                    <th>Model</th>
-                                    <th>Location Name</th>
-                                    <th>Days</th>
-                                    <th>Frequency</th>
-                                    <th>Team Location</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            @{
-                                int recordsPerPage = 10;
-                                int pageNumber = (int)Model.CurrentPage;
-                                int pageSize = pageNumber + 4;
-                                int rowNo = ((pageNumber - 1) * recordsPerPage);
-                            }
-                            <tbody>
-                                @for (int i = 0; i < Model.ActivityDetails.Count; i++)
-                                {
+                        <div class="card-body">
+                            <div class="col-lg-12">
+                                @* <div class="form-group">
+                                    <label for="company">Serach Activity Detail By User</label>
+                                    @Html.DropDownListFor(x => x.UserId, Model.User, "Please select Instrument", new { @class = "form-control processbank", onchange = "changeUser()" })
+                                </div> *@
+                            </div>
+                            <table class="table table-responsive-sm" id="activity">
+                                <thead>
                                     <tr>
-                                        <td>@Model.ActivityDetails[i].InstrumentName</td>
-                                        <td>@Model.ActivityDetails[i].InstrumentSerial</td>
-                                        <td>@Model.ActivityDetails[i].Model</td>
-                                        <td>@Model.ActivityDetails[i].LocationName</td>
-                                        <td>@Model.ActivityDetails[i].Days</td>
-                                        <td>@Model.ActivityDetails[i].Frequency</td>
-                                        <td>@Model.ActivityDetails[i].TeamLocation</td>
-                                        @if (Model.ActivityDetails[i].IsActive)
-                                        {
-                                            <td>Active</td>
-                                        }
-                                        else
-                                        {
-                                            <td>InActive</td>
-                                        }
+                                        <th>Instrument Id Name</th>
+                                        <th>Instrument Name</th>
+                                        <th>Instrument Serial</th>
+                                        <th>Model</th>
+                                        <th>Location Name</th>
+                                        <th>Department Name</th>
+                                        <th>Updated By/Role</th>
+                                        <th>Performed Date</th>
+                                        @*  <th>Days</th>
+                                        <th>Frequency</th>
+                                        <th>Team Location</th> *@
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                @{
+                                    int recordsPerPage = 10;
+                                    int pageNumber = (int)Model.CurrentPage;
+                                    int pageSize = pageNumber + 4;
+                                    int rowNo = ((pageNumber - 1) * recordsPerPage);
+                                }
+                                <tbody>
+                                    <tr>
                                         <td>
-                                            <div class="btn-group" role="group">
-                                                <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
-                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                    <a class="dropdown-item" href="/ActivityDetails/EditActivityDetails?id=@Model.ActivityDetails[i].Id">Edit</a>
-                                                    <a class="dropdown-item" href="/ActivityDetails/DeleteActivityDetails?id=@Model.ActivityDetails[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
-                                                </div>
-                                            </div>
+                                            @Html.TextBoxFor(x => x.InstrumentIdName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.InstrumentIdName != null ? @ViewBag.InstrumentIdName : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.InstrumentName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.InstrumentName != null ? @ViewBag.InstrumentName : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.InstrumentSerial, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.InstrumentSerial != null ? @ViewBag.InstrumentSerial : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.Model, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.Model != null ? @ViewBag.Model : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.LocationName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.LocationName != null ? @ViewBag.LocationName : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.DepartmentName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.LocationName != null ? @ViewBag.LocationName : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.UpdatedBy, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })
+                                        </td>
+                                        <td>
+                                            <input asp-for="@Model.PerformedDate" class="form-control" onchange="Filter()" />
+                                        </td>
+                                        @* <td>
+                                        <input asp-for="@Model.UpdatedDate" class="form-control" onchange="Filter()" />
+                                        </td> *@
+                                        <td>
+                                            @Html.DropDownListFor(x => x.SelectedStatus, Model.Status, new { @class = "form-control processbank", @onchange = "Filter()" })
                                         </td>
                                     </tr>
-                                }
+                                    @for (int i = 0; i < Model.activityDetailsViewModels.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>@Model.activityDetailsViewModels[i].InstrumentIdName</td>
+                                            <td>@Model.activityDetailsViewModels[i].InstrumentName</td>
+                                            <td>@Model.activityDetailsViewModels[i].InstrumentSerial</td>
+                                            <td>@Model.activityDetailsViewModels[i].Model</td>
+                                            <td>@Model.activityDetailsViewModels[i].LocationName</td>
+                                            <td>@Model.activityDetailsViewModels[i].DepartmentName</td>
+                                            <td>@Model.activityDetailsViewModels[i].fullname (@Model.activityDetailsViewModels[i].Role)</td>
+                                            <td>@Model.activityDetailsViewModels[i].PerformedDate.ToString("dd MMM yyyy HH:mm")</td>
+                                            @* <td>@Model.ActivityDetails[i].Days</td>
+                                        <td>@Model.ActivityDetails[i].Frequency</td>
+                                        <td>@Model.ActivityDetails[i].TeamLocation</td> *@
+                                            @if (Model.activityDetailsViewModels[i].IsActive)
+                                            {
+                                                <td>Active</td>
+                                            }
+                                            else
+                                            {
+                                                <td>InActive</td>
+                                            }
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                        <a class="dropdown-item" href="/ActivityDetails/EditActivityDetails?id=@Model.activityDetailsViewModels[i].Id">Edit</a>
+                                                        <a class="dropdown-item" href="/ActivityDetails/DeleteActivityDetails?id=@Model.activityDetailsViewModels[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
 
-                            </tbody>
-                        </table>
-                        @if (Model.TotalPages > 1)
-                        {
-                            <nav>
-                                <ul class="pagination">
-                                    @if (pageNumber > 1)
-                                    {
-                                        int prevPage = pageNumber - 1;
-                                        <li class="page-item">
-                                            <a class="page-link" href="/ActivityDetails/GetAllActivityDetails?pageNumber=@prevPage">Prev</a>
-                                        </li>
-                                    }
-                                    @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
-                                    {
-                                        if (i == pageNumber)
+                                </tbody>
+                            </table>
+                            @if (Model.TotalPages > 1)
+                            {
+                                string formattedDate = string.Empty;
+                                @if (Model.UpdatedDate != null)
+                                {
+                                    formattedDate = Model.UpdatedDate.Value.ToString("yyyy-MM-dd");
+                                }
+                                <nav>
+                                    <ul class="pagination">
+                                        @if (pageNumber > 1)
                                         {
-                                            <li class="page-item active">
-                                                <a class="page-link" href="/ActivityDetails/GetAllActivityDetails?pageNumber=@i">@i</a>
-                                            </li>
-                                        }
-                                        else
-                                        {
+                                            int prevPage = pageNumber - 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/ActivityDetails/GetAllActivityDetails?pageNumber=@i">@i</a>
+                                                <a class="page-link" href="/ActivityDetails/GetAllActivityDetails?pageNumber=@prevPage&instrumentIdName=@Model.InstrumentIdName&instrumentName=@Model.InstrumentName&instrumentSerial=@Model.InstrumentSerial&modelName=@Model.Model&location=@Model.LocationName&department=@Model.DepartmentName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Prev</a>
                                             </li>
                                         }
-                                    }
-                                    @if (pageNumber < Model.TotalPages)
-                                    {
-                                        int nextPage = pageNumber + 1;
-                                        <li class="page-item">
-                                            <a class="page-link" href="/ActivityDetails/GetAllActivityDetails?pageNumber=@nextPage">Next</a>
-                                        </li>
-                                    }
-                                </ul>
-                            </nav>
-                        }
+                                        @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
+                                        {
+                                            if (i == pageNumber)
+                                            {
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="/ActivityDetails/GetAllActivityDetails?pageNumber=@i&instrumentIdName=@Model.InstrumentIdName&instrumentName=@Model.InstrumentName&instrumentSerial=@Model.InstrumentSerial&modelName=@Model.Model&location=@Model.LocationName&department=@Model.DepartmentName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@i</a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" href="/ActivityDetails/GetAllActivityDetails?pageNumber=@i&instrumentIdName=@Model.InstrumentIdName&instrumentName=@Model.InstrumentName&instrumentSerial=@Model.InstrumentSerial&modelName=@Model.Model&location=@Model.LocationName&department=@Model.DepartmentName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@i</a>
+                                                </li>
+                                            }
+                                        }
+                                        @if (pageNumber < Model.TotalPages)
+                                        {
+                                            int nextPage = pageNumber + 1;
+                                            <li class="page-item">
+                                                <a class="page-link" href="/ActivityDetails/GetAllActivityDetails?pageNumber=@nextPage&instrumentIdName=@Model.InstrumentIdName&instrumentName=@Model.InstrumentName&instrumentSerial=@Model.InstrumentSerial&modelName=@Model.Model&location=@Model.LocationName&department=@Model.DepartmentName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Next</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- /.col-->
+                <!-- /.col-->
 
+            </div>
+            <!-- /.row-->
         </div>
-        <!-- /.row-->
     </div>
 </div>
-@if (TempData["message"] != null)
-{
+    @if (TempData["message"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@TempData["message"]");
+                var url = "@TempData["RedirectURl"]";
+                window.location.href = url;
+            };
+        </script>
+    }
     <script type="text/javascript">
-        window.onload = function () {
-            alert("@TempData["message"]");
-            var url = "@TempData["RedirectURl"]";
+        function changeUser() {
+            var userId = $("#UserId option:selected").val();
+            url = "/ActivityDetails/GetAllActivityDetails/?userId=" + userId;
             window.location.href = url;
-        };
+        }
     </script>
-}
 <script type="text/javascript">
-    function changeUser() {
-        var userId = $("#UserId option:selected").val();
-        url = "/ActivityDetails/GetAllActivityDetails/?userId=" + userId;
-        window.location.href = url;
+    $(document).ready(function () {
+        var value = '@ViewBag.updatedDate';
+    })
+    function Filter() {
+        let instrumentIdName = $("#InstrumentIdName").val();
+        let instrumentName = $("#InstrumentName").val();
+        let instrumentSerial = $("#InstrumentSerial").val();
+        let modelName = $("#Model").val();
+        let location = $("#LocationName").val();
+        let department = $("#DepartmentName").val();
+        let updatebyOrRole = $("#UpdatedBy").val();
+        var selectElement = document.getElementById("SelectedStatus");
+        var selectedValue = selectElement.value;
+        let status = selectedValue;
+        let date = $("#PerformedDate").val();
+        if (instrumentIdName == "" && instrumentIdName.length == 0)
+            instrumentIdName = null;
+        if (instrumentName == "" && instrumentName.length == 0)
+            instrumentName = null;
+        if (instrumentSerial == "" && instrumentSerial.length == 0)
+            instrumentSerial = null;
+        if (modelName == "" && modelName.length == 0)
+            modelName = null;
+        if (location == "" && location.length == 0)
+            location = null;
+        if (department == "" && department.length == 0)
+            department = null;
+        if (updatebyOrRole == "" && updatebyOrRole.length == 0)
+            updatebyOrRole = null;
+        if (date == "")
+            date = null;
+        var model = {
+            instrumentIdName: instrumentIdName,
+            instrumentName: instrumentName,
+            instrumentSerial: instrumentSerial,
+            model: modelName,
+            location: location,
+            department: department,
+            updatedBy: updatebyOrRole,
+            status: status,
+            updatedDate: date
+        };
+        debugger;
+        $.ajax({
+            url: '/ActivityDetails/GetAllActivityDetails',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (response) {
+                // Handle successful response from the server
+                var div = document.getElementById("content");
+                div.innerHTML = response;
+            },
+            error: function (xhr, status, error) {
+                // Handle error response from the server
+                console.error(xhr.responseText);
+            }
+        });
     }
 </script>

@@ -205,5 +205,60 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
+        public async Task<ExecutionResult<GridData<InstrumentActivity>>> GetAllFilterInstrumentActivity(string? instrumentActivityId,string? activityName,string? instrumentName,string? requirementName,string? departmentName, int pageNumber, string? updatedBy, string? status, string? updatedDate)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy = "%" + updatedBy + "%" : updatedBy;
+                    bool isactive = false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
+                    instrumentActivityId = !string.IsNullOrEmpty(instrumentActivityId) ? instrumentActivityId = instrumentActivityId + "%" : instrumentActivityId;
+                    activityName = !string.IsNullOrEmpty(activityName) ? activityName = activityName + "%" : activityName;
+                    instrumentName = !string.IsNullOrEmpty(instrumentName) ? instrumentName = instrumentName + "%" : instrumentName;
+                    requirementName = !string.IsNullOrEmpty(requirementName) ? requirementName = requirementName + "%" : requirementName;
+                    departmentName = !string.IsNullOrEmpty(departmentName) ? departmentName = departmentName + "%" : departmentName;
+                    var result = await connection.QueryAsync<InstrumentActivity>(InstrumentActivityQueries.GetAllFilterInstrumentActivity, new { InstrumentActivityId = instrumentActivityId, ActivityName= activityName, InstrumentName= instrumentName, RequirementName= requirementName, DepartmentName= departmentName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var locationList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var instrumentActiviies = new GridData<InstrumentActivity>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = locationList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<InstrumentActivity>>(instrumentActiviies);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var locationList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var instrumentactivities = new GridData<InstrumentActivity>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = locationList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<InstrumentActivity>>(instrumentactivities);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

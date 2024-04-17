@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Hutech.Application.Interfaces;
 using Hutech.Core.Entities;
 using Hutech.Infrastructure.Repository;
@@ -7,6 +8,7 @@ using Imputabiliteafro.Api.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Configuration;
+using System.Diagnostics.Metrics;
 
 namespace Hutech.API.Controllers
 {
@@ -30,6 +32,46 @@ namespace Hutech.API.Controllers
             configuration = _configuration;
             documentRepository = _documentRepository;
             auditRepository = _auditRepository;
+        }
+        [HttpPost("GetAllFilterActivityDetail")]
+        public async Task<ApiResponse<List<ActivityDetailsViewModel>>> GetAllFilterActivityDetail(ActivityDetailModel activityModel)
+        {
+            var apiResponse = new ApiResponse<List<ActivityDetailsViewModel>>();
+            try
+            {
+                string? instrumentIdName = activityModel.InstrumentIdName;
+                string? instrumentName=activityModel.InstrumentName;
+                string? instrumentSerial = activityModel.InstrumentSerial;
+                string? model=activityModel.Model;
+                string? location=activityModel.Location;
+                string? department=activityModel.Department;
+                int pageNumber = activityModel.PageNumber;
+                string? updatedBy = activityModel.UpdatedBy;
+                string? status = activityModel.Status;
+                DateTime? updatedDate = activityModel.UpdatedDate;
+                string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
+                string LoggedInUser = activityModel.UserId;
+
+                var activityDetail = await activityDetailRepository.GetAllFilterActivityDetail(instrumentIdName,instrumentName,instrumentSerial,model,location,department, pageNumber, updatedBy, status, formattedDate, LoggedInUser);
+                var data = mapper.Map<List<ActivityDetails>, List<ActivityDetailsViewModel>>(activityDetail.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = activityDetail.Value.CurrentPage;
+                apiResponse.TotalPage = activityDetail.Value.TotalPages;
+                apiResponse.TotalRecords = activityDetail.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
         }
         [HttpGet("GetAllActivityDetails/{userId}/{pageNumber}")]
         public async Task<ApiResponse<List<ActivityDetailsViewModel>>> GetAllActivityDetails(string userId,int pageNumber)
@@ -66,6 +108,7 @@ namespace Hutech.API.Controllers
                 var activitydata = mapper.Map<ActivityDetailsViewModel, ActivityDetails>(activityDetailsViewModel);
                 activitydata.CreatedByUserId= httpContextAccessor.HttpContext.Session.GetString("UserId");
                 activitydata.CreatedDate = DateTime.UtcNow;
+                activitydata.ModifiedDate=DateTime.UtcNow;
                 bool data = await activityDetailRepository.PostActivityDetail(activitydata);
                 apiResponse.Result = "activityDetails added successfully";
                 apiResponse.Success = true;

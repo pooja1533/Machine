@@ -22,6 +22,62 @@ namespace Hutech.Infrastructure.Repository
         {
             configuration = _configuration;
         }
+        public async Task<ExecutionResult<GridData<ActivityDetails>>> GetAllFilterActivityDetail(string? InstrumentIdName,string InstrumentName,string InstrumentSerial,string Model,string Location,string Department, int pageNumber, string? updatedBy, string? status, string? updatedDate, string LoggedInUser)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    updatedBy = !string.IsNullOrEmpty(updatedBy) ? updatedBy = "%" + updatedBy + "%" : updatedBy;
+                    bool isactive = false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
+                    InstrumentSerial = !string.IsNullOrEmpty(InstrumentSerial) ? InstrumentSerial = InstrumentSerial + "%" : InstrumentSerial;
+                    InstrumentName = !string.IsNullOrEmpty(InstrumentName) ? InstrumentName = InstrumentName + "%" : InstrumentName;
+                    InstrumentIdName = !string.IsNullOrEmpty(InstrumentIdName) ? InstrumentIdName = InstrumentIdName + "%" : InstrumentIdName;
+                    Model = !string.IsNullOrEmpty(Model) ? Model=Model+"%" : Model;
+                    Location = !string.IsNullOrEmpty(Location) ? Location = Location + "%" : Location;
+                    Department = !string.IsNullOrEmpty(Department) ? Department = Department + "%" : Department;
+                    var result = await connection.QueryAsync<ActivityDetails>(ActivityDetailsQueries.GetAllFilterActivityDetail, new { InstrumentIdName = InstrumentIdName,InstrumentName=InstrumentName,InstrumentSerial=InstrumentSerial,Model=Model,Location=Location,Department=Department, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
+                    var recordsPerPage = 2;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var activitydetailsList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var activitydetails = new GridData<ActivityDetails>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = activitydetailsList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<ActivityDetails>>(activitydetails);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var activitydetailsList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var activitydetails = new GridData<ActivityDetails>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = activitydetailsList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<ActivityDetails>>(activitydetails);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<ExecutionResult<GridData<ActivityDetails>>> GetAllActivityDetails(string userId, int pageNumber)
         {
             try

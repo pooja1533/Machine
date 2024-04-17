@@ -19,5 +19,6 @@ namespace Hutech.Application.Interfaces
         public Task<InstrumentActivity> GetInstrumentActivityDetailData(long Id);
         public Task<String> PutInstrumentActivity(InstrumentActivity activity);
         public Task<DateTime> GetLastPerformedDateForInstrumentActivity(long instrumentActivityId);
+        public Task<ExecutionResult<GridData<InstrumentActivity>>> GetAllFilterInstrumentActivity(string? instrumentActivityId,string? activityName,string? instrumentName,string? requirementName,string? departmentName, int pageNumber, string? updatedBy, string? status, string? updatedDate);
     }
 }
