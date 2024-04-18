@@ -411,7 +411,7 @@ namespace Hutech.Controllers
                 {
                     Id = activityDetailsdocumentViewModel.Id,
                     InstrumentId = activityDetailsdocumentViewModel.InstrumentId,
-                    IsActive = true,
+                    IsActive = activityDetailsdocumentViewModel.IsActive,
                     IsDeleted = false,
                     InstrumentName = activityDetailsdocumentViewModel.InstrumentName,
                     InstrumentSerial = activityDetailsdocumentViewModel.InstrumentSerial,
@@ -498,6 +498,7 @@ namespace Hutech.Controllers
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        activityDetail.UpdatedBy = HttpContext.Session.GetString("UserId").ToString();
                         var json = JsonConvert.SerializeObject(activityDetail);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
 

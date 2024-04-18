@@ -144,8 +144,8 @@
                     <div class="form-group">
                         <label for="company">Status</label>
                         <div class="input-prepend input-group">
-                            <label for="company" class="status">Active</label>@Html.RadioButtonFor(x => x.IsActive, "true",new{@class="frequencyUnit frequency"})
-                            <label for="company" class="status">InActive</label>@Html.RadioButtonFor(x => x.IsActive, "false",new{@class="frequencyUnit frequency"})
+                            @Html.RadioButtonFor(x => x.IsActive, "true")<label for="company" class="status ">Active</label> &nbsp;&nbsp;
+                            @Html.RadioButtonFor(x => x.IsActive, "false")<label for="company" class="status frequencyUnit">InActive</label>
                         </div>
                     </div>
                     @Html.HiddenFor(x=>x.Id)
@@ -174,9 +174,9 @@
 @* </form> *@
 <script type="text/javascript">
     var success = "true";
-    $(':radio').click(function () {
-        return false;
-    });
+    // $(':radio').click(function () {
+    //     return false;
+    // });
 
     var success = "true"
     $(function () {

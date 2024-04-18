@@ -116,9 +116,9 @@
                             @if (Model.TotalPages > 1)
                             {
                                 string formattedDate = string.Empty;
-                                @if (Model.UpdatedDate != null)
+                                @if (Model.PerformedDate != null)
                                 {
-                                    formattedDate = Model.UpdatedDate.Value.ToString("yyyy-MM-dd");
+                                    formattedDate = Model.PerformedDate.Value.ToString("yyyy-MM-dd");
                                 }
                                 <nav>
                                     <ul class="pagination">

@@ -13,7 +13,7 @@ namespace Hutech.Sql.Queries
         //public static string GetActivityDetail => "Select ad.*,ad.Department as DeaprtmentName,ad.Requirement as RequirementName,ad.Team as TeamName from ActivityDetails ad where Id=@Id";
         public static string GetAllActivityDetails => "Select ad.*,ad.Department as DepartmentName,i.InstrumentsId as InstrumentIdName,ud.FirstName + ' ' + ud.LastName AS fullname,(SELECT STRING_AGG(r.name, ',') FROM AspNetRoles r JOIN AspNetUserRoles ar ON ar.RoleId = r.Id WHERE ar.UserId = CASE WHEN ad.ModifyByUserId IS NOT NULL THEN ad.ModifyByUserId ELSE ad.CreatedByUserId END) AS Role from ActivityDetails ad   JOIN UserDetail ud ON ud.AspNetUserId = CASE WHEN ad.ModifyByUserId IS NOT NULL THEN ad.ModifyByUserId ELSE ad.CreatedByUserId END join InstrumentsIds i on i.Id=ad.InstrumentId where ad.Isdeleted=0  and ad.CreatedByUserId=@LoggedInUser order by ad.Id desc";
         public static string GetAllUsersActivityDetails => "Select * from ActivityDetails where Isdeleted=0 ";
-        public static string PutActivityDetail = "Update ActivityDetails set Remark=@Remark,PerformedDate=@PerformedDate,IsActive=@IsActive where Id=@Id";
+        public static string PutActivityDetail = "Update ActivityDetails set Remark=@Remark,PerformedDate=@PerformedDate,IsActive=@IsActive,ModifyByUserId=@ModifyByUserId,ModifiedDate=@ModifiedDate where Id=@Id";
         public static string DeleteActivityDetails => "Update ActivityDetails set IsDeleted=1 where Id=@Id";
         public static string PostActivityDetail => "Insert into ActivityDetails values(@InstrumentId,@InstrumentName,@InstrumentSerial," +
             "@Model,@LocationName,@InstrumentActivityId,@Days,@Frequency,@TeamName,@TeamLocation,@RequirementName,@DepartmentName," +

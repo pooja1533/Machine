@@ -109,6 +109,7 @@ namespace Hutech.API.Controllers
                 activitydata.CreatedByUserId= httpContextAccessor.HttpContext.Session.GetString("UserId");
                 activitydata.CreatedDate = DateTime.UtcNow;
                 activitydata.ModifiedDate=DateTime.UtcNow;
+                activitydata.ModifyByUserId = activityDetailsViewModel.UpdatedBy;
                 bool data = await activityDetailRepository.PostActivityDetail(activitydata);
                 apiResponse.Result = "activityDetails added successfully";
                 apiResponse.Success = true;

@@ -40,7 +40,7 @@ namespace Hutech.Infrastructure.Repository
                     Location = !string.IsNullOrEmpty(Location) ? Location = Location + "%" : Location;
                     Department = !string.IsNullOrEmpty(Department) ? Department = Department + "%" : Department;
                     var result = await connection.QueryAsync<ActivityDetails>(ActivityDetailsQueries.GetAllFilterActivityDetail, new { InstrumentIdName = InstrumentIdName,InstrumentName=InstrumentName,InstrumentSerial=InstrumentSerial,Model=Model,Location=Location,Department=Department, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate });
-                    var recordsPerPage = 2;
+                    var recordsPerPage = 10;
                     var skipRecords = (pageNumber - 1) * recordsPerPage;
                     if (pageNumber > 0)
                     {
