@@ -1,4 +1,6 @@
-﻿using Hutech.Models;
+﻿using Azure;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Hutech.Models;
 using Hutech.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -140,7 +142,7 @@ namespace Hutech.Controllers
                 logger.LogInformation($"SQL Exception Occure.{ex.Message}");
                 throw ex;
             }
-            
+
         }
         public async Task<IActionResult> DeleteRole(Guid id)
         {
@@ -391,7 +393,113 @@ namespace Hutech.Controllers
 
                 return View();
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                logger.LogInformation($"SQL Exception Occure.{ex.Message}");
+                throw ex;
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMenuAceessRightForRole(string selectedroleId)
+        {
+            var token = Request.Cookies["jwtCookie"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                var handler = new JwtSecurityTokenHandler();
+
+                token = token.Replace("Bearer ", "");
+            }
+            List<MenuViewModel> allmenus = new List<MenuViewModel>();
+            string apiUrl = configuration["Baseurl"];
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Clear();
+
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage Res = await client.GetAsync(string.Format("Role/GetMenuAceessRightForRole/{0}", selectedroleId));
+                if (Res.IsSuccessStatusCode)
+                {
+                    var content = await Res.Content.ReadAsStringAsync();
+                    JObject root = JObject.Parse(content);
+                    var resultData = root["success"].ToString();
+                    if (resultData == "False" || resultData == "false")
+                    {
+                        var Id = root["auditId"].ToString();
+                        TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                    }
+                    else
+                    {
+                        allmenus = root["result"].ToObject<List<MenuViewModel>>();
+                        var mastermenu = allmenus.Where(x => x.ParentId == 0);
+                        var submenu = allmenus.Where(x => x.ParentId > 0);
+                        foreach (var menu in mastermenu)
+                        {
+                            var list = submenu.Where(x => x.ParentId == menu.Id);
+                            bool isuserHaveAccessAllSubMenu = list.All(x => x.IsUserHaveAccess == true);
+                            menu.IsUserHaveAccess = isuserHaveAccessAllSubMenu == true ? true : false;
+                        }
+                    }
+                }
+            }
+            return Json(allmenus);
+        }
+        [HttpPost]
+        public async Task<IActionResult> SaveMenuAccessOfRole(string selectedMenuIds, string roleId)
+        {
+            try
+            {
+                var token = Request.Cookies["jwtCookie"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+
+                    token = token.Replace("Bearer ", "");
+                }
+
+                string apiUrl = configuration["Baseurl"];
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    UserMenuPermissionViewModel userMenuPermissionViewModel = new UserMenuPermissionViewModel();
+                    userMenuPermissionViewModel.MenuIds = selectedMenuIds;
+                    userMenuPermissionViewModel.RoleId=roleId;
+                    userMenuPermissionViewModel.DatecreatedUtc = DateTime.UtcNow;
+                    userMenuPermissionViewModel.CreatedByUserId= HttpContext.Session.GetString("UserId");
+                    // Serialize the data to JSON string
+                    string jsonData = JsonConvert.SerializeObject(userMenuPermissionViewModel);
+
+                    // Create StringContent with JSON data
+                    var data = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+                    // Send HTTP POST request to the API endpoint
+                    HttpResponseMessage Res = await client.PostAsync("Role/SaveMenuAccessOfRole", data);
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        var resultData = root["success"].ToString();
+                        var response = new
+                        {
+                            Message = "Menu access saved successfully",
+                            StatusCode = 200
+                        };
+                        return Json(response);
+                    }
+                }
+                var responseData = new
+                {
+                    Message = "Something Went wrong please contact your administrator",
+                    StatusCode = 500
+                };
+                return Json(responseData);
+            }
+            catch (Exception ex)
             {
                 logger.LogInformation($"SQL Exception Occure.{ex.Message}");
                 throw ex;

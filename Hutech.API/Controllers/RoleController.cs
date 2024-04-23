@@ -231,5 +231,52 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
+        [HttpGet("GetMenuAceessRightForRole/{roleId}")]
+        public async Task<ApiResponse<List<MenuViewModel>>> GetMenuAceessRightForRole(string roleId)
+        {
+            var apiResponse = new ApiResponse<List<MenuViewModel>>();
+            try
+            {
+                var menudata = await roleRepository.GetMenuAceessRightForRole(roleId);
+                var data = mapper.Map<List<Menu>, List<MenuViewModel>>(menudata);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.AuditId = auditId;
+                apiResponse.Success = false;
+                return apiResponse;
+            }
+        }
+        [HttpPost("SaveMenuAccessOfRole")]
+        public async Task<ApiResponse<string>> SaveMenuAccessOfRole(UserMenuPermissionViewModel userMenuPermissionViewModel)
+        {
+            try
+            {
+                var apiResponse = new ApiResponse<string>();
+                var rolePermission = mapper.Map<UserMenuPermissionViewModel, UserMenuPermission>(userMenuPermissionViewModel);
+                bool data = await roleRepository.SaveMenuAccessOfRole(rolePermission);
+                apiResponse.Result = "Permission added successfully";
+                apiResponse.Success = true;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                var apiResponse = new ApiResponse<string>();
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+        }
     }
 }

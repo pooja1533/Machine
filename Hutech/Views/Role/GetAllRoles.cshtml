@@ -18,6 +18,7 @@
                                 <thead>
                                     <tr>
                                         <th>RoleName</th>
+                                        <th></th>
                                         <th>Created By/ Role</th>
                                         <th>Created On</th>
                                         <th>Action</th>
@@ -35,6 +36,7 @@
                                         <td>
                                             @Html.TextBoxFor(x => x.RoleName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.RoleName != null ? @ViewBag.RoleName : "" })
                                         </td>
+                                        <td></td>
                                         <td>
                                             @Html.TextBoxFor(x => x.UpdatedBy, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })
                                         </td>
@@ -46,6 +48,9 @@
                                     {
                                         <tr>
                                             <td>@Model.Roles[i].Name</td>
+                                            <td>
+                                                <button data-id="@Model.Roles[i].Id" data-toggle="modal" data-target="#accessRightModal" class="ModalClick btn btn-primary"> Access Right </button>
+                                            </td>
                                             <td>@Model.Roles[i].fullname (@Model.Roles[i].Role)</td>
                                             @if (Model.Roles[i].DateModifiedUtc != null)
                                             {
@@ -60,7 +65,7 @@
                                                     <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                         <a class="dropdown-item" href="/Role/EditRole?id=@Model.Roles[i].Id">Edit</a>
-                                                        <a class="dropdown-item" href="/Role/DeleteRole?id=@Model.Roles[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a>
+                                                        <a class="dropdown-item" href="/Role/DeleteRole?id=@Model.Roles[i].Id" onclick="return confirm('Are you sure want to delete?')">Deactivate</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -68,7 +73,7 @@
                                         <td><a href="/Role/DeleteRole?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a></td>*@
                                         </tr>
                                     }
-
+                                    <inpu type="hidden" id="selectedRole">
                                 </tbody>
                             </table>
                             @if (Model.TotalPages > 1)
@@ -122,6 +127,23 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="accessRightModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">User Access RIghts</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body" id="data">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit" id="submitMenuAccess">Save changes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 @if (TempData["message"] != null)
 {
     <script type="text/javascript">
@@ -133,6 +155,151 @@
     </script>
 }
 <script type="text/javascript">
+    // Function to attach event listeners to checkboxes
+    function attachCheckboxChangeEvents() {
+        var checkboxes = document.querySelectorAll('#data input[type="checkbox"]');
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', handleCheckboxChange);
+        });
+    }
+    // function handleCheckboxChange(event) {
+    //     var checkbox = event.target;
+    //     var parentId = checkbox.dataset.parentid;
+    //     var id = checkbox.dataset.id;
+    //     // If parentId > 0, check/uncheck all child checkboxes
+    //     if (parentId > 0) {
+    //         debugger;
+    //         var childCheckboxes = document.querySelectorAll('[data-id="' + parentId + '"]');
+    //         var allChecked = true;
+
+    //         childCheckboxes.forEach(function (childCheckbox) {
+    //             if (!childCheckbox.checked) {
+    //                 allChecked = false;
+    //             }
+    //         });
+
+    //         // Update parent checkbox state based on child checkboxes
+    //         var parentCheckbox = document.getElementById('parentCheckbox' + parentId);
+    //         parentCheckbox.checked = allChecked;
+    //     } else {
+    //         debugger;
+    //         // If it's a parent checkbox, check/uncheck all child checkboxes
+    //         // var childCheckboxes = document.querySelectorAll('[data-parentid="' + checkbox.id.replace('parentCheckbox', '') + '"]');
+    //         // childCheckboxes.forEach(function (childCheckbox) {
+    //         //     childCheckbox.checked = checkbox.checked;
+    //         // });
+    //         var childCheckboxes = document.querySelectorAll('[data-parentid="' + id + '"]');
+    //         childCheckboxes.forEach(function (childCheckbox) {
+    //             childCheckbox.checked = checkbox.checked;
+    //         });
+    //     }
+    // }
+    function handleCheckboxChange(event) {
+        var checkbox = event.target;
+        var parentId = checkbox.dataset.parentid;
+        var id = checkbox.dataset.id;
+        // If parentId > 0, check/uncheck all child checkboxes
+        if (id > 0) {
+            var childCheckboxes = document.querySelectorAll('[data-parentid="' + id + '"]');
+            childCheckboxes.forEach(function (childCheckbox) {
+                childCheckbox.checked = checkbox.checked;
+            });
+        }
+        if (parentId > 0) {
+            var childCheckboxes = document.querySelectorAll('[data-id="' + parentId + '"]');
+            childCheckboxes.forEach(function (childCheckbox) {
+                childCheckbox.checked = checkbox.checked;
+            });
+            var childCheckboxes = document.querySelectorAll('[data-parentid="' + parentId + '"]');
+            childCheckboxes.forEach(function (childCheckbox) {
+                var ischecked= childCheckbox.checked;
+                if(!ischecked)
+                {
+                    var childCheckboxdata = document.querySelectorAll('[data-id="' + parentId + '"]');
+                    childCheckboxdata[0].checked = false;
+                    return;
+                }
+            });
+        }
+    }
+    $('#submitMenuAccess').click(function () {
+        // Initialize an array to store selected menu access
+        var selectedMenus = [];
+
+        // Iterate over all checkboxes within the form
+        $('#data input[type="checkbox"]').each(function () {
+            if ($(this).is(':checked')) {
+                // If checkbox is checked, add its value (menu name) to the selectedMenus array
+                var id = $(this).attr('data-id');
+                selectedMenus.push(id);
+            }
+        });
+        var roleId = $("#selectedRole").val();
+        var data = {
+            selectedMenuIds: selectedMenus,
+            roleId: roleId
+        }
+        var url = '/Role/SaveMenuAccessOfRole?selectedMenuIds=' + selectedMenus + '&roleId=' + roleId;
+
+        // Sending selected menu access IDs via AJAX
+        $.ajax({
+            url: url,// URL of your MVC controller action
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data), // Serialize array to JSON string
+            success: function (response) {
+                alert(response.message);
+                $("#accessRightModal").hide();
+                window.location.reload();
+                // Handle success response if needed
+            },
+            error: function (error) {
+                console.error('Error saving menu access:', error);
+                // Handle error response if needed
+            }
+        });
+        // Display selected menu access (for demonstration)
+        console.log('Selected Menu Access:', selectedMenus);
+        // Close the modal after handling the submit event
+        $('#menuAccessModal').modal('hide');
+    });
+    $(".ModalClick").click(function () {
+        var roleId = $(this).data('id');//get the id of the selected button
+        roleId = roleId;
+        $("#selectedRole").val(roleId);
+        // get menu this.access right for Selected role
+        $.ajax({
+            url: '/Role/GetMenuAceessRightForRole?selectedroleId=' + roleId,
+            type: 'GET',
+            success: function (response) {
+                var table = $('<table>').addClass('table');
+
+                // Iterate over each record and create table rows and cells
+                response.forEach(function (response) {
+                    var row = $('<tr>');
+
+                    // Create table cells (columns) for each record property
+                    $('<td>').text(response.name).appendTo(row);      // Display Id
+                    $('<td>').append($('<input>').attr('type', 'checkbox').prop('checked', response.isUserHaveAccess).attr('data-id', response.id).attr('data-parentid', response.parentId)).appendTo(row); // Display Checkbox
+
+                    // Append the row to the table
+                    table.append(row);
+                });
+
+                // Display the table within a modal popup
+                $('#data').html(table); // Assuming 'myModalBody' is the modal body element
+
+                // Show the modal popup
+                $('#myModal').modal('show'); // Assuming 'myModal' is the modal element
+                attachCheckboxChangeEvents();
+            },
+            error: function (error) {
+                console.error('Error fetching menu data:', error);
+            }
+        });
+
+        // $('input:text').val(passedID);//set the id to the input on the modal
+    });
     function Filter() {
         let roleName = $("#RoleName").val();
         let updatebyOrRole = $("#UpdatedBy").val();

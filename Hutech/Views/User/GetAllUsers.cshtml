@@ -49,10 +49,10 @@
                                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                     @if (Model[i].UserstatusName != "Performed")
                                                     {
-                                                        <a class="dropdown-item" href="#" id="@Model[i].UserId" onclick="performAction(this.id)">Perform</a>
+                                                        <a class="dropdown-item" href="#" id="@Model[i].UserId" onclick="performAction(this.id)">Execute</a>
                                                     }
                                                     <a class="dropdown-item" href="/User/EditUser?Id=@Model[i].UserId">Edit</a>
-                                                    <a class="dropdown-item" href="/User/DeleteUser?Id=@Model[i].UserId" onclick="return confirm('Are you sure want to delete?')">Delete</a>
+                                                    <a class="dropdown-item" href="/User/DeleteUser?Id=@Model[i].UserId" onclick="return confirm('Are you sure want to delete?')">Deactivate</a>
                                                 </div>
                                             </div>
                                         </td>

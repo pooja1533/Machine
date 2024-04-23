@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Hutech.Sql.Queries;
 using Hutech.Core.ApiResponse;
+using Microsoft.AspNet.Identity;
 
 namespace Hutech.Infrastructure.Repository
 {
@@ -224,6 +225,51 @@ namespace Hutech.Infrastructure.Repository
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        public async Task<List<Menu>> GetMenuAceessRightForRole(string roleId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                   var menu = await connection.QueryAsync<Menu>(RoleQueries.GetMenuAceessRightForRole, new { Role = roleId });
+                    return menu.ToList();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> SaveMenuAccessOfRole(UserMenuPermission userMenuPermission)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    userMenuPermission.ModifiedByUserId = userMenuPermission.CreatedByUserId;
+                    var deleteExistingRole = await connection.QueryAsync<UserMenuPermission>(RoleQueries.DeleteExistingPermissionOfRole, new { RoleId = userMenuPermission.RoleId, DateModifiedUtc=DateTime.UtcNow, ModifiedByUserId =userMenuPermission.ModifiedByUserId});
+                    userMenuPermission.IsActive=true;
+                    userMenuPermission.IsDeleted = false;
+                    var menuIds = userMenuPermission.MenuIds.Split(",");
+                    foreach (var item in menuIds)
+                    {
+                        userMenuPermission.MenuId =System.Convert.ToInt64(item);
+                        var result = await connection.QueryAsync<string>(RoleQueries.SaveMenuAccessOfRole, userMenuPermission);
+
+                    }
+                    // var result =  connection.Query(RoleQueries.AddRole,aspnetRole);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
     }

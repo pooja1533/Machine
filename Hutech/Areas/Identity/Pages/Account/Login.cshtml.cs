@@ -34,7 +34,7 @@ namespace Hutech.Areas.Identity.Pages.Account
         private readonly ILogger<LoginModel> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, UserManager<ApplicationUser> userManager,IConfiguration configuration)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _signInManager = signInManager;
             _logger = logger;
@@ -193,7 +193,7 @@ namespace Hutech.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                   
+
 
                     var authClaims = new List<Claim>();
                     authClaims.Add(new Claim(ClaimTypes.Name, string.Concat(user.UserName)));
@@ -224,7 +224,7 @@ namespace Hutech.Areas.Identity.Pages.Account
                         {
                             var content = await response.Content.ReadAsStringAsync();
                         }
-                        List<ConfigurationViewModel> configure=new List<ConfigurationViewModel>();
+                        List<ConfigurationViewModel> configure = new List<ConfigurationViewModel>();
                         HttpResponseMessage configurationresponse = await client.GetAsync(string.Format("Configuration/GetAllConfiguration"));
                         if (configurationresponse.IsSuccessStatusCode)
                         {
@@ -232,7 +232,7 @@ namespace Hutech.Areas.Identity.Pages.Account
                             JObject root = JObject.Parse(content);
                             configure = root["result"].ToObject<List<ConfigurationViewModel>>();
                             HttpContext.Session.SetString("FileType", configure.First().FileType);
-                            HttpContext.Session.SetString("FileSize",configure.First().FileSize);
+                            HttpContext.Session.SetString("FileSize", configure.First().FileSize);
                         }
                     }
 
@@ -240,6 +240,76 @@ namespace Hutech.Areas.Identity.Pages.Account
 
                     _logger.LogInformation($"User logged in {Input.Email} {DateTime.Now}");
                     //_logger.LogDebug(message: $"User logged in  {Input.Email} {DateTime.Now}");
+
+                    //Get user permission menu according to role
+                    string BaseURL = _configuration["Baseurl"];
+                    var loggedinUserId = HttpContext.Session.GetString("UserId");
+                    string URL = string.Format("Menu/GetLoggedInUserMenuPermission/{0}", loggedinUserId);
+                    List<MenuViewModel> menu = new List<MenuViewModel>();
+                    BaseURL += URL;
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Clear();
+
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                        HttpResponseMessage responsedataForMenu = await client.GetAsync(BaseURL);
+                        {
+                            if (responsedataForMenu.IsSuccessStatusCode)
+                            {
+                                var contentdata = await responsedataForMenu.Content.ReadAsStringAsync();
+
+                                JObject rootdata = JObject.Parse(contentdata);
+                                menu = rootdata["result"].ToObject<List<MenuViewModel>>();
+                            }
+                        }
+                    }
+                    //HttpContext.Session.SetComplexData("leftsideMenu", menu);
+
+                    //End get user permission menu according to role
+                    HttpContext.Session.SetComplexData("leftsideMenu", menu);
+
+                    var data = HttpContext.Session.GetComplexData<List<MenuViewModel>>("leftsideMenu");
+                    List<LeftSideMenu> menus = new List<LeftSideMenu>();
+
+
+                    var submenu = data.Where(x => x.ParentId > 0).Select(x => x.ParentId).ToList();
+                    submenu = submenu.Distinct().ToList();
+                    foreach (var item in submenu)
+                    {
+                        var submenus = data.Where(x => x.ParentId == item).ToList();
+                        LeftSideMenu menudata = new LeftSideMenu();
+                        menudata.ParentName = submenus[0].ParentName; ;
+                        menudata.ParentId = submenus[0].ParentId;
+                        foreach (var itemdata in submenus)
+                        {
+                            menudata.Sort = itemdata.sort;
+                            menudata.ParentId = itemdata.ParentId;
+                            SubMenu subMenu = new SubMenu();
+                            subMenu.SubMenuName = itemdata.Name;
+                            subMenu.URL = itemdata.URL;
+                            subMenu.Sort = itemdata.sort;
+                            menudata.SubMenus.Add(subMenu);
+
+                        }
+
+                        menus.Add(menudata);
+
+                    }
+                    var mainmenu = data.Where(x => x.ParentId == 0 && x.URL !=null).ToList();
+                    foreach (var item in mainmenu)
+                    {
+                        LeftSideMenu menudata = new LeftSideMenu();
+                        menudata.ParentName = item.Name;
+                        menudata.URL = item.URL;
+                        menudata.Sort = item.sort;
+                        menus.Add(menudata);
+                    }
+                    //ViewBag.Data = menus.ToList();
+                    menus = menus.OrderBy(x => x.Sort).ToList();
+                    HttpContext.Session.SetComplexData("leftside", menus.ToList());
                     return Redirect("Home/Index");
 
                 }
@@ -286,5 +356,5 @@ namespace Hutech.Areas.Identity.Pages.Account
             Response.Cookies.Append("jwtCookie", token, cookieOptions);
         }
     }
-    
+
 }

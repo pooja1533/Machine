@@ -18,5 +18,7 @@ namespace Hutech.Application.Interfaces
         public Task<String> UpdateRole(AspNetRole aspNetRole);
         public Task<ExecutionResult<GridData<AspNetRole>>> GetAllFilterRoles(string? roleName, int pageNumber, string? updatedBy,string? updatedDate);
         public Task<List<AspNetRole>> GetAllRoles();
+        public Task<List<Menu>> GetMenuAceessRightForRole(string roleId);
+        public Task<bool> SaveMenuAccessOfRole(UserMenuPermission userMenuPermission);
     }
 }
