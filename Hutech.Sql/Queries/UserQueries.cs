@@ -32,5 +32,16 @@ namespace Hutech.Sql.Queries
         public static string ApproveUser => "Update UserDetail set UserstatusId=(Select Id from UserStatus where Name='Performed') where Id=@Id";
         public static string RejectUser => "Update UserDetail set RemarkForReject=@Comment,UserstatusId=(select Id from UserStatus where name='Rejected')where Id=@Id";
         public static string GetUserDefualtStatus => "Select Id from UserStatus where Name='Pending'";
+        public static string GetAllFilterUser = "select u.Id as UserId,ut.Name as UserType,u.EmployeeId,u.Remark,u.FirstName+' '+u.LastName as fullName,us.Name as UserstatusName," +
+            "u.WindowsUserName,u.Email,d.Name as DepartmentName,L.Name as LocationName,(select STRING_AGG(r.name,',') from AspNetRoles r inner join AspNetUserRoles ar on ar.RoleId=r.Id  where u.AspNetUserId=ar.UserId) as RoleName from UserDetail u " +
+            " join Department d on d.Id=u.DepartmentId join Location l on l.Id=u.LocationId join UserType ut on ut.Id=u.UserTypeId join userstatus us on us.Id=u.UserstatusId where u.IsActive=@Status and u.AspNetUserId!=@Id and " +
+            "(u.FirstName like case when @FullName is not null then @FullName else '%' end or u.LastName like case when @FullName is not null then @FullName else '%' end) " +
+            " and u.Email like case when @email is not null then @email else '%' end" +
+            " and u.EmployeeId like case when @EmployeeId is not null then @EmployeeId else '%' end" +
+          " AND COALESCE(u.WindowsUserName, '') LIKE COALESCE(@userName, '%') "+
+            " and u.UserTypeId= case when @UserTypeId > 0 then @UserTypeId else u.UserTypeId end "+
+           " and u.DepartmentId= case when @DepartmentId> 0 then @DepartmentId else u.DepartmentId end"+
+             " and u.LocationId= case when @LocationId> 0 then @LocationId else u.LocationId end"+
+            " AND (@RoleId IS NULL OR EXISTS (SELECT 1 FROM AspNetUserRoles aur WHERE aur.UserId = u.AspNetUserId AND aur.RoleId = @RoleId))";
     }
 }

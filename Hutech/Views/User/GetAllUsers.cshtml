@@ -1,76 +1,162 @@
-﻿<style>
-    .label {
-        font-weight: bold !important;
-    }
-</style>
-<div class="container-fluid">
-    <div class="animated fadeIn">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Users
-                        <a href="/User/AddUser">Add User</a>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-responsive-sm">
-                            <thead>
-                                <tr>
-                                    <th>User Type</th>
-                                    <th>Full Name</th>
-                                    <th>User Name</th>
-                                    <th>Email</th>
-                                    <th>Employee Id</th>
-                                    <th>Remark</th>
-                                    <th>Department</th>
-                                    <th>User Role</th>
-                                    <th>Location</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.Count; i++)
-                                {
+﻿@{
+    Layout = !Context.Request.Headers["X-Requested-With"].ToString().Equals("XMLHttpRequest", StringComparison.OrdinalIgnoreCase) ? "_Layout" : null;
+}
+@model Hutech.Models.UsersViewModel
+<div id="content">
+    <div class="container-fluid">
+        <div class="animated fadeIn">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div  style="float:left;">
+                                <i class="fa fa-align-justify"></i> Users
+                                <a href="/User/AddUser">Add User</a>
+                            </div>
+                            <div style="float:right">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-secondary dropdown-toggle" id="btnGroupExport" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Export</button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupExport">
+                                        @* <a class="dropdown-item" href="/User/ExportToExcel?FullName=@Model.FullName">Export to Excel</a> *@
+                                        <a class="dropdown-item" href="/User/ExportToExcel?FullName=@Model.FullName&UserName=@Model.UserName&EmailId=@Model.EmailId&Status=@Model.SelectedStatus&EmployeeId=@Model.EmployeeId&userType=@Model.SelectedUserType&department=@Model.SelectedDepartment&role=@Model.SelectedRole&location=@Model.SelectedLocation">Export to Excel</a> 
+                                        <a class="dropdown-item" href="/User/ExportToPDF?FullName=@Model.FullName&UserName=@Model.UserName&EmailId=@Model.EmailId&Status=@Model.SelectedStatus&EmployeeId=@Model.EmployeeId&userType=@Model.SelectedUserType&department=@Model.SelectedDepartment&role=@Model.SelectedRole&location=@Model.SelectedLocation">Export to PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                            
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-responsive-sm">
+                                <thead>
                                     <tr>
-                                        <td>@Model[i].UserType</td>
-                                        <td>@Model[i].FullName</td>
-                                        <td>@Model[i].WindowsUserName</td>
-                                        <td>@Model[i].Email</td>
-                                        <td>@Model[i].EmployeeId</td>
-                                        <td>@Model[i].Remark</td>
-                                        <td>@Model[i].DepartmentName</td>
-                                        <td>@Model[i].RoleName</td>
-                                        <td>@Model[i].LocationName</td>
-                                        <td>@Model[i].UserstatusName</td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
-                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                    @if (Model[i].UserstatusName != "Performed")
-                                                    {
-                                                        <a class="dropdown-item" href="#" id="@Model[i].UserId" onclick="performAction(this.id)">Execute</a>
-                                                    }
-                                                    <a class="dropdown-item" href="/User/EditUser?Id=@Model[i].UserId">Edit</a>
-                                                    <a class="dropdown-item" href="/User/DeleteUser?Id=@Model[i].UserId" onclick="return confirm('Are you sure want to delete?')">Deactivate</a>
-                                                </div>
-                                            </div>
-                                        </td>
-
-
+                                        <th>User Type</th>
+                                        <th>Full Name</th>
+                                        <th>User Name</th>
+                                        <th>Email</th>
+                                        <th>Employee Id</th>
+                                        <th>Remark</th>
+                                        <th>Department</th>
+                                        <th>User Role</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
+                                </thead>
+                                @{
+                                    int recordsPerPage = 10;
+                                    int pageNumber = Model.CurrentPage;
+                                    int pageSize = pageNumber + 4;
+                                    int rowNo = ((pageNumber - 1) * recordsPerPage);
                                 }
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @Html.DropDownListFor(x => x.SelectedUserType, Model.UserTypes,"Select UserType", new { @class = "form-control processbank", @onchange = "Filter()" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.FullName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.FullName != null ? @ViewBag.FullName : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.UserName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UserName != null ? @ViewBag.UserName : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.EmailId, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.EmailId != null ? @ViewBag.EmailId : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.EmployeeId, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.EmployeeId != null ? @ViewBag.EmployeeId : "" })
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            @Html.DropDownListFor(x=>x.SelectedDepartment,Model.Departments,"Select Department",new {@class="form-control processbank",@onchange="Filter()"})
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(x => x.SelectedRole, Model.Roles,"Select Role", new { @class = "form-control processbank", @onchange = "Filter()" })
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(x => x.SelectedLocation, Model.Locations,"Select Location", new { @class = "form-control processbank", @onchange = "Filter()" })
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(x => x.SelectedStatus, Model.Status,"Select Status", new { @class = "form-control processbank", @onchange = "Filter()" })
+                                        </td>
+                                    </tr>
+                                    @for (int i = 0; i < Model.userViewModels.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>@Model.userViewModels[i].UserType</td>
+                                            <td>@Model.userViewModels[i].FullName</td>
+                                            <td>@Model.userViewModels[i].WindowsUserName</td>
+                                            <td>@Model.userViewModels[i].Email</td>
+                                            <td>@Model.userViewModels[i].EmployeeId</td>
+                                            <td>@Model.userViewModels[i].Remark</td>
+                                            <td>@Model.userViewModels[i].DepartmentName</td>
+                                            <td>@Model.userViewModels[i].RoleName</td>
+                                            <td>@Model.userViewModels[i].LocationName</td>
+                                            <td>@Model.userViewModels[i].UserstatusName</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                        @if (Model.userViewModels[i].UserstatusName != "Performed")
+                                                        {
+                                                            <a class="dropdown-item" href="#" id="@Model.userViewModels[i].UserId" onclick="performAction(this.id)">Execute</a>
+                                                        }
+                                                        <a class="dropdown-item" href="/User/EditUser?Id=@Model.userViewModels[i].UserId">Edit</a>
+                                                        <a class="dropdown-item" href="/User/DeleteUser?Id=@Model.userViewModels[i].UserId" onclick="return confirm('Are you sure want to delete?')">Deactivate</a>
+                                                    </div>
+                                                </div>
+                                            </td>
 
-                            </tbody>
-                        </table>
 
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                            @if (Model.TotalPages > 1)
+                            {
+                                <nav>
+                                    <ul class="pagination">
+                                        @if (pageNumber > 1)
+                                        {
+                                            int prevPage = pageNumber - 1;
+                                            <li class="page-item">
+                                                <a class="page-link" href="/User/GetAllUsers?PageNumber=@prevPage&FullName=@Model.FullName&UserName=@Model.UserName&EmailId=@Model.EmailId&Status=@Model.SelectedStatus&EmployeeId=@Model.EmployeeId&userType=@Model.SelectedUserType&department=@Model.SelectedDepartment&role=@Model.SelectedRole&location=@Model.SelectedLocation">Prev</a>
+                                            </li>
+                                        }
+                                        @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
+                                        {
+                                            if (i == pageNumber)
+                                            {
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="/User/GetAllUsers?PageNumber=@i&FullName=@Model.FullName&UserName=@Model.UserName&EmailId=@Model.EmailId&Status=@Model.SelectedStatus&EmployeeId=@Model.EmployeeId&userType=@Model.SelectedUserType&department=@Model.SelectedDepartment&role=@Model.SelectedRole&location=@Model.SelectedLocation">@i</a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" href="/User/GetAllUsers?PageNumber=@i&FullName=@Model.FullName&UserName=@Model.UserName&EmailId=@Model.EmailId&Status=@Model.SelectedStatus&EmployeeId=@Model.EmployeeId&userType=@Model.SelectedUserType&department=@Model.SelectedDepartment&role=@Model.SelectedRole&location=@Model.SelectedLocation">@i</a>
+                                                </li>
+                                            }
+                                        }
+                                        @if (pageNumber < Model.TotalPages)
+                                        {
+                                            int nextPage = pageNumber + 1;
+                                            <li class="page-item">
+                                                <a class="page-link" href="/User/GetAllUsers?PageNumber=@nextPage&FullName=@Model.FullName&UserName=@Model.UserName&EmailId=@Model.EmailId&Status=@Model.SelectedStatus&EmployeeId=@Model.EmployeeId&userType=@Model.SelectedUserType&department=@Model.SelectedDepartment&role=@Model.SelectedRole&location=@Model.SelectedLocation">Next</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- /.col-->
+                <!-- /.col-->
 
+            </div>
+            <!-- /.row-->
         </div>
-        <!-- /.row-->
     </div>
 </div>
 <!-- Modal -->
@@ -232,6 +318,77 @@
     </script>
 }
 <script type="text/javascript">
+    function Filter() {
+        let fullName = $("#FullName").val();
+        let userName = $("#UserName").val();
+        let email = $("#EmailId").val();
+        let employeeId = $("#EmployeeId").val();
+        var selectElement = document.getElementById("SelectedStatus");
+        var selectedValue = selectElement.value;
+        let status = selectedValue;
+
+        var selectUsertype=document.getElementById("SelectedUserType");
+        var selectedUserType=selectUsertype.value;
+        let userType=selectedUserType;
+
+        var selectDepartmenttype=document.getElementById("SelectedDepartment");
+        var selectedDepartment=selectDepartmenttype.value;
+        let department=selectedDepartment;
+        
+        var selectRole=document.getElementById("SelectedRole");
+        var selectedRole=selectRole.value;
+        let role=selectedRole;
+
+        
+        var selectLocation=document.getElementById("SelectedLocation");
+        var selectedLocation=selectLocation.value;
+        let location=selectedLocation;
+
+        if (fullName == "" && fullName.length == 0)
+            fullName = null;
+        if (userName == "" && userName.length == 0)
+            userName = null;
+        if (email == "" && email.length == 0)
+            email = null;
+        if (employeeId == "" && employeeId.length == 0)
+            employeeId = null;
+        if(userType=="" && userType.length==0)
+            userType=null;
+        if(department=="" && department.length==0)
+            department=null;
+        if(role=="" && role.length==0)
+            role=null;
+        if(location=="" && location.length==0)
+            location=null;
+        var model = {
+            FullName: fullName,
+            UserName: userName,
+            EmployeeId: employeeId,
+            EmailId: email,
+            Status:status,
+            userType:userType,
+            department:department,
+            role:role,
+            location:location
+        };
+        $.ajax({
+            url: '/User/GetAllUsers',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (response) {
+                // Handle successful response from the server
+                var div = document.getElementById("content");
+                div.innerHTML = response;
+            },
+            error: function (xhr, status, error) {
+                // Handle error response from the server
+                console.error(xhr.responseText);
+            }
+        });
+    }
+</script>
+<script type="text/javascript">
     function RejectUser() {
         var rejectComment = $("#reject").val();
         var userId = $("#userId").val();
@@ -261,7 +418,7 @@
                 }
             })
         }
-        
+
     }
     function ApproveUser() {
         var password = $("#password").val();

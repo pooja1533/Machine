@@ -21,7 +21,8 @@ namespace Hutech
             var message = String.Format("{0} controller:{1} action:{2} execeute by {3} at {4}", "onexecuting", controllerName, actionName,loggedinuser,DateTime.Now);
             if(parameter.Count > 0)
             {
-                message = message+" " + parameter.Keys.First().ToString()+"-"+parameter.Values.First().ToString();
+                var value = parameter.Values.First()!=null ? parameter.Values.First() : string.Empty;
+                message = message+" " + parameter.Keys.FirstOrDefault().ToString()+"-"+value;
             }
             //Debug.WriteLine(message, "Action Filter Log");
             _logger.LogInformation(message);

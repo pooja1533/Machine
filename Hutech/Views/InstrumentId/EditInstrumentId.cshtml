@@ -9,7 +9,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Instrument Id Name*</label>
+                            <label for="company">Instrument Id *</label>
                             @Html.TextBoxFor(x => x.InstrumentsId, new { Placeholder = "Enter Instrument Id", @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.InstrumentsId,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@

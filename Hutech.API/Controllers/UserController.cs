@@ -30,6 +30,44 @@ namespace Hutech.API.Controllers
             logger = _logger;
             auditRepository= _auditRepository;
         }
+        [HttpPost("GetAllFilterUser")]
+        public async Task<ApiResponse<List<UserViewModel>>> GetAllFilterUser(UserModal userModal)
+        {
+            var apiResponse = new ApiResponse<List<UserViewModel>>();
+            try
+            {
+                string? fullName = userModal.FullName;
+                int pageNumber = userModal.PageNumber;
+                string? userName = userModal.UserName;
+                string? status = userModal.status;
+                string? email = userModal.EmailId;
+                string? loggedInUserId = userModal.LoggedInUserId;
+                string? employeeId= userModal.EmployeeId;
+                int? userType =System.Convert.ToInt32(userModal.UserType);
+                long departmentId = System.Convert.ToInt64(userModal.Department);
+                long? locationId = System.Convert.ToInt64(userModal.Location);
+                string? roleId = userModal.Role;
+                var user = await userRepository.GetAllFilterUser(fullName, pageNumber, userName, status, email,loggedInUserId,employeeId, userType, departmentId,locationId, roleId);
+                var data = mapper.Map<List<UserDetail>, List<UserViewModel>>(user.Value.GridRecords);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+                apiResponse.CurrentPage = user.Value.CurrentPage;
+                apiResponse.TotalPage = user.Value.TotalPages;
+                apiResponse.TotalRecords = user.Value.TotalRecords;
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+        }
         [HttpGet("GetUsers")]
         public async Task<ApiResponse<List<UserViewModel>>> GetUsers()
         {

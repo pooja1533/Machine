@@ -18,6 +18,12 @@
                     @Html.ValidationMessageFor(x=>x.LocationId,"", new { @class = "text-danger"})
                     @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                 </div>
+                <div class="form-group">
+                    <label for="company">Department*</label>
+                    @Html.DropDownListFor(x => x.DepartmentId, Model.deparments, "Please select Department", new { @class = "form-control processbank" })
+                    @Html.ValidationMessageFor(x => x.DepartmentId, "", new { @class = "text-danger" })
+                    @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
+                </div>
                 <div class="form-actions">
                     <button class="btn btn-primary" type="submit">Save changes</button>
                     <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>

@@ -9,6 +9,7 @@ namespace Hutech.Models
         public TeamViewModel()
         {
             locations = new List<SelectListItem>();
+            deparments = new List<SelectListItem>();
         }
         public long Id { get; set; }
         public string? Name { get; set; }
@@ -16,8 +17,11 @@ namespace Hutech.Models
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public long LocationId { get; set; }
+        public long DepartmentId { get; set; }  
         public List<SelectListItem> locations { get; set; }
+        public List<SelectListItem> deparments { get; set; }
         public string? LocationName { get; set; }
+        public string? DepartmentName { get; set; }
         public DateTime? DatecreatedUtc { get; set; }
         public string? CreatedByUserId { get; set; }
         public DateTime DateModifiedUtc { get; set; }
@@ -33,7 +37,7 @@ namespace Hutech.Models
         {
             RuleFor(x => x.Name).NotEmpty().WithMessage("Please enter Team Name");
             RuleFor(x => x.LocationId).NotNull().NotEmpty().WithMessage("Please select Location");
-
+            RuleFor(x => x.DepartmentId).NotNull().NotEmpty().WithMessage("Please select Department");
         }
     }
     public class TeamModel
@@ -44,5 +48,6 @@ namespace Hutech.Models
         public string? Status { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public string? LocationName { get; set; }
+        public string? DepartmentName { get; set; }
     }
 }

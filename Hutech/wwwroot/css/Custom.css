@@ -6,3 +6,6 @@
     height: 80vh;
     overflow-y: auto;
 }
+.label {
+    font-weight: bold !important;
+}

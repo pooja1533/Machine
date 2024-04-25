@@ -8,6 +8,7 @@ namespace Hutech.Models
         public List<TeamViewModel> teamViewModels { get; set; }
         public string? TeamName { get; set; }
         public string? LocationName { get; set; }
+        public string? DepartmentName { get; set; }
         public string? UpdatedBy { get; set; }
         public int SelectedStatus { get; set; }
         public List<SelectListItem> Status { get; set; }

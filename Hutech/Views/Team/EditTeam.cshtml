@@ -20,6 +20,12 @@
                     @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                 </div>
                 <div class="form-group">
+                    <label for="company">Department*</label>
+                    @Html.DropDownListFor(x => x.DepartmentId, Model.deparments, "Please select Department", new { @class = "form-control processbank" })
+                    @Html.ValidationMessageFor(x => x.DepartmentId, "", new { @class = "text-danger" })
+                    @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
+                </div>
+                <div class="form-group">
                     <label for="company">Status</label>
                     <div class="input-prepend input-group">
                         @Html.RadioButtonFor(x => x.IsActive, "true")<label for="company" class="status ">Active</label> &nbsp;&nbsp;

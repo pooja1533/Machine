@@ -68,4 +68,18 @@ namespace Hutech.Models
             RuleFor(x => x.SelectedUserRoleId).NotNull().NotEmpty().WithMessage("Please select User Role");
         }
     }
+    public class UserModal
+    {
+        public string? FullName { get; set; }
+       public string? UserName { get; set; }
+        public string? EmailId { get; set; }
+        public int PageNumber { get; set; }
+        public string? status { get; set; }
+        public string? LoggedInUserId { get; set; }
+        public string? EmployeeId { get; set; }
+        public string? UserType { get; set; }
+        public string? Department { get; set; }
+        public string? Role { get; set; }
+        public string? Location { get; set; }
+    }
 }

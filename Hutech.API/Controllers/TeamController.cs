@@ -177,7 +177,8 @@ namespace Hutech.API.Controllers
                 DateTime? updatedDate = teamModel.UpdatedDate;
                 string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
                 string? locationName = teamModel.LocationName;
-                var team = await teamRepository.GetAllFilterTeam(teamName, pageNumber, updatedBy, status, formattedDate,locationName);
+                string? departmentName=teamModel.DepartmentName;
+                var team = await teamRepository.GetAllFilterTeam(teamName, pageNumber, updatedBy, status, formattedDate,locationName,departmentName);
                 var data = mapper.Map<List<Team>, List<TeamViewModel>>(team.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;

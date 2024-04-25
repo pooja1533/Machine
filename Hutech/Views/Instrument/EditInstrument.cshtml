@@ -6,17 +6,17 @@
 *@    <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <strong>Edit Instrument</strong>
+                <strong>Edit Instrument Name</strong>
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="company">Name</label>
+                    <label for="company">Instrument Name</label>
                     @Html.HiddenFor(x=>x.Id)
                     @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Instrument Name", @class = "form-control", maxlength = "50" })
                     @Html.ValidationMessageFor(x=>x.Name,"",new {@class="text-danger"})
                 </div>
 
-                @if (Model != null)
+               @*  @if (Model != null)
                 {
                     <div class="form-group">
                         <label for="company">Uploaded Documents</label><br />
@@ -28,13 +28,13 @@
                         }
                     </div>
 
-                }
+                } *@
 
-                <div class="form-group">
+               @*  <div class="form-group">
                     <label for="company">Select Multiple Files</label>
                     <input asp-for="Files" class="form-control" multiple />
                     <span asp-validation-for="Files" class="text-danger"></span>
-                </div>
+                </div> *@
                 <div class="form-group">
                     <label for="company">Status</label>
                     <div class="input-prepend input-group">

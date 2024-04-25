@@ -116,7 +116,7 @@ namespace Hutech.Infrastructure.Repository
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    var result = await connection.QueryAsync<Team>(TeamQueries.UpdateTeam, new { Id = team.Id, Name = team.Name, LocationId = team.LocationId, IsActive = team.IsActive, DateModifiedUtc=team.DateModifiedUtc, ModifiedByUserId=team.ModifiedByUserId });
+                    var result = await connection.QueryAsync<Team>(TeamQueries.UpdateTeam, new { Id = team.Id, Name = team.Name, LocationId = team.LocationId, IsActive = team.IsActive, DateModifiedUtc=team.DateModifiedUtc, ModifiedByUserId=team.ModifiedByUserId,DepartmentId=team.DepartmentId });
                     return result.ToString();
                 }
 
@@ -126,7 +126,7 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
-        public async Task<ExecutionResult<GridData<Team>>> GetAllFilterTeam(string? TeamName, int pageNumber, string? updatedBy, string? status, string? updatedDate,string? LocationName)
+        public async Task<ExecutionResult<GridData<Team>>> GetAllFilterTeam(string? TeamName, int pageNumber, string? updatedBy, string? status, string? updatedDate,string? LocationName,string? DepartmentName)
         {
             try
             {
@@ -139,7 +139,8 @@ namespace Hutech.Infrastructure.Repository
                         isactive = true;
                     LocationName = !string.IsNullOrEmpty(LocationName) ? LocationName + "%" : LocationName;
                     TeamName = !string.IsNullOrEmpty(TeamName) ? TeamName = TeamName + "%" : TeamName;
-                    var result = await connection.QueryAsync<Team>(TeamQueries.GetAllFilterTeam, new { Name = TeamName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate, LocationName=LocationName });
+                    DepartmentName=!string.IsNullOrEmpty(DepartmentName)? DepartmentName+"%" : DepartmentName;
+                    var result = await connection.QueryAsync<Team>(TeamQueries.GetAllFilterTeam, new { Name = TeamName, UpdatedBy = updatedBy, Status = isactive, UpdatedDate = updatedDate, LocationName=LocationName , DepartmentName = DepartmentName });
                     var recordsPerPage = 10;
                     var skipRecords = (pageNumber - 1) * recordsPerPage;
                     if (pageNumber > 0)

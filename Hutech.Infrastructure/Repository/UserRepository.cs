@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Hutech.Application.Interfaces;
+using Hutech.Core.ApiResponse;
 using Hutech.Core.Constants;
 using Hutech.Core.Entities;
 using Hutech.Sql.Queries;
@@ -48,6 +49,60 @@ namespace Hutech.Infrastructure.Repository
                     var result = await connection.QueryAsync<AspNetUsers>(UserQueries.GetUsers);
                     users = result.ToList();
                     return users;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<ExecutionResult<GridData<UserDetail>>> GetAllFilterUser(string? fullName, int pageNumber, string? userName, string? status, string? email,string? loggedInUserId,string? employeeId, int? userType, long? departmentId,long? locationId, string? roleId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    fullName = !string.IsNullOrEmpty(fullName) ? fullName = "%" + fullName + "%" : fullName;
+                    bool isactive = false;
+                    if (string.IsNullOrEmpty(status) || status == "1")
+                        isactive = true;
+                    userName = !string.IsNullOrEmpty(userName) ? userName = userName + "%" : userName;
+                    employeeId = !string.IsNullOrEmpty(employeeId) ? employeeId = employeeId + "%" : employeeId;
+                    email=!string.IsNullOrEmpty(email) ? email=email + "%" : email;
+                    roleId = !string.IsNullOrEmpty(roleId) ? roleId = roleId : roleId;
+                    var result = await connection.QueryAsync<UserDetail>(UserQueries.GetAllFilterUser, new { FullName = fullName, userName = userName, Status = isactive, email = email ,Id=loggedInUserId,EmployeeId= employeeId,UserTypeId=userType,DepartmentId=departmentId,LocationId=locationId,RoleId= roleId });
+                    var recordsPerPage = 10;
+                    var skipRecords = (pageNumber - 1) * recordsPerPage;
+                    if (pageNumber > 0)
+                    {
+                        var totalRecords = result.Count();
+                        var userList = result.Skip(skipRecords).Take(recordsPerPage).ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var users = new GridData<UserDetail>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = userList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<UserDetail>>(users);
+                    }
+                    else
+                    {
+                        var totalRecords = result.Count();
+                        var userList = result.ToList();
+                        var totalPages = ((double)totalRecords / (double)recordsPerPage);
+                        var users = new GridData<UserDetail>()
+                        {
+                            CurrentPage = pageNumber,
+                            TotalRecords = totalRecords,
+                            GridRecords = userList,
+                            TotalPages = (int)Math.Ceiling(totalPages)
+                        };
+                        return new ExecutionResult<GridData<UserDetail>>(users);
+                    }
                 }
 
             }

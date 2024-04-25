@@ -12,6 +12,7 @@ namespace Hutech.Core.Entities
         public long Id { get; set; }
         public string Name { get; set; }
         public long LocationId { get; set; }
+        public long DepartmentId { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DatecreatedUtc { get; set; }
@@ -21,6 +22,8 @@ namespace Hutech.Core.Entities
 
         [NotMapped]
         public string LocationName { get; set; }
+        [NotMapped]
+        public string DepartmentName { get; set; }
         [NotMapped]
         public string? fullname { get; set; }
         [NotMapped]

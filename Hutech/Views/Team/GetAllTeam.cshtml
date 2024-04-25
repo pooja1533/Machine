@@ -19,6 +19,7 @@
                                     <tr>
                                         <th>Team Name</th>
                                         <th>Location Name</th>
+                                        <th>Department Name</th>
                                         <th>Updated By/Role</th>
                                         <th>Updated On</th>
                                         <th>Status</th>
@@ -38,7 +39,10 @@
                                             @Html.TextBoxFor(x => x.TeamName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.TeamName != null ? @ViewBag.TeamName : "" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(x => x.LocationName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.TeamName != null ? @ViewBag.TeamName : "" })
+                                            @Html.TextBoxFor(x => x.LocationName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.LocationName != null ? @ViewBag.LocationName : "" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(x => x.DepartmentName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.DepartmentName != null ? @ViewBag.DepartmentName : "" })
                                         </td>
                                         <td>
                                             @Html.TextBoxFor(x => x.UpdatedBy, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })
@@ -55,6 +59,7 @@
                                         <tr>
                                             <td>@Model.teamViewModels[i].Name</td>
                                             <td>@Model.teamViewModels[i].LocationName</td>
+                                            <td>@Model.teamViewModels[i].DepartmentName</td>
                                             <td>@Model.teamViewModels[i].fullname (@Model.teamViewModels[i].Role)</td>
                                             <td>@Model.teamViewModels[i].DateModifiedUtc.ToString("dd MMM yyyy HH:mm")</td>
                                             @if (Model.teamViewModels[i].IsActive)
@@ -92,7 +97,7 @@
                                         {
                                             int prevPage = pageNumber - 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/Team/GetAllTeam?pageNumber=@prevPage&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Prev</a>
+                                                <a class="page-link" href="/Team/GetAllTeam?pageNumber=@prevPage&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus&locationName=@Model.LocationName&departmentName=@Model.DepartmentName">Prev</a>
                                             </li>
                                         }
                                         @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
@@ -100,13 +105,13 @@
                                             if (i == pageNumber)
                                             {
                                                 <li class="page-item active">
-                                                    <a class="page-link" href="/Team/GetAllTeam?pageNumber=@i&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@i</a>
+                                                    <a class="page-link" href="/Team/GetAllTeam?pageNumber=@i&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus&locationName=@Model.LocationName&departmentName=@Model.DepartmentName">@i</a>
                                                 </li>
                                             }
                                             else
                                             {
                                                 <li class="page-item">
-                                                    <a class="page-link" href="/Team/GetAllTeam?pageNumber=@i&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@i</a>
+                                                    <a class="page-link" href="/Team/GetAllTeam?pageNumber=@i&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus&locationName=@Model.LocationName&departmentName=@Model.DepartmentName">@i</a>
                                                 </li>
                                             }
                                         }
@@ -114,7 +119,7 @@
                                         {
                                             int nextPage = pageNumber + 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/Team/GetAllTeam?pageNumber=@nextPage&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Next</a>
+                                                <a class="page-link" href="/Team/GetAllTeam?pageNumber=@nextPage&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus&locationName=@Model.LocationName&departmentName=@Model.DepartmentName">Next</a>
                                             </li>
                                         }
                                     </ul>
@@ -147,6 +152,7 @@
     function Filter() {
         let teamName = $("#TeamName").val();
         let locationName = $("#LocationName").val();
+        let departmentName = $("#DepartmentName").val();
         let updatebyOrRole = $("#UpdatedBy").val();
         var selectElement = document.getElementById("SelectedStatus");
         var selectedValue = selectElement.value;
@@ -158,6 +164,8 @@
             updatebyOrRole = null;
         if (locationName == "" && locationName.length == 0)
             locationName = null;
+        if (departmentName == "" && departmentName.length == 0)
+            departmentName = null;
         if (date == "")
             date = null;
         var model = {
@@ -165,7 +173,8 @@
             updatedBy: updatebyOrRole,
             status: status,
             updatedDate: date,
-            locationName:locationName
+            locationName:locationName,
+            departmentName: departmentName
         };
         $.ajax({
             url: '/Team/GetAllTeam',

@@ -107,15 +107,33 @@ else
     app.UseExceptionHandler("/Home/Error");
 
 }
-app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
+app.UseExceptionHandler("/Error");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 app.UseRouting();
+
+app.UseStatusCodePages(async context =>
+{
+    if (context.HttpContext.Response.StatusCode == 400)
+    {
+        context.HttpContext.Response.Redirect("/Home/Error");
+    }
+    else if (context.HttpContext.Response.StatusCode == 404)
+    {
+        context.HttpContext.Response.Redirect("/Home/Error");
+    }
+    else if (context.HttpContext.Response.StatusCode == 500)
+    {
+        context.HttpContext.Response.Redirect("/Home/Error");
+    }
+});
+
 app.UseAuthorization(); 
 app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapRazorPages();
 app.Run();
