@@ -3,14 +3,14 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <strong>Add AddInstrumentId</strong>
+                <strong>@_localizer.Getkey("Edit InstrumentId")</strong>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Instrument Id *</label>
-                            @Html.TextBoxFor(x => x.InstrumentsId, new { Placeholder = "Enter Instrument Id", @class = "form-control", maxlength = "50" })
+                            <label for="company">@_localizer.Getkey("Instrument Id*")</label>
+                            @Html.TextBoxFor(x => x.InstrumentsId, new { Placeholder = @_localizer.Getkey("Enter Instrument Id"), @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.InstrumentsId,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
@@ -18,16 +18,16 @@
                     @Html.HiddenFor(x=>x.Id)
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Model*</label>
-                            @Html.TextBoxFor(x => x.Model, new { Placeholder = "Enter Model", @class = "form-control", maxlength = "50" })
+                            <label for="company">@_localizer.Getkey("Model*")</label>
+                            @Html.TextBoxFor(x => x.Model, new { Placeholder = @_localizer.Getkey("Enter Model"), @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.Model,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Instrument Serial*</label>
-                            @Html.TextBoxFor(x => x.InstrumentSerial, new { Placeholder = "Enter InstrumentSerial", @class = "form-control", maxlength = "50" })
+                            <label for="company">@_localizer.Getkey("Instrument Serial*")</label>
+                            @Html.TextBoxFor(x => x.InstrumentSerial, new { Placeholder = @_localizer.Getkey("Enter InstrumentSerial"), @class = "form-control", maxlength = "50" })
                             @Html.ValidationMessageFor(x=>x.InstrumentSerial,"", new { @class = "text-danger"})
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
@@ -36,22 +36,22 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Instrument Name*</label>
-                            @Html.DropDownListFor(x=>x.InstrumentId,Model.Instruments,"Please select Instrument",new {@class="form-control processbank",onchange="handleActivityChange()"})
+                            <label for="company">@_localizer.Getkey("Instrument Name*")</label>
+                            @Html.DropDownListFor(x => x.InstrumentId, Model.Instruments, @_localizer.Getkey("Please select Instrument"), new { @class = "form-control processbank", onchange = "handleActivityChange()" })
                             @Html.ValidationMessageFor(x=>x.InstrumentId,"", new { @class = "text-danger"})
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Location*</label>
-                            @Html.DropDownListFor(x=>x.LocationId,Model.Locations,"Please select Location",new {@class="form-control processbank",onchange="handleLocationChange()"})
+                            <label for="company">@_localizer.Getkey("Location*")</label>
+                            @Html.DropDownListFor(x => x.LocationId, Model.Locations, @_localizer.Getkey("Please select Location"), new { @class = "form-control processbank", onchange = "handleLocationChange()" })
                             @Html.ValidationMessageFor(x=>x.LocationId,"", new { @class = "text-danger"})
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Team*</label>
-                            @Html.DropDownListFor(x=>x.TeamId,Model.Teams,"Please select Team",new {@class="form-control processbank",onchange="handleTeamChange()"})
+                            <label for="company">@_localizer.Getkey("Team*")</label>
+                            @Html.DropDownListFor(x => x.TeamId, Model.Teams, @_localizer.Getkey("Please select Team"), new { @class = "form-control processbank", onchange = "handleTeamChange()" })
                             @Html.ValidationMessageFor(x=>x.TeamId,"", new { @class = "text-danger"})
                         </div>
                     </div>
@@ -59,21 +59,21 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Team Location</label>
-                            @Html.TextBoxFor(x=>x.TeamLocation,new{Placeholder="Enter Team Location",@class="form-control",@readonly = true})
+                            <label for="company">@_localizer.Getkey("Team Location")</label>
+                            @Html.TextBoxFor(x => x.TeamLocation, new { Placeholder = @_localizer.Getkey("Enter Team Location"), @class = "form-control", @readonly = true })
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="company">Status</label>
+                        <label for="company">@_localizer.Getkey("Status")</label>
                         <div class="input-prepend input-group">
-                            @Html.RadioButtonFor(x => x.IsActive, "true")<label for="company" class="status ">Active</label> &nbsp;&nbsp;
-                            @Html.RadioButtonFor(x => x.IsActive, "false")<label for="company" class="status frequencyUnit">InActive</label>
+                            @Html.RadioButtonFor(x => x.IsActive, "true")<label for="company" class="status ">@_localizer.Getkey("Active")</label> &nbsp;&nbsp;
+                            @Html.RadioButtonFor(x => x.IsActive, "false")<label for="company" class="status frequencyUnit">@_localizer.Getkey("InActive")</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Save changes</button>
-                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                    <button class="btn btn-primary" type="submit">@_localizer.Getkey("Save changes")</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">@_localizer.Getkey("Cancel")</button>
                 </div>
             </div>
         </div>

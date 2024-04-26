@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
 using Hutech.Application;
+using Hutech.Services;
 
 namespace Hutech.Areas.Identity.Pages.Account
 {
@@ -34,12 +35,14 @@ namespace Hutech.Areas.Identity.Pages.Account
         private readonly ILogger<LoginModel> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        private readonly LanguageService _languageService;
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, UserManager<ApplicationUser> userManager, IConfiguration configuration,LanguageService languageService)
         {
             _signInManager = signInManager;
             _logger = logger;
             _userManager = userManager;
             _configuration = configuration;
+            _languageService = languageService;
         }
 
         /// <summary>
@@ -48,6 +51,8 @@ namespace Hutech.Areas.Identity.Pages.Account
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
+        [BindProperty]
+        public TranslationModel Translate { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -72,6 +77,15 @@ namespace Hutech.Areas.Identity.Pages.Account
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        ///
+        public class TranslationModel
+        {
+            public string SignInToYourAccount { get; set; }
+            public string Login { get; set; }
+            public string Forgotpassword { get; set; }
+            public string UserNamePlaceHolder { get; set; }
+            public string PasswordPlaceHolder { get; set; }
+        }
         public class InputModel
         {
             /// <summary>
@@ -96,10 +110,17 @@ namespace Hutech.Areas.Identity.Pages.Account
             /// </summary>
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
+            public string Login_Register { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            Translate = new TranslationModel();
+            Translate.SignInToYourAccount = _languageService.Getkey("SignInToYourAccount");
+            Translate.Login = _languageService.Getkey("Login");
+            Translate.Forgotpassword = _languageService.Getkey("Forgotpassword");
+            Translate.UserNamePlaceHolder = _languageService.Getkey("UserNamePlaceHolder");
+            Translate.PasswordPlaceHolder=_languageService.Getkey("PasswordPlaceHolder");
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);

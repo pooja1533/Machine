@@ -3,25 +3,25 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <strong>Edit Requirement</strong>
+                <strong>@_localizer.Getkey("Edit Requirement")</strong>
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="company">Name*</label>
+                    <label for="company">@_localizer.Getkey("Name*")</label>
                     @Html.HiddenFor(x=>x.Id)
-                    @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Requirement Name", @class = "form-control", maxlength = "50" })
+                    @Html.TextBoxFor(x => x.Name, new { Placeholder = _localizer.Getkey("Enter Requirement Name"), @class = "form-control", maxlength = "50" })
                     @Html.ValidationMessageFor(x=>x.Name,"",new {@class="text-danger"})
                 </div>
                 <div class="form-group">
-                    <label for="company">Status</label>
+                    <label for="company">@_localizer.Getkey("Status")</label>
                     <div class="input-prepend input-group">
-                        @Html.RadioButtonFor(x => x.IsActive, "true")<label for="company" class="status ">Active</label> &nbsp;&nbsp;
-                        @Html.RadioButtonFor(x => x.IsActive, "false")<label for="company" class="status frequencyUnit">InActive</label>
+                        @Html.RadioButtonFor(x => x.IsActive, "true")<label for="company" class="status ">@_localizer.Getkey("Active")</label> &nbsp;&nbsp;
+                        @Html.RadioButtonFor(x => x.IsActive, "false")<label for="company" class="status frequencyUnit">@_localizer.Getkey("InActive")</label>
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Save changes</button>
-                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                    <button class="btn btn-primary" type="submit">@_localizer.Getkey("Save changes")</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">@_localizer.Getkey("Cancel")</button>
                 </div>
             </div>
         </div>

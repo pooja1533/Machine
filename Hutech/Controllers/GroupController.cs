@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Hutech;
 using Microsoft.Extensions.Localization;
-using Hutech.Resources;
+using Hutech.Services;
 
 namespace Hutech.Controllers
 {
@@ -60,7 +60,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -130,12 +131,14 @@ namespace Hutech.Controllers
                             if(resultData=="False" || resultData=="false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Group/AddGroup/";
                             }
                             else
                             {
-                                TempData["message"] = languageService.Getkey("Group Added Successfully");
+                                string message= languageService.Getkey("Group Added Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Group/GetAllGroup/";
                             }
                         }
@@ -193,7 +196,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Group/AddGroup/";
                         }
                         else
@@ -253,7 +257,8 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Group/EditGroup/";
                                 return RedirectToAction("EditGroup", new { id = groupViewModel.Id });
 
@@ -261,7 +266,8 @@ namespace Hutech.Controllers
                             else
                             {
                                 groupViewModel = root["result"].ToObject<GroupViewModel>();
-                                TempData["message"] = languageService.Getkey("Group Updated Successfully");
+                                string message= languageService.Getkey("Group Updated Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Group/GetAllGroup/";
                             }
                         }
@@ -303,12 +309,14 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
 
                         }
                         else
                         {
-                            TempData["message"] = languageService.Getkey("Group Deleted Successfully");
+                            string message= languageService.Getkey("Group Deleted Successfully");
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Group/GetAllGroup/";
                         }
                     }

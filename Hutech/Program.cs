@@ -11,7 +11,9 @@ using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using System.Reflection;
-using Hutech.Resources;
+using Hutech.Services;
+using Microsoft.Extensions.Options;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -90,6 +92,7 @@ else
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -117,11 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="+- Days*" xml:space="preserve">
+    <value>+- Days*</value>
+  </data>
+  <data name="+-Days*" xml:space="preserve">
+    <value>+-Days*</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Activity" xml:space="preserve">
+    <value>Activity</value>
+  </data>
   <data name="Activity Added Successfully" xml:space="preserve">
     <value>Activity Added Successfully</value>
   </data>
   <data name="Activity Deleted Successfully" xml:space="preserve">
     <value>Activity Deleted Successfully</value>
+  </data>
+  <data name="Activity Detail" xml:space="preserve">
+    <value>Activity Detail</value>
+  </data>
+  <data name="Activity Name" xml:space="preserve">
+    <value>Activity Name</value>
+  </data>
+  <data name="Activity Name*" xml:space="preserve">
+    <value>Activity Name*</value>
   </data>
   <data name="Activity Updated Successfully" xml:space="preserve">
     <value>Activity Updated Successfully</value>
@@ -132,8 +156,77 @@
   <data name="ActivityDetails Deleted Successfully" xml:space="preserve">
     <value>ActivityDetails Deleted Successfully</value>
   </data>
+  <data name="Add Activity" xml:space="preserve">
+    <value>Add Activity</value>
+  </data>
+  <data name="Add Activity Detail" xml:space="preserve">
+    <value>Add Activity Detail</value>
+  </data>
+  <data name="Add Activity Details" xml:space="preserve">
+    <value>Add Activity Details</value>
+  </data>
+  <data name="Add AddInstrumentId" xml:space="preserve">
+    <value>Add AddInstrumentId</value>
+  </data>
+  <data name="Add Configuration" xml:space="preserve">
+    <value>Add Configuration</value>
+  </data>
+  <data name="Add Department" xml:space="preserve">
+    <value>Add Department</value>
+  </data>
+  <data name="Add Group" xml:space="preserve">
+    <value>Add Group</value>
+  </data>
+  <data name="Add Instrument" xml:space="preserve">
+    <value>Add Instrument</value>
+  </data>
+  <data name="Add Instrument Activity" xml:space="preserve">
+    <value>Add Instrument Activity</value>
+  </data>
+  <data name="Add Instrument Id" xml:space="preserve">
+    <value>Add Instrument Id</value>
+  </data>
+  <data name="Add Instrument Name" xml:space="preserve">
+    <value>Add Instrument Name</value>
+  </data>
+  <data name="Add Location" xml:space="preserve">
+    <value>Add Location</value>
+  </data>
+  <data name="Add Requirement" xml:space="preserve">
+    <value>Add Requirement</value>
+  </data>
+  <data name="AddActivity" xml:space="preserve">
+    <value>Add Activity</value>
+  </data>
+  <data name="Audit Trail" xml:space="preserve">
+    <value>Audit Trail</value>
+  </data>
+  <data name="AuditId" xml:space="preserve">
+    <value>AuditId</value>
+  </data>
+  <data name="Before Alert value(Only Digits allow)" xml:space="preserve">
+    <value>Before Alert value(Only Digits allow)</value>
+  </data>
+  <data name="Before Alerts" xml:space="preserve">
+    <value>Before Alerts</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Configuration" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
   <data name="Configuration Added Successfully" xml:space="preserve">
     <value>Configuration Added Successfully</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>DateTime</value>
+  </data>
+  <data name="Deactivate" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Department</value>
   </data>
   <data name="Department Added Successfully" xml:space="preserve">
     <value>Department Added Successfully</value>
@@ -141,11 +234,146 @@
   <data name="Department Deleted Successfully" xml:space="preserve">
     <value>Department Deleted Successfully</value>
   </data>
+  <data name="Department Name" xml:space="preserve">
+    <value>Department Name</value>
+  </data>
   <data name="Department Updated Successfully" xml:space="preserve">
     <value>Department Updated Successfully</value>
   </data>
+  <data name="Department*" xml:space="preserve">
+    <value>Department*</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
   <data name="Document Deleted Successfully" xml:space="preserve">
     <value>Document Deleted Successfully</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Edit Activity" xml:space="preserve">
+    <value>Edit Activity</value>
+  </data>
+  <data name="Edit Activity Details" xml:space="preserve">
+    <value>Edit Activity Details</value>
+  </data>
+  <data name="Edit Configuration" xml:space="preserve">
+    <value>Edit Configuration</value>
+  </data>
+  <data name="Edit Department" xml:space="preserve">
+    <value>Edit Department</value>
+  </data>
+  <data name="Edit Group" xml:space="preserve">
+    <value>Edit Group</value>
+  </data>
+  <data name="Edit Instrument Name" xml:space="preserve">
+    <value>Edit Instrument Name</value>
+  </data>
+  <data name="Edit InstrumentId" xml:space="preserve">
+    <value>Edit InstrumentId</value>
+  </data>
+  <data name="Edit Location" xml:space="preserve">
+    <value>Edit Location</value>
+  </data>
+  <data name="Edit Requirement" xml:space="preserve">
+    <value>Edit Requirement</value>
+  </data>
+  <data name="Email Required" xml:space="preserve">
+    <value>Email Required</value>
+  </data>
+  <data name="Enter Activity Name" xml:space="preserve">
+    <value>Enter Activity Name</value>
+  </data>
+  <data name="Enter Days" xml:space="preserve">
+    <value>Enter Days</value>
+  </data>
+  <data name="Enter Department" xml:space="preserve">
+    <value>Enter Department</value>
+  </data>
+  <data name="Enter Department Name" xml:space="preserve">
+    <value>Enter Department Name</value>
+  </data>
+  <data name="Enter File Size" xml:space="preserve">
+    <value>Enter File Size</value>
+  </data>
+  <data name="Enter File Type" xml:space="preserve">
+    <value>Enter File Type</value>
+  </data>
+  <data name="Enter Group Name" xml:space="preserve">
+    <value>Enter Group Name</value>
+  </data>
+  <data name="Enter Instrument Id" xml:space="preserve">
+    <value>Enter Instrument Id</value>
+  </data>
+  <data name="Enter Instrument Model" xml:space="preserve">
+    <value>Enter Instrument Model</value>
+  </data>
+  <data name="Enter Instrument Name" xml:space="preserve">
+    <value>Enter Instrument Name</value>
+  </data>
+  <data name="Enter Instrument Serial" xml:space="preserve">
+    <value>Enter Instrument Serial</value>
+  </data>
+  <data name="Enter InstrumentSerial" xml:space="preserve">
+    <value>Enter InstrumentSerial</value>
+  </data>
+  <data name="Enter Keyword To search" xml:space="preserve">
+    <value>Enter Keyword To search</value>
+  </data>
+  <data name="Enter Location Name" xml:space="preserve">
+    <value>Enter Location Name</value>
+  </data>
+  <data name="Enter Model" xml:space="preserve">
+    <value>Enter Model</value>
+  </data>
+  <data name="Enter Remark" xml:space="preserve">
+    <value>Enter Remark</value>
+  </data>
+  <data name="Enter Requirement Name" xml:space="preserve">
+    <value>Enter Requirement Name</value>
+  </data>
+  <data name="Enter RequirementName" xml:space="preserve">
+    <value>Enter RequirementName</value>
+  </data>
+  <data name="Enter Team Location" xml:space="preserve">
+    <value>Enter Team Location</value>
+  </data>
+  <data name="Enter Team Name" xml:space="preserve">
+    <value>Enter Team Name</value>
+  </data>
+  <data name="Export to Excel" xml:space="preserve">
+    <value>Export to Excel</value>
+  </data>
+  <data name="Export to PDF" xml:space="preserve">
+    <value>Export to PDF</value>
+  </data>
+  <data name="File Size" xml:space="preserve">
+    <value>File Size</value>
+  </data>
+  <data name="File Size(MB)" xml:space="preserve">
+    <value>File Size(MB)</value>
+  </data>
+  <data name="File Type" xml:space="preserve">
+    <value>File Type</value>
+  </data>
+  <data name="Follow Department*" xml:space="preserve">
+    <value>Follow Department*</value>
+  </data>
+  <data name="Forgotpassword" xml:space="preserve">
+    <value>Forgotpassword ?</value>
+  </data>
+  <data name="Frequency Period*" xml:space="preserve">
+    <value>Frequency Period*</value>
+  </data>
+  <data name="Frequency Value(Only digits allow)*" xml:space="preserve">
+    <value>Frequency Value(Only digits allow)*</value>
+  </data>
+  <data name="From Date" xml:space="preserve">
+    <value>From Date</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Group</value>
   </data>
   <data name="Group Added Successfully" xml:space="preserve">
     <value>Group Added Successfully !!</value>
@@ -153,8 +381,26 @@
   <data name="Group Deleted Successfully" xml:space="preserve">
     <value>Group Deleted Successfully !!</value>
   </data>
+  <data name="Group Name" xml:space="preserve">
+    <value>Group Name</value>
+  </data>
   <data name="Group Updated Successfully" xml:space="preserve">
     <value>Group Updated Successfully !!</value>
+  </data>
+  <data name="InActive" xml:space="preserve">
+    <value>InActive</value>
+  </data>
+  <data name="Instrument" xml:space="preserve">
+    <value>Instrument</value>
+  </data>
+  <data name="Instrument Activity" xml:space="preserve">
+    <value>Instrument Activity</value>
+  </data>
+  <data name="Instrument ActivityId" xml:space="preserve">
+    <value>Instrument ActivityId</value>
+  </data>
+  <data name="Instrument ActivityId*" xml:space="preserve">
+    <value>Instrument ActivityId*</value>
   </data>
   <data name="Instrument Added Successfully" xml:space="preserve">
     <value>Instrument Added Successfully</value>
@@ -162,8 +408,41 @@
   <data name="Instrument Deleted Successfully" xml:space="preserve">
     <value>Instrument Deleted Successfully</value>
   </data>
+  <data name="Instrument Id" xml:space="preserve">
+    <value>Instrument Id</value>
+  </data>
+  <data name="Instrument Id *" xml:space="preserve">
+    <value>Instrument Id *</value>
+  </data>
+  <data name="Instrument Id Name" xml:space="preserve">
+    <value>Instrument Id Name</value>
+  </data>
+  <data name="Instrument Id*" xml:space="preserve">
+    <value>Instrument Id*</value>
+  </data>
+  <data name="Instrument Name" xml:space="preserve">
+    <value>Instrument Name</value>
+  </data>
+  <data name="Instrument Name Activity*" xml:space="preserve">
+    <value>Instrument Name Activity*</value>
+  </data>
+  <data name="Instrument Name Id*" xml:space="preserve">
+    <value>Instrument Name Id*</value>
+  </data>
+  <data name="Instrument Name*" xml:space="preserve">
+    <value>Instrument Name*</value>
+  </data>
+  <data name="Instrument Serial" xml:space="preserve">
+    <value>Instrument Serial</value>
+  </data>
+  <data name="Instrument Serial*" xml:space="preserve">
+    <value>Instrument Serial*</value>
+  </data>
   <data name="Instrument Updated Successfully" xml:space="preserve">
     <value>Instrument Updated Successfully</value>
+  </data>
+  <data name="Instrument+Activity*" xml:space="preserve">
+    <value>Instrument+Activity*</value>
   </data>
   <data name="InstrumentActivity Added Successfully" xml:space="preserve">
     <value>InstrumentActivity Added Successfully</value>
@@ -183,17 +462,98 @@
   <data name="InstrumentId Updated Successfully" xml:space="preserve">
     <value>InstrumentId Updated Successfully</value>
   </data>
+  <data name="InstrumentSerial" xml:space="preserve">
+    <value>InstrumentSerial</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
   <data name="Location Added Successfully" xml:space="preserve">
     <value>Location Added Successfully</value>
   </data>
   <data name="Location Deleted Successfully" xml:space="preserve">
     <value>Location Deleted Successfully</value>
   </data>
+  <data name="Location Name" xml:space="preserve">
+    <value>Location Name</value>
+  </data>
+  <data name="Location Name*" xml:space="preserve">
+    <value>Location Name*</value>
+  </data>
   <data name="Location Updated Successfully" xml:space="preserve">
     <value>Location Updated Successfully</value>
   </data>
+  <data name="Location*" xml:space="preserve">
+    <value>Location*</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Model*" xml:space="preserve">
+    <value>Model*</value>
+  </data>
+  <data name="Module" xml:space="preserve">
+    <value>Module</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Name*" xml:space="preserve">
+    <value>Name*</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="PasswordPlaceHolder" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Performed Date" xml:space="preserve">
+    <value>Performed Date</value>
+  </data>
+  <data name="Performed Date*" xml:space="preserve">
+    <value>Performed Date*</value>
+  </data>
   <data name="Please enter file types that you want to allow user to upload" xml:space="preserve">
     <value>Please enter file types that you want to allow user to upload !!!</value>
+  </data>
+  <data name="Please select Activity" xml:space="preserve">
+    <value>Please select Activity</value>
+  </data>
+  <data name="Please select Department" xml:space="preserve">
+    <value>Please select Department</value>
+  </data>
+  <data name="Please select Instrument" xml:space="preserve">
+    <value>Please select Instrument</value>
+  </data>
+  <data name="Please select Instrument Activity" xml:space="preserve">
+    <value>Please select Instrument Activity</value>
+  </data>
+  <data name="Please select Location" xml:space="preserve">
+    <value>Please select Location</value>
+  </data>
+  <data name="Please select Requirement" xml:space="preserve">
+    <value>Please select Requirement</value>
+  </data>
+  <data name="Please select Team" xml:space="preserve">
+    <value>Please select Team</value>
+  </data>
+  <data name="Prev" xml:space="preserve">
+    <value>Prev</value>
+  </data>
+  <data name="Remark" xml:space="preserve">
+    <value>Remark</value>
+  </data>
+  <data name="Report" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="Requirement" xml:space="preserve">
+    <value>Requirement</value>
   </data>
   <data name="Requirement Added Successfully" xml:space="preserve">
     <value>Requirement Added Successfully</value>
@@ -201,8 +561,17 @@
   <data name="Requirement Deleted Successfully" xml:space="preserve">
     <value>Requirement Deleted Successfully</value>
   </data>
+  <data name="Requirement Name" xml:space="preserve">
+    <value>Requirement Name</value>
+  </data>
+  <data name="Requirement Name*" xml:space="preserve">
+    <value>Requirement Name*</value>
+  </data>
   <data name="Requirement Updated Successfully" xml:space="preserve">
     <value>Requirement Updated Successfully</value>
+  </data>
+  <data name="Requirement*" xml:space="preserve">
+    <value>Requirement*</value>
   </data>
   <data name="Role Added Successfully" xml:space="preserve">
     <value>Role Added Successfully</value>
@@ -213,8 +582,23 @@
   <data name="Role Updated Successfully" xml:space="preserve">
     <value>Role Updated Successfully !!</value>
   </data>
+  <data name="Save changes" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Select Multiple Files" xml:space="preserve">
+    <value>Select Multiple Files</value>
+  </data>
+  <data name="SignInToYourAccount" xml:space="preserve">
+    <value>Sign In To Your Account</value>
+  </data>
   <data name="Something went wrong.Please contact Admin with AuditId:-" xml:space="preserve">
     <value>Something went wrong.Please contact Admin with AuditId:-</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
   </data>
   <data name="Team Added Successfully" xml:space="preserve">
     <value>Team Added Successfully</value>
@@ -222,13 +606,46 @@
   <data name="Team Deleted Successfully" xml:space="preserve">
     <value>Team Deleted Successfully</value>
   </data>
+  <data name="Team Location" xml:space="preserve">
+    <value>Team Location</value>
+  </data>
+  <data name="Team Name" xml:space="preserve">
+    <value>Team Name</value>
+  </data>
+  <data name="Team Name*" xml:space="preserve">
+    <value>Team Name*</value>
+  </data>
   <data name="Team Updated Successfully" xml:space="preserve">
     <value>Team Updated Successfully</value>
+  </data>
+  <data name="Team*" xml:space="preserve">
+    <value>Team*</value>
+  </data>
+  <data name="To Date" xml:space="preserve">
+    <value>To Date</value>
+  </data>
+  <data name="Updated By/ Role" xml:space="preserve">
+    <value>Updated By/ Role</value>
+  </data>
+  <data name="Updated By/Role" xml:space="preserve">
+    <value>Updated By/Role</value>
+  </data>
+  <data name="Updated On" xml:space="preserve">
+    <value>Updated On</value>
+  </data>
+  <data name="Uploaded Documents" xml:space="preserve">
+    <value>Uploaded Documents</value>
   </data>
   <data name="User Deleted Successfully" xml:space="preserve">
     <value>User Deleted Successfully</value>
   </data>
   <data name="User Updated Successfully" xml:space="preserve">
     <value>User Updated Successfully</value>
+  </data>
+  <data name="UserId" xml:space="preserve">
+    <value>UserId</value>
+  </data>
+  <data name="UserNamePlaceHolder" xml:space="preserve">
+    <value>name@example.com</value>
   </data>
 </root>

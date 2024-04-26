@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using Hutech.Models;
-using Hutech.Resources;
+using Hutech.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -66,12 +66,14 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Configuration/AddConfiguration/";
                             }
                             else
                             {
-                                TempData["message"] = languageService.Getkey("Configuration Added Successfully");
+                                string message= languageService.Getkey("Configuration Added Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Configuration/GetAllConfiguration/";
                             }
                         }
@@ -119,7 +121,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -164,7 +167,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + id;
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Configuration/AddConfiguration/";
                         }
                         else

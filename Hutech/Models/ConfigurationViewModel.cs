@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Office.CoverPageProps;
 using FluentValidation;
-using Hutech.Resources;
+using Hutech.Services;
 
 namespace Hutech.Models
 {

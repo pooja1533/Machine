@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Hutech.Models;
-using Hutech.Resources;
+using Hutech.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -64,7 +64,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -148,7 +149,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -241,12 +243,14 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Location/AddLocation/";
                             }
                             else
                             {
-                                TempData["message"] = languageService.Getkey("Location Added Successfully");
+                                string message = languageService.Getkey("Location Added Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Location/GetAllLocation/";
                             }
                         }
@@ -290,7 +294,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Location/AddLocation/";
                         }
                         else
@@ -349,7 +354,8 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Location/EditLocation/";
                                 return RedirectToAction("EditLocation", new { id = locationViewModel.Id });
 
@@ -357,7 +363,8 @@ namespace Hutech.Controllers
                             else
                             {
                                 locationViewModel = root["result"].ToObject<LocationViewModel>();
-                                TempData["message"] = languageService.Getkey("Location Updated Successfully");
+                                string message= languageService.Getkey("Location Updated Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Location/GetAllLocation/";
                             }
                         }
@@ -400,12 +407,14 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
 
                         }
                         else
                         {
-                            TempData["message"] = languageService.Getkey("Location Deleted Successfully");
+                            string message= languageService.Getkey("Location Deleted Successfully");
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Location/GetAllLocation/";
                         }
                         //var message = root["value"].ToString();

@@ -1,7 +1,7 @@
 ﻿using Azure;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Hutech.Models;
-using Hutech.Resources;
+using Hutech.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;

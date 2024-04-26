@@ -1,5 +1,5 @@
 ﻿using Hutech.Models;
-using Hutech.Resources;
+using Hutech.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;

@@ -9,18 +9,18 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
-                            <i class="fa fa-align-justify"></i> Location
-                            <a href="/Location/AddLocation">Add Location</a>
+                            <i class="fa fa-align-justify"></i>@_localizer.Getkey("Location")
+                            <a href="/Location/AddLocation">@_localizer.Getkey("Add Location")</a>
                         </div>
                         <div class="card-body">
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
-                                        <th>Location Name</th>
-                                        <th>Updated By/Role</th>
-                                        <th>Updated On</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <th>@_localizer.Getkey("Location Name")</th>
+                                        <th>@_localizer.Getkey("Updated By/Role")</th>
+                                        <th>@_localizer.Getkey("Updated On")</th>
+                                        <th>@_localizer.Getkey("Status")</th>
+                                        <th>@_localizer.Getkey("Action")</th>
                                         @*<th>Delete</th>*@
                                     </tr>
                                 </thead>
@@ -33,10 +33,10 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            @Html.TextBoxFor(x => x.LocationName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.LocationName != null ? @ViewBag.LocationName : "" })
+                                            @Html.TextBoxFor(x => x.LocationName, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.LocationName != null ? @ViewBag.LocationName : "" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(x=>x.UpdatedBy, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })
+                                            @Html.TextBoxFor(x => x.UpdatedBy, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })
                                        </td>
                                         <td>
                                             <input asp-for="@Model.UpdatedDate" class="form-control" onchange="Filter()" />
@@ -61,18 +61,18 @@
                                             }
                                             @if (Model.locationViewModel[i].IsActive)
                                             {
-                                                <td>Active</td>
+                                                <td>@_localizer.Getkey("Active")</td>
                                             }
                                             else
                                             {
-                                                <td>InActive</td>
+                                                <td>@_localizer.Getkey("InActive")</td>
                                             }
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                    <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@_localizer.Getkey("Action")</button>
                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                         <a class="dropdown-item" href="/Location/EditLocation?id=@Model.locationViewModel[i].Id">Edit</a>
-                                                        <a class="dropdown-item" href="/Location/DeleteLocation?id=@Model.locationViewModel[i].Id" onclick="return confirm('Are you sure want to delete?')">Deactivate</a>
+                                                        <a class="dropdown-item" href="/Location/DeleteLocation?id=@Model.locationViewModel[i].Id" onclick="return confirm('Are you sure want to delete?')">@_localizer.Getkey("Deactivate")</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -96,7 +96,7 @@
                                         {
                                             int prevPage = pageNumber - 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/Location/GetAllLocation?pageNumber=@prevPage&locationName=@Model.LocationName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Prev</a>
+                                                <a class="page-link" href="/Location/GetAllLocation?pageNumber=@prevPage&locationName=@Model.LocationName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@_localizer.Getkey("Prev")</a>
                                             </li>
                                         }
                                         @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
@@ -118,7 +118,7 @@
                                         {
                                             int nextPage = pageNumber + 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/Location/GetAllLocation?pageNumber=@nextPage&locationName=@Model.LocationName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">Next</a>
+                                                <a class="page-link" href="/Location/GetAllLocation?pageNumber=@nextPage&locationName=@Model.LocationName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&SelectedStatus=@Model.SelectedStatus">@_localizer.Getkey("Next")</a>
                                             </li>
                                         }
                                     </ul>

@@ -3,22 +3,22 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <strong>Add Configuration</strong>
+                <strong>@_localizer.Getkey("Add Configuration")</strong>
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="company">File Type</label>
-                    @Html.TextBoxFor(x => x.FileType, new { Placeholder = "Enter File Type", @class = "form-control",autofocus = "autofocus" })
+                    <label for="company">@_localizer.Getkey("File Type")</label>
+                    @Html.TextBoxFor(x => x.FileType, new { Placeholder = @_localizer.Getkey("Enter File Type"), @class = "form-control",autofocus = "autofocus" })
                     @Html.ValidationMessageFor(x=>x.FileType,"", new { @class = "text-danger"})
                 </div>
                 <div class="form-group">
-                    <label for="company">File Size(MB)</label>
-                    @Html.TextBoxFor(x=>x.FileSize,new{Placeholder="Enter File Size",@class="form-control"})
+                    <label for="company">@_localizer.Getkey("File Size(MB)")</label>
+                    @Html.TextBoxFor(x=>x.FileSize,new{Placeholder=_localizer.Getkey("Enter File Size"),@class="form-control"})
                     @Html.ValidationMessageFor(x=>x.FileSize,"", new { @class = "text-danger"})
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Save changes</button>
-                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                    <button class="btn btn-primary" type="submit">@_localizer.Getkey("Save changes")</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">@_localizer.Getkey("Cancel")</button>
                 </div>
             </div>
         </div>

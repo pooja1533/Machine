@@ -5,16 +5,16 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Configuration
-                        <a href="/Configuration/AddConfiguration">Add Configuration</a>
+                        <i class="fa fa-align-justify"></i>@_localizer.Getkey("Configuration")
+                        <a href="/Configuration/AddConfiguration">@_localizer.Getkey("Add Configuration")</a>
                     </div>
                     <div class="card-body">
                         <table class="table table-responsive-sm">
                             <thead>
                                 <tr>
-                                    <th>File Type</th>
-                                    <th>File Size</th>
-                                    <th>Action</th>
+                                    <th>@_localizer.Getkey("File Type")</th>
+                                    <th>@_localizer.Getkey("File Size")</th>
+                                    <th>@_localizer.Getkey("Action")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -25,9 +25,9 @@
                                         <td>@Model[i].FileSize</td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@_localizer.Getkey("Action")</button>
                                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                    <a class="dropdown-item" href="/Configuration/EditConfiguration?id=@Model[i].Id">Edit</a>
+                                                    <a class="dropdown-item" href="/Configuration/EditConfiguration?id=@Model[i].Id">@_localizer.Getkey("Edit")</a>
                                                 </div>
                                             </div>
                                         </td>

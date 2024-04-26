@@ -1,5 +1,5 @@
 ﻿using Hutech.Models;
-using Hutech.Resources;
+using Hutech.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -352,12 +352,14 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/InstrumentActivity/AddInstrumentActivity/";
                             }
                             else
                             {
-                                TempData["message"] = languageService.Getkey("InstrumentActivity Added Successfully");
+                                string message= languageService.Getkey("InstrumentActivity Added Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/InstrumentActivity/GetAllInstrumentActivity/";
                             }
                         }
@@ -401,12 +403,14 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
 
                         }
                         else
                         {
-                            TempData["message"] = languageService.Getkey("InstrumentActivity Deleted Successfully");
+                            string message= languageService.Getkey("InstrumentActivity Deleted Successfully");
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/InstrumentActivity/GetAllInstrumentActivity/";
                         }
                         //var message = root["value"].ToString();
@@ -458,7 +462,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -557,7 +562,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -633,7 +639,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/InstrumentActivity/AddInstrumentActivity/";
                         }
                         else
@@ -955,7 +962,8 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/InstrumentActivity/EditInstrumentActivity/";
                                 return RedirectToAction("EditInstrumentActivity", new { id = instrumentActivityViewModel.Id });
 
@@ -963,7 +971,8 @@ namespace Hutech.Controllers
                             else
                             {
                                 instrumentActivityViewModel = root["result"].ToObject<InstrumentActivityViewModel>();
-                                TempData["message"] = languageService.Getkey("InstrumentActivity Updated Successfully");
+                                string message= languageService.Getkey("InstrumentActivity Updated Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/InstrumentActivity/GetAllInstrumentActivity/";
                             }
                         }

@@ -5,21 +5,21 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Audit Trail
+                        <i class="fa fa-align-justify"></i>@_localizer.Getkey("Audit Trail")
                     </div>
                     <div class="card-body">
                         <div class="col-lg-12">
                             @*<div class="card">*@
                             <div class="form-group">
-                                <label for="company">From Date</label>
+                                <label for="company">@_localizer.Getkey("From Date")</label>
                                 <input type="date" id="fromdate" value="@ViewBag.StartDate" />&nbsp;&nbsp;&nbsp;
-                                <label for="company">To Date</label>
+                                <label for="company">@_localizer.Getkey("To Date")</label>
                                 <input type="date" id="todate" value="@ViewBag.EndDate" />&nbsp;&nbsp;&nbsp;
-                                <button class="btn btn-primary" type="button" id="GenerateReport">Report</button>
-                                <label for="company">Enter Keyword To search</label>
-                                <input type="text" id="keyword" placeholder="Enter Keyword to search" onkeypress="searchForKeyword(event)" value="@ViewBag.Keyword" />
-                                <div class="export-btn"><a class="dic-action-col" href="/AuditTrail/ExportAuditTrail?fdate=@ViewBag.StartDate&tdate=@ViewBag.EndDate&keyword=@ViewBag.Keyword">Export to Excel</a></div>
-                                <div class="export-btn"><a class="dic-action-col" href="/AuditTrail/ExportAuditTrailPDFFormat?fdate=@ViewBag.StartDate&tdate=@ViewBag.EndDate&keyword=@ViewBag.Keyword">Export to PDF</a></div>
+                                <button class="btn btn-primary" type="button" id="GenerateReport">@_localizer.Getkey("Report")</button>
+                                <label for="company">@_localizer.Getkey("Enter Keyword To search")</label>
+                                <input type="text" id="keyword" placeholder=@_localizer.Getkey("Enter Keyword to search") onkeypress="searchForKeyword(event)" value="@ViewBag.Keyword" />
+                                <div class="export-btn"><a class="dic-action-col" href="/AuditTrail/ExportAuditTrail?fdate=@ViewBag.StartDate&tdate=@ViewBag.EndDate&keyword=@ViewBag.Keyword">@_localizer.Getkey("Export to Excel")</a></div>
+                                <div class="export-btn"><a class="dic-action-col" href="/AuditTrail/ExportAuditTrailPDFFormat?fdate=@ViewBag.StartDate&tdate=@ViewBag.EndDate&keyword=@ViewBag.Keyword">@_localizer.Getkey("Export to PDF")</a></div>
                             </div>
                         </div>
                         @*<div class="form-group">
@@ -30,12 +30,12 @@
                     <table class="table table-responsive-sm">
                         <thead>
                             <tr>
-                                <th>AuditId</th>
-                                <th>Module</th>
-                                <th>DateTime</th>
-                                <th>UserId</th>
-                                <th>Description</th>
-                                <td>Message</td>
+                                <th>@_localizer.Getkey("AuditId")</th>
+                                <th>@_localizer.Getkey("Module")</th>
+                                <th>@_localizer.Getkey("DateTime")</th>
+                                <th>@_localizer.Getkey("UserId")</th>
+                                <th>@_localizer.Getkey("Description")</th>
+                                <td>@_localizer.Getkey("Message")</td>
                             </tr>
                         </thead>
                             @{
@@ -68,7 +68,7 @@
                                     {
                                         int prevPage = pageNumber - 1;
                                         <li class="page-item">
-                                            <a class="page-link" href="/AuditTrail/GetAllAuditTrail?pageNumber=@prevPage&keyword=@ViewBag.Keyword&tdate=@ViewBag.EndDate&fdate=@ViewBag.StartDate">Prev</a>
+                                            <a class="page-link" href="/AuditTrail/GetAllAuditTrail?pageNumber=@prevPage&keyword=@ViewBag.Keyword&tdate=@ViewBag.EndDate&fdate=@ViewBag.StartDate">@_localizer.Getkey("Prev")</a>
                                         </li>
                                     }
                                     @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
@@ -90,7 +90,7 @@
                                     {
                                         int nextPage = pageNumber + 1;
                                         <li class="page-item">
-                                            <a class="page-link" href="/AuditTrail/GetAllAuditTrail?pageNumber=@nextPage&keyword=@ViewBag.Keyword&tdate=@ViewBag.EndDate&fdate=@ViewBag.StartDate">Next</a>
+                                            <a class="page-link" href="/AuditTrail/GetAllAuditTrail?pageNumber=@nextPage&keyword=@ViewBag.Keyword&tdate=@ViewBag.EndDate&fdate=@ViewBag.StartDate">@_localizer.Getkey("Next")</a>
                                         </li>
                                     }
                                 </ul>

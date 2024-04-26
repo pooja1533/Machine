@@ -2,7 +2,7 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using Hutech.Core.Entities;
 using Hutech.Models;
-using Hutech.Resources;
+using Hutech.Services;
 using Irony.Ast;
 using iText.Html2pdf;
 using iText.IO.Source;

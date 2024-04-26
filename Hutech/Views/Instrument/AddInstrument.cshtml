@@ -6,12 +6,12 @@
 *@    <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <strong>Add Instrument Name</strong>
+                <strong>@_localizer.Getkey("Add Instrument Name")</strong>
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="company">Instrument Name*</label>
-                    @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Instrument Name", @class = "form-control", maxlength = "50",autofocus = "autofocus" })
+                    <label for="company">@_localizer.Getkey("Instrument Name*")</label>
+                    @Html.TextBoxFor(x => x.Name, new { Placeholder =@_localizer.Getkey("Enter Instrument Name"), @class = "form-control", maxlength = "50",autofocus = "autofocus" })
                     @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
                 </div>
                 @* <div class="form-group">
@@ -20,8 +20,8 @@
                     <span asp-validation-for="Files" class="text-danger"></span>
                 </div> *@
                 <div class="form-actions">
-                    <input class="btn btn-primary" type="submit" value="Save changes">
-                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                    <input class="btn btn-primary" type="submit" value=@_localizer.Getkey("Save changes")>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">@_localizer.Getkey("Cancel")</button>
                 </div>
             </div>
         </div>

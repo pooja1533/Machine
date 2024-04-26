@@ -3,18 +3,18 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <strong>Add Department</strong>
+                <strong>@_localizer.Getkey("Add Department")</strong>
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="company">Name</label>
-                    @Html.TextBoxFor(x => x.Name, new { Placeholder = "Enter Department Name", @class = "form-control", maxlength = "50",autofocus = "autofocus" })
+                    <label for="company">@_localizer.Getkey("Name")</label>
+                    @Html.TextBoxFor(x => x.Name, new { Placeholder = _localizer.Getkey("Enter Department Name"), @class = "form-control", maxlength = "50",autofocus = "autofocus" })
                     @Html.ValidationMessageFor(x=>x.Name,"", new { @class = "text-danger"})
                     @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Save changes</button>
-                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                    <button class="btn btn-primary" type="submit">@_localizer.Getkey("Save changes")</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">@_localizer.Getkey("Cancel")</button>
                 </div>
             </div>
         </div>

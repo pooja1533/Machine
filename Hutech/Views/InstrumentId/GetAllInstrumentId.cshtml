@@ -10,24 +10,24 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <i class="fa fa-align-justify"></i> Instrument Id
-                            <a href="/InstrumentId/AddInstrumentId">Add Instrument Id</a>
+                            <i class="fa fa-align-justify"></i> @_localizer.Getkey("Instrument Id")
+                            <a href="/InstrumentId/AddInstrumentId">@_localizer.Getkey("Add Instrument Id")</a>
                         </div>
                         <div class="card-body">
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
-                                        <th>Instrument Id</th>
-                                        <th>Model</th>
-                                        <th>InstrumentSerial</th>
-                                        <th>Instrument Name</th>
-                                        <th>Location Name</th>
-                                        <th>Team Name</th>
+                                        <th>@_localizer.Getkey("Instrument Id")</th>
+                                        <th>@_localizer.Getkey("Model")</th>
+                                        <th>@_localizer.Getkey("InstrumentSerial")</th>
+                                        <th>@_localizer.Getkey("Instrument Name")</th>
+                                        <th>@_localizer.Getkey("Location Name")</th>
+                                        <th>@_localizer.Getkey("Team Name")</th>
                                        @*  <th>TeamLocation</th> *@
-                                        <th>Updated By/Role</th>
-                                        <th>Updated On</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <th>@_localizer.Getkey("Updated By/Role")</th>
+                                        <th>@_localizer.Getkey("Updated On")</th>
+                                        <th>@_localizer.Getkey("Status")</th>
+                                        <th>@_localizer.Getkey("Action")</th>
                                         @*<th>Delete</th>*@
                                     </tr>
                                 </thead>
@@ -40,25 +40,25 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            @Html.TextBoxFor(x => x.InstrumentIdName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.InstrumentIdName != null ? @ViewBag.InstrumentIdName : "" })
+                                            @Html.TextBoxFor(x => x.InstrumentIdName, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.InstrumentIdName != null ? @ViewBag.InstrumentIdName : "" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(x => x.Model, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.Model != null ? @ViewBag.Model : "" })
+                                            @Html.TextBoxFor(x => x.Model, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.Model != null ? @ViewBag.Model : "" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(x => x.InstrumentSerial, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.InstrumentSerial != null ? @ViewBag.InstrumentSerial : "" })
+                                            @Html.TextBoxFor(x => x.InstrumentSerial, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.InstrumentSerial != null ? @ViewBag.InstrumentSerial : "" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(x => x.InstrumentName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.InstrumentName != null ? @ViewBag.InstrumentName : "" })
+                                            @Html.TextBoxFor(x => x.InstrumentName, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.InstrumentName != null ? @ViewBag.InstrumentName : "" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(x => x.InstrumentLocation, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.InstrumentLocation != null ? @ViewBag.InstrumentLocation : "" })
+                                            @Html.TextBoxFor(x => x.InstrumentLocation, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.InstrumentLocation != null ? @ViewBag.InstrumentLocation : "" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(x => x.TeamName, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.TeamName != null ? @ViewBag.TeamName : "" })
+                                            @Html.TextBoxFor(x => x.TeamName, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.TeamName != null ? @ViewBag.TeamName : "" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(x => x.UpdatedBy, new { @class = "form-control", @placeholder = "Search", @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })
+                                            @Html.TextBoxFor(x => x.UpdatedBy, new { @class = "form-control", @placeholder = @_localizer.Getkey("Search"), @onKeyUp = "Filter()", @value = @ViewBag.UpdatedBy != null ? @ViewBag.UpdatedBy : "" })
                                         </td>
                                         <td>
                                             <input asp-for="@Model.UpdatedDate" class="form-control" onchange="Filter()" />
@@ -88,18 +88,18 @@
                                             }
                                             @if (Model.instrumentIdViewModels[i].IsActive)
                                             {
-                                                <td>Active</td>
+                                                <td>@_localizer.Getkey("Active")</td>
                                             }
                                             else
                                             {
-                                                <td>InActive</td>
+                                                <td>@_localizer.Getkey("InActive")</td>
                                             }
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                                    <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@_localizer.Getkey("Action")</button>
                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                        <a class="dropdown-item" href="/InstrumentId/EditInstrumentId?id=@Model.instrumentIdViewModels[i].Id">Edit</a>
-                                                        <a class="dropdown-item" href="/InstrumentId/DeleteInstrumentId?id=@Model.instrumentIdViewModels[i].Id" onclick="return confirm('Are you sure want to delete?')">Deactivate</a>
+                                                        <a class="dropdown-item" href="/InstrumentId/EditInstrumentId?id=@Model.instrumentIdViewModels[i].Id">@_localizer.Getkey("Edit")</a>
+                                                        <a class="dropdown-item" href="/InstrumentId/DeleteInstrumentId?id=@Model.instrumentIdViewModels[i].Id" onclick="return confirm('Are you sure want to delete?')">@_localizer.Getkey("Deactivate")</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -121,7 +121,7 @@
                                         {
                                             int prevPage = pageNumber - 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/InstrumentId/GetAllInstrumentId?pageNumber=@prevPage&instrumentIdName=@Model.InstrumentIdName&model=@Model.Model&instrumentName=@Model.InstrumentName&instrumentSerial=@Model.InstrumentSerial&instrumentLocation=@Model.InstrumentLocation&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&Status=@Model.SelectedStatus">Prev</a>
+                                                <a class="page-link" href="/InstrumentId/GetAllInstrumentId?pageNumber=@prevPage&instrumentIdName=@Model.InstrumentIdName&model=@Model.Model&instrumentName=@Model.InstrumentName&instrumentSerial=@Model.InstrumentSerial&instrumentLocation=@Model.InstrumentLocation&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&Status=@Model.SelectedStatus">@_localizer.Getkey("Prev")</a>
                                             </li>
                                         }
                                         @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
@@ -143,7 +143,7 @@
                                         {
                                             int nextPage = pageNumber + 1;
                                             <li class="page-item">
-                                                <a class="page-link" href="/InstrumentId/GetAllInstrumentId?pageNumber=@nextPage&instrumentIdName=@Model.InstrumentIdName&model=@Model.Model&instrumentName=@Model.InstrumentName&instrumentSerial=@Model.InstrumentSerial&instrumentLocation=@Model.InstrumentLocation&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&Status=@Model.SelectedStatus">Next</a>
+                                                <a class="page-link" href="/InstrumentId/GetAllInstrumentId?pageNumber=@nextPage&instrumentIdName=@Model.InstrumentIdName&model=@Model.Model&instrumentName=@Model.InstrumentName&instrumentSerial=@Model.InstrumentSerial&instrumentLocation=@Model.InstrumentLocation&teamName=@Model.TeamName&updatedBy=@Model.UpdatedBy&updatedDate=@formattedDate&Status=@Model.SelectedStatus">@_localizer.Getkey("Next")</a>
                                             </li>
                                         }
                                     </ul>
