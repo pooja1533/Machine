@@ -192,6 +192,9 @@
   <data name="Add Location" xml:space="preserve">
     <value>Add Location</value>
   </data>
+  <data name="Add Organization" xml:space="preserve">
+    <value>Add Organization</value>
+  </data>
   <data name="Add Requirement" xml:space="preserve">
     <value>Add Requirement</value>
   </data>
@@ -303,6 +306,9 @@
   <data name="Edit Location" xml:space="preserve">
     <value>Edit Location</value>
   </data>
+  <data name="Edit Organization" xml:space="preserve">
+    <value>Edit Organization</value>
+  </data>
   <data name="Edit Requirement" xml:space="preserve">
     <value>Edit Requirement</value>
   </data>
@@ -401,6 +407,9 @@
   </data>
   <data name="Enter Model" xml:space="preserve">
     <value>Enter Model</value>
+  </data>
+  <data name="Enter Organization Name*" xml:space="preserve">
+    <value>Enter Organization Name*</value>
   </data>
   <data name="Enter Password" xml:space="preserve">
     <value>Enter Password</value>
@@ -626,6 +635,12 @@
   </data>
   <data name="Next" xml:space="preserve">
     <value>Next</value>
+  </data>
+  <data name="Organization" xml:space="preserve">
+    <value>Organization</value>
+  </data>
+  <data name="OrganizationName" xml:space="preserve">
+    <value>OrganizationName</value>
   </data>
   <data name="PasswordPlaceHolder" xml:space="preserve">
     <value>Password</value>

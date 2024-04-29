@@ -32,6 +32,7 @@ namespace Hutech.Infrastructure
             service.AddTransient<IDocumentRepository, DocumentRepository>();
             service.AddTransient<IUserTypeRepository, UserTypeRepository>();
             service.AddTransient<IMenuRepository, MenuRepository>();
+            service.AddTransient<IOrganizationRepository, OrganizationRepository>();
         }
     }
 }

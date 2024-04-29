@@ -57,6 +57,8 @@ namespace Hutech.API.Mapper
             CreateMap<Menu, MenuViewModel>();
             CreateMap<UserMenuPermission,UserMenuPermissionViewModel>();
             CreateMap<UserMenuPermissionViewModel, UserMenuPermission>();
+            CreateMap<Organization, OrganizationViewModel>();
+            CreateMap<OrganizationViewModel, Organization>();
         }
     }
 }

@@ -1,0 +1,111 @@
+﻿<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fa fa-align-justify"></i>@_localizer.Getkey("Organization")
+                        <a href="/Organization/AddOrganization">@_localizer.Getkey("Add Organization")</a>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-responsive-sm">
+                            <thead>
+                                <tr>
+                                    <th>@_localizer.Getkey("OrganizationName")</th>
+                                    <th>@_localizer.Getkey("Status")</th>
+                                    <th>@_localizer.Getkey("Action")</th>
+                                    @*<th>Delete</th>*@
+                                </tr>
+                            </thead>
+                            @{
+                                int recordsPerPage = 10;
+                                int pageNumber = Model.CurrentPage;
+                                int pageSize = pageNumber + 4;
+                                int rowNo = ((pageNumber - 1) * recordsPerPage);
+                            }
+                            <tbody>
+                                @for (int i = 0; i < Model.GridRecords.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@Model.GridRecords[i].Name</td>
+
+                                        @if (Model.GridRecords[i].IsActive)
+                                        {
+                                            <td>Active</td>
+                                        }
+                                        else
+                                        {
+                                            <td>InActive</td>
+                                        }
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-secondary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@_localizer.Getkey("Action")</button>
+                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                    <a class="dropdown-item" href="/Organization/EditOrganization?id=@Model.GridRecords[i].Id">@_localizer.Getkey("Edit")</a>
+                                                    <a class="dropdown-item" href="/Organization/DeleteOrganization?id=@Model.GridRecords[i].Id" onclick="return confirm('Are you sure want to delete?')">@_localizer.Getkey("Deactivate")</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        @*<td><a href="/Role/EditRole?id=@Model[i].Id">Edit</a></td>
+                                    <td><a href="/Role/DeleteRole?id=@Model[i].Id" onclick="return confirm('Are you sure want to delete?')">Delete</a></td>*@
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                        @if (Model.TotalPages > 1)
+                        {
+                            <nav>
+                                <ul class="pagination">
+                                    @if (pageNumber > 1)
+                                    {
+                                        int prevPage = pageNumber - 1;
+                                        <li class="page-item">
+                                            <a class="page-link" href="/Organization/GetAllOrganization?pageNumber=@prevPage">@_localizer.Getkey("Prev")</a>
+                                        </li>
+                                    }
+                                    @for (int i = pageNumber; i <= Model.TotalPages && i <= pageSize; i++)
+                                    {
+                                        if (i == pageNumber)
+                                        {
+                                            <li class="page-item active">
+                                                <a class="page-link" href="/Organization/GetAllOrganization?pageNumber=@i">@i</a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" href="/Organization/GetAllOrganization?pageNumber=@i">@i</a>
+                                            </li>
+                                        }
+                                    }
+                                    @if (pageNumber < Model.TotalPages)
+                                    {
+                                        int nextPage = pageNumber + 1;
+                                        <li class="page-item">
+                                            <a class="page-link" href="/Organization/GetAllOrganization?pageNumber=@nextPage">@_localizer.Getkey("Next")</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        }
+                    </div>
+                </div>
+            </div>
+            <!-- /.col-->
+
+        </div>
+        <!-- /.row-->
+    </div>
+</div>
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@TempData["message"]");
+            var url = "@TempData["RedirectURl"]";
+            window.location.href = url;
+        };
+    </script>
+}
