@@ -60,7 +60,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Role/AddRole/";
                         }
                         else
@@ -120,7 +121,8 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Role/EditRole/";
                                 return RedirectToAction("EditRole", new { id = roleViewModel.Id });
 
@@ -128,7 +130,8 @@ namespace Hutech.Controllers
                             else
                             {
                                 roleViewModel = root["result"].ToObject<RoleViewModel>();
-                                TempData["message"] = languageService.Getkey("Role Updated Successfully");
+                                string message= languageService.Getkey("Role Updated Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Role/GetAllRoles/";
                             }
 
@@ -172,12 +175,14 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
 
                         }
                         else
                         {
-                            TempData["message"] = languageService.Getkey("Role Deleted Successfully");
+                            string message = languageService.Getkey("Role Deleted Successfully");
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Role/GetAllRoles/";
                         }
                     }
@@ -228,7 +233,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -300,7 +306,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -379,12 +386,14 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Role/AddRole/";
                             }
                             else
                             {
-                                TempData["message"] = languageService.Getkey("Role Added Successfully");
+                                string message= languageService.Getkey("Role Added Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Role/GetAllRoles/";
                             }
                         }
@@ -427,7 +436,8 @@ namespace Hutech.Controllers
                     if (resultData == "False" || resultData == "false")
                     {
                         var Id = root["auditId"].ToString();
-                        TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                        TempData["message"] = message;
                     }
                     else
                     {
@@ -484,17 +494,19 @@ namespace Hutech.Controllers
                         var content = await Res.Content.ReadAsStringAsync();
                         JObject root = JObject.Parse(content);
                         var resultData = root["success"].ToString();
+                        string message = languageService.Getkey("Menu access saved successfully");
                         var response = new
                         {
-                            Message = "Menu access saved successfully",
+                            Message = message,
                             StatusCode = 200
                         };
                         return Json(response);
                     }
                 }
+                string messageData = languageService.Getkey("Something Went wrong please contact your administrator");
                 var responseData = new
                 {
-                    Message = "Something Went wrong please contact your administrator",
+                    Message = messageData,
                     StatusCode = 500
                 };
                 return Json(responseData);

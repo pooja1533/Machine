@@ -174,12 +174,14 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Team/AddTeam/";
                             }
                             else
                             {
-                                TempData["message"] = languageService.Getkey("Team Added Successfully");
+                                string message= languageService.Getkey("Team Added Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Team/GetAllTeam/";
                             }
                         }
@@ -231,7 +233,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -319,7 +322,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                         }
                         else
                         {
@@ -394,7 +398,8 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Team/AddTeam/";
                         }
                         else
@@ -546,7 +551,8 @@ namespace Hutech.Controllers
                             if (resultData == "False" || resultData == "false")
                             {
                                 var Id = root["auditId"].ToString();
-                                TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Team/EditTeam/";
                                 return RedirectToAction("EditTeam", new { id = teamViewModel.Id });
 
@@ -554,7 +560,8 @@ namespace Hutech.Controllers
                             else
                             {
                                 teamViewModel = root["result"].ToObject<TeamViewModel>();
-                                TempData["message"] = languageService.Getkey("Team Updated Successfully");
+                                string message= languageService.Getkey("Team Updated Successfully");
+                                TempData["message"] = message;
                                 TempData["RedirectURl"] = "/Team/GetAllTeam/";
                             }
                         }
@@ -597,12 +604,14 @@ namespace Hutech.Controllers
                         if (resultData == "False" || resultData == "false")
                         {
                             var Id = root["auditId"].ToString();
-                            TempData["message"] = languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            string message= languageService.Getkey("Something went wrong.Please contact Admin with AuditId:- ") + Id;
+                            TempData["message"] = message;
 
                         }
                         else
                         {
-                            TempData["message"] = languageService.Getkey("Team Deleted Successfully");
+                            string message= languageService.Getkey("Team Deleted Successfully");
+                            TempData["message"] = message;
                             TempData["RedirectURl"] = "/Team/GetAllTeam/";
                         }
                     }

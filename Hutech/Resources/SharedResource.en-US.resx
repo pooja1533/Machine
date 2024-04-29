@@ -195,8 +195,26 @@
   <data name="Add Requirement" xml:space="preserve">
     <value>Add Requirement</value>
   </data>
+  <data name="Add Role" xml:space="preserve">
+    <value>Add Role</value>
+  </data>
+  <data name="Add Team" xml:space="preserve">
+    <value>Add Team</value>
+  </data>
+  <data name="Add User" xml:space="preserve">
+    <value>Add User</value>
+  </data>
+  <data name="Add User Type" xml:space="preserve">
+    <value>Add User Type</value>
+  </data>
+  <data name="Add UserType" xml:space="preserve">
+    <value>Add UserType</value>
+  </data>
   <data name="AddActivity" xml:space="preserve">
     <value>Add Activity</value>
+  </data>
+  <data name="Approve" xml:space="preserve">
+    <value>Approve</value>
   </data>
   <data name="Audit Trail" xml:space="preserve">
     <value>Audit Trail</value>
@@ -213,11 +231,20 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="Configuration" xml:space="preserve">
     <value>Configuration</value>
   </data>
   <data name="Configuration Added Successfully" xml:space="preserve">
     <value>Configuration Added Successfully</value>
+  </data>
+  <data name="Created By/ Role" xml:space="preserve">
+    <value>Created By/ Role</value>
+  </data>
+  <data name="Created On" xml:space="preserve">
+    <value>Created On</value>
   </data>
   <data name="DateTime" xml:space="preserve">
     <value>DateTime</value>
@@ -279,11 +306,44 @@
   <data name="Edit Requirement" xml:space="preserve">
     <value>Edit Requirement</value>
   </data>
+  <data name="Edit Role" xml:space="preserve">
+    <value>Edit Role</value>
+  </data>
+  <data name="Edit Team" xml:space="preserve">
+    <value>Edit Team</value>
+  </data>
+  <data name="Edit User" xml:space="preserve">
+    <value>Edit User</value>
+  </data>
+  <data name="Edit UserType" xml:space="preserve">
+    <value>Edit UserType</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Email Id" xml:space="preserve">
+    <value>Email Id</value>
+  </data>
+  <data name="Email Id*" xml:space="preserve">
+    <value>Email Id*</value>
+  </data>
   <data name="Email Required" xml:space="preserve">
     <value>Email Required</value>
   </data>
+  <data name="Employee Id" xml:space="preserve">
+    <value>Employee Id</value>
+  </data>
+  <data name="EmployeeId" xml:space="preserve">
+    <value>EmployeeId</value>
+  </data>
+  <data name="EmployeeId*" xml:space="preserve">
+    <value>EmployeeId*</value>
+  </data>
   <data name="Enter Activity Name" xml:space="preserve">
     <value>Enter Activity Name</value>
+  </data>
+  <data name="Enter Comment for Reject" xml:space="preserve">
+    <value>Enter Comment for Reject</value>
   </data>
   <data name="Enter Days" xml:space="preserve">
     <value>Enter Days</value>
@@ -294,11 +354,20 @@
   <data name="Enter Department Name" xml:space="preserve">
     <value>Enter Department Name</value>
   </data>
+  <data name="Enter Email Id" xml:space="preserve">
+    <value>Enter Email Id</value>
+  </data>
+  <data name="Enter Employee Id" xml:space="preserve">
+    <value>Enter Employee Id</value>
+  </data>
   <data name="Enter File Size" xml:space="preserve">
     <value>Enter File Size</value>
   </data>
   <data name="Enter File Type" xml:space="preserve">
     <value>Enter File Type</value>
+  </data>
+  <data name="Enter First Name" xml:space="preserve">
+    <value>Enter First Name</value>
   </data>
   <data name="Enter Group Name" xml:space="preserve">
     <value>Enter Group Name</value>
@@ -321,11 +390,20 @@
   <data name="Enter Keyword To search" xml:space="preserve">
     <value>Enter Keyword To search</value>
   </data>
+  <data name="Enter Last Name" xml:space="preserve">
+    <value>Enter Last Name</value>
+  </data>
   <data name="Enter Location Name" xml:space="preserve">
     <value>Enter Location Name</value>
   </data>
+  <data name="Enter Login Validity" xml:space="preserve">
+    <value>Enter Login Validity</value>
+  </data>
   <data name="Enter Model" xml:space="preserve">
     <value>Enter Model</value>
+  </data>
+  <data name="Enter Password" xml:space="preserve">
+    <value>Enter Password</value>
   </data>
   <data name="Enter Remark" xml:space="preserve">
     <value>Enter Remark</value>
@@ -336,11 +414,26 @@
   <data name="Enter RequirementName" xml:space="preserve">
     <value>Enter RequirementName</value>
   </data>
+  <data name="Enter Role Name" xml:space="preserve">
+    <value>Enter Role Name</value>
+  </data>
   <data name="Enter Team Location" xml:space="preserve">
     <value>Enter Team Location</value>
   </data>
   <data name="Enter Team Name" xml:space="preserve">
     <value>Enter Team Name</value>
+  </data>
+  <data name="Enter User Type" xml:space="preserve">
+    <value>Enter User Type</value>
+  </data>
+  <data name="Enter Window User Name" xml:space="preserve">
+    <value>Enter Window User Name</value>
+  </data>
+  <data name="Execute" xml:space="preserve">
+    <value>Execute</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
   </data>
   <data name="Export to Excel" xml:space="preserve">
     <value>Export to Excel</value>
@@ -357,6 +450,12 @@
   <data name="File Type" xml:space="preserve">
     <value>File Type</value>
   </data>
+  <data name="First Name" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="First Name*" xml:space="preserve">
+    <value>First Name*</value>
+  </data>
   <data name="Follow Department*" xml:space="preserve">
     <value>Follow Department*</value>
   </data>
@@ -371,6 +470,9 @@
   </data>
   <data name="From Date" xml:space="preserve">
     <value>From Date</value>
+  </data>
+  <data name="Full Name" xml:space="preserve">
+    <value>Full Name</value>
   </data>
   <data name="Group" xml:space="preserve">
     <value>Group</value>
@@ -465,6 +567,12 @@
   <data name="InstrumentSerial" xml:space="preserve">
     <value>InstrumentSerial</value>
   </data>
+  <data name="Last Name" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Last Name*" xml:space="preserve">
+    <value>Last Name*</value>
+  </data>
   <data name="Location" xml:space="preserve">
     <value>Location</value>
   </data>
@@ -489,6 +597,12 @@
   <data name="Login" xml:space="preserve">
     <value>Login</value>
   </data>
+  <data name="Login Validity In Days" xml:space="preserve">
+    <value>Login Validity In Days</value>
+  </data>
+  <data name="Menu access saved successfully" xml:space="preserve">
+    <value>Menu access saved successfully</value>
+  </data>
   <data name="Message" xml:space="preserve">
     <value>Message</value>
   </data>
@@ -507,11 +621,17 @@
   <data name="Name*" xml:space="preserve">
     <value>Name*</value>
   </data>
+  <data name="New User Creation Request" xml:space="preserve">
+    <value>New User Creation Request</value>
+  </data>
   <data name="Next" xml:space="preserve">
     <value>Next</value>
   </data>
   <data name="PasswordPlaceHolder" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="Perform User Creation Request" xml:space="preserve">
+    <value>Perform User Creation Request</value>
   </data>
   <data name="Performed Date" xml:space="preserve">
     <value>Performed Date</value>
@@ -519,8 +639,14 @@
   <data name="Performed Date*" xml:space="preserve">
     <value>Performed Date*</value>
   </data>
+  <data name="Please enter Correct Password to approve user" xml:space="preserve">
+    <value>Please enter Correct Password to approve user</value>
+  </data>
   <data name="Please enter file types that you want to allow user to upload" xml:space="preserve">
     <value>Please enter file types that you want to allow user to upload !!!</value>
+  </data>
+  <data name="Please enter password to approve user" xml:space="preserve">
+    <value>Please enter password to approve user</value>
   </data>
   <data name="Please select Activity" xml:space="preserve">
     <value>Please select Activity</value>
@@ -543,8 +669,14 @@
   <data name="Please select Team" xml:space="preserve">
     <value>Please select Team</value>
   </data>
+  <data name="Please select User Type" xml:space="preserve">
+    <value>Please select User Type</value>
+  </data>
   <data name="Prev" xml:space="preserve">
     <value>Prev</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>Reject</value>
   </data>
   <data name="Remark" xml:space="preserve">
     <value>Remark</value>
@@ -573,6 +705,9 @@
   <data name="Requirement*" xml:space="preserve">
     <value>Requirement*</value>
   </data>
+  <data name="Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
   <data name="Role Added Successfully" xml:space="preserve">
     <value>Role Added Successfully</value>
   </data>
@@ -582,23 +717,56 @@
   <data name="Role Updated Successfully" xml:space="preserve">
     <value>Role Updated Successfully !!</value>
   </data>
+  <data name="Role*" xml:space="preserve">
+    <value>Role*</value>
+  </data>
+  <data name="RoleName" xml:space="preserve">
+    <value>RoleName</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
   <data name="Save changes" xml:space="preserve">
     <value>Save changes</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="Select Department" xml:space="preserve">
+    <value>Select Department</value>
+  </data>
+  <data name="Select Location" xml:space="preserve">
+    <value>Select Location</value>
+  </data>
   <data name="Select Multiple Files" xml:space="preserve">
     <value>Select Multiple Files</value>
   </data>
+  <data name="Select Role" xml:space="preserve">
+    <value>Select Role</value>
+  </data>
+  <data name="Select Status" xml:space="preserve">
+    <value>Select Status</value>
+  </data>
+  <data name="Select UserType" xml:space="preserve">
+    <value>Select UserType</value>
+  </data>
   <data name="SignInToYourAccount" xml:space="preserve">
     <value>Sign In To Your Account</value>
+  </data>
+  <data name="Something went wrong please contact admin" xml:space="preserve">
+    <value>Something went wrong please contact admin</value>
+  </data>
+  <data name="Something Went wrong please contact your administrator" xml:space="preserve">
+    <value>Something Went wrong please contact your administrator</value>
   </data>
   <data name="Something went wrong.Please contact Admin with AuditId:-" xml:space="preserve">
     <value>Something went wrong.Please contact Admin with AuditId:-</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Team</value>
   </data>
   <data name="Team Added Successfully" xml:space="preserve">
     <value>Team Added Successfully</value>
@@ -636,8 +804,26 @@
   <data name="Uploaded Documents" xml:space="preserve">
     <value>Uploaded Documents</value>
   </data>
+  <data name="User Access Rights" xml:space="preserve">
+    <value>User Access Rights</value>
+  </data>
   <data name="User Deleted Successfully" xml:space="preserve">
     <value>User Deleted Successfully</value>
+  </data>
+  <data name="User Name" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="User Role" xml:space="preserve">
+    <value>User Role</value>
+  </data>
+  <data name="User Type" xml:space="preserve">
+    <value>User Type</value>
+  </data>
+  <data name="User Type Name" xml:space="preserve">
+    <value>User Type Name</value>
+  </data>
+  <data name="User Type*" xml:space="preserve">
+    <value>User Type*</value>
   </data>
   <data name="User Updated Successfully" xml:space="preserve">
     <value>User Updated Successfully</value>
@@ -647,5 +833,17 @@
   </data>
   <data name="UserNamePlaceHolder" xml:space="preserve">
     <value>name@example.com</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Windows User Name" xml:space="preserve">
+    <value>Windows User Name</value>
+  </data>
+  <data name="Windows User Name*" xml:space="preserve">
+    <value>Windows User Name*</value>
+  </data>
+  <data name="WindowsName" xml:space="preserve">
+    <value>WindowsName</value>
   </data>
 </root>

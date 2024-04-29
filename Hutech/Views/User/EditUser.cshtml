@@ -5,14 +5,14 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <strong>Add User</strong>
+                <strong>@_localizer.Getkey("Edit User")</strong>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">User Type</label>
-                            @Html.DropDownListFor(x => x.UserTypeId, Model.UserTypesId, "Please select User Type", new { @class = "form-control processbank", onchange = "changeUserType()", @Id = "UserTypeId", @name = "UserTypeId" })
+                            <label for="company">@_localizer.Getkey("User Type")</label>
+                            @Html.DropDownListFor(x => x.UserTypeId, Model.UserTypesId,@_localizer.Getkey("Please select User Type"), new { @class = "form-control processbank", onchange = "changeUserType()", @Id = "UserTypeId", @name = "UserTypeId" })
                             @Html.ValidationMessageFor(x => x.UserTypeId, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -20,27 +20,27 @@
                         <div class="form-group">
                             <div class="col-md-12">
                                 <div class="col-md-9" style="float:left">
-                                    <label for="company">Windows User Name</label>
-                                    @Html.TextBoxFor(x => x.WindowsUserName, new { Placeholder = "Enter Window User Name", @class = "form-control", @readonly = "true" ,@id="userName"})
+                                    <label for="company">@_localizer.Getkey("Windows User Name")</label>
+                                    @Html.TextBoxFor(x => x.WindowsUserName, new { Placeholder =@_localizer.Getkey("Enter Window User Name"), @class = "form-control", @readonly = "true" ,@id="userName"})
                                     @Html.ValidationMessageFor(x => x.WindowsUserName, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="col-md-3" style="float:right">
-                                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Search</button>
+                                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">@_localizer.Getkey("Search")</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">First Name</label>
-                            @Html.TextBoxFor(x => x.FirstName, new { Placeholder = "Enter First Name", @class = "form-control" })
+                            <label for="company">@_localizer.Getkey("First Name*")</label>
+                            @Html.TextBoxFor(x => x.FirstName, new { Placeholder = @_localizer.Getkey("Enter First Name"), @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Last Name</label>
-                            @Html.TextBoxFor(x => x.LastName, new { Placeholder = "Enter Last Name", @class = "form-control" })
+                            <label for="company">@_localizer.Getkey("Last Name*")</label>
+                            @Html.TextBoxFor(x => x.LastName, new { Placeholder = @_localizer.Getkey("Enter Last Name"), @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -48,22 +48,22 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">EmployeeId</label>
-                            @Html.TextBoxFor(x => x.EmployeeId, new { Placeholder = "Enter Employee Id", @class = "form-control" })
+                            <label for="company">@_localizer.Getkey("EmployeeId*")</label>
+                            @Html.TextBoxFor(x => x.EmployeeId, new { Placeholder = @_localizer.Getkey("Enter Employee Id"), @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.EmployeeId, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Email Id</label>
-                            @Html.TextBoxFor(x => x.Email, new { Placeholder = "Enter Email Id", @class = "form-control" })
+                            <label for="company">@_localizer.Getkey("Email Id*")</label>
+                            @Html.TextBoxFor(x => x.Email, new { Placeholder = @_localizer.Getkey("Enter Email Id"), @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.Email, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Location</label>
-                            @Html.DropDownListFor(x => x.LocationId, Model.LocationsId, "Please select Location", new { @class = "form-control processbank" })
+                            <label for="company">@_localizer.Getkey("Location*")</label>
+                            @Html.DropDownListFor(x => x.LocationId, Model.LocationsId, @_localizer.Getkey("Please select Location"), new { @class = "form-control processbank" })
                             @Html.ValidationMessageFor(x => x.LocationId, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -71,14 +71,14 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Department</label>
-                            @Html.DropDownListFor(x => x.DepartmentId, Model.DepartmentsId, "Please select Department", new { @class = "form-control processbank" })
+                            <label for="company">@_localizer.Getkey("Department*")</label>
+                            @Html.DropDownListFor(x => x.DepartmentId, Model.DepartmentsId, @_localizer.Getkey("Please select Department"), new { @class = "form-control processbank" })
                             @Html.ValidationMessageFor(x => x.DepartmentId, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Role</label>
+                            <label for="company">@_localizer.Getkey("Role*")</label>
                             @Html.ListBoxFor(x => x.SelectedUserRoleId, new SelectList(Model.UserRolesId, "Value", "Text"),
                                      new { style = "width: 100%", @class = "selectpicker", multiple = "multiple", id = "role" })
                             @Html.ValidationMessageFor(x => x.SelectedUserRoleId, "", new { @class = "text-danger" })
@@ -89,16 +89,16 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Remark</label>
-                            @Html.TextBoxFor(x => x.Remark, new { Placeholder = "Enter Remark", @class = "form-control" })
+                            <label for="company">@_localizer.Getkey("Remark")</label>
+                            @Html.TextBoxFor(x => x.Remark, new { Placeholder = @_localizer.Getkey("Enter Remark"), @class = "form-control" })
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="company">Login Validity In Days</label>
-                            @Html.TextBoxFor(x => x.LoginValidityDays, new { Placeholder = "Enter Login Validity", @class = "form-control" })
+                            <label for="company">@_localizer.Getkey("Login Validity In Days")</label>
+                            @Html.TextBoxFor(x => x.LoginValidityDays, new { Placeholder = @_localizer.Getkey("Enter Login Validity"), @class = "form-control" })
                         </div>
                     </div>
                 </div>
@@ -106,8 +106,8 @@
                 @Html.HiddenFor(x=>x.AspNetUserId)
                 @Html.HiddenFor(x => x.UserType)
                 <div class="form-actions">
-                    <input class="btn btn-primary" type="submit" value="Save changes">
-                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Cancel</button>
+                    <input class="btn btn-primary" type="submit" value=@_localizer.Getkey("Save changes")>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">@_localizer.Getkey("Cancel")</button>
                 </div>
             </div>
         </div>
@@ -121,13 +121,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Users</h4>
+                <h4 class="modal-title">@_localizer.Getkey("Users")</h4>
             </div>
             <div class="modal-body" id="userId">
                 <table id="item">
                     <tr>
-                        <td>Name</td>
-                        <td>Action</td>
+                        <td>@_localizer.Getkey("Name")</td>
+                        <td>@_localizer.Getkey("Action")</td>
                     </tr>
                     @foreach (var item in Model.WindowsUserNamesId)
                     {
@@ -154,7 +154,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@_localizer.Getkey("Close")</button>
             </div>
         </div>
 
