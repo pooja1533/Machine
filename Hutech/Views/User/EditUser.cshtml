@@ -49,8 +49,10 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">@_localizer.Getkey("EmployeeId*")</label>
-                            @Html.TextBoxFor(x => x.EmployeeId, new { Placeholder = @_localizer.Getkey("Enter Employee Id"), @class = "form-control" })
-                            @Html.ValidationMessageFor(x => x.EmployeeId, "", new { @class = "text-danger" })
+                            @Html.TextBoxFor(x => x.EmployeeId, new { Placeholder = @_localizer.Getkey("Enter Employee Id"), @class = "form-control" ,@readonly="true"})
+                            @* @Html.ValidationMessageFor(x => x.EmployeeId, "", new { @class = "text-danger" }) *@
+                            @Html.ValidationMessageFor(x => x.EmployeeId, "", new { @class = "text-danger", @id = "errorEmployeeId" })
+
                         </div>
                     </div>
                     <div class="col-md-4">

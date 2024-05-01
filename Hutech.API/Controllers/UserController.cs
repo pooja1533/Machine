@@ -292,5 +292,31 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
+
+        
+        [HttpGet("CheckEmployeeIdExist/{employeeId}")]
+        public async Task<ApiResponse<bool>> CheckEmployeeIdExist(string  employeeId)
+        {
+            var apiResponse = new ApiResponse<bool>();
+
+            try
+            {
+                var data = await userRepository.CheckEmployeeIdExist(employeeId);
+                apiResponse.Success = true;
+                apiResponse.Result = data;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+
+            return apiResponse;
+        }
     }
 }

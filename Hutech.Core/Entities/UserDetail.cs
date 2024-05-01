@@ -14,7 +14,7 @@ namespace Hutech.Core.Entities
         public string AspNetUserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Email { get; set; }
+        public string? Email { get; set; }
         public string EmployeeId { get; set; }
         public string? Remark { get; set; }
         public int LoginValidityDays { get; set; }

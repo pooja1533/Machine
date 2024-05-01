@@ -20,5 +20,6 @@ namespace Hutech.Application.Interfaces
         Task<bool> PostUser(UserDetail userDetail);
         public Task<UserDetail> GetUserDetail(long Id);
         public Task<ExecutionResult<GridData<UserDetail>>> GetAllFilterUser(string? fullName, int pageNumber, string? userName, string? status, string? email,string? loggedInUserId,string? employeeId,int? userType,long? departmentId,long? locationId,string? roleId);
+        public Task<bool> CheckEmployeeIdExist(string EmployeeId);
     }
 }

@@ -19,7 +19,7 @@ namespace Hutech.Models
         public string AspNetUserId { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public string Email { get; set; }
+        public string? Email { get; set; }
         public string EmployeeId { get; set; }
         public string? Remark {  get; set; }
         public int LoginValidityDays {  get; set; }
@@ -57,9 +57,10 @@ namespace Hutech.Models
         {
             RuleFor(p => p.FirstName).NotNull().WithMessage("Please enter First Name").NotEmpty().WithMessage("Please enter First Name");
             RuleFor(x => x.LastName).NotNull().WithMessage("Please enter Last Name").NotEmpty().WithMessage("Please enter Last Name");
-            RuleFor(x => x.EmployeeId).NotNull().WithMessage("Please enter EmployeeId").NotEmpty().WithMessage("Please enter EmployeeId");
-            RuleFor(s => s.Email).NotEmpty().WithMessage("Plaese enter Email address ")
-                                 .EmailAddress().WithMessage("Email address is not valid");
+            RuleFor(x => x.EmployeeId).NotNull().WithMessage("Please enter EmployeeId").NotEmpty().WithMessage("Please enter EmployeeId").Matches(@"^[a-zA-Z0-9]{24}$").WithMessage("EmployeeId must be 24 character and contain only alphabets and numbers");
+            
+            //RuleFor(s => s.Email).NotEmpty().WithMessage("Plaese enter Email address ")
+            //                     .EmailAddress().WithMessage("Email address is not valid");
             RuleFor(x => x.UserTypeId).NotNull().NotEmpty().WithMessage("Please select User Type");
 
             RuleFor(x => x.WindowsUserName).NotNull().NotEmpty().WithMessage("Please select Windows UserName").When(x => x.UserType == "clintha").WithMessage("Please select Windows UserName");

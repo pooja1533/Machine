@@ -27,6 +27,23 @@ namespace Hutech.Infrastructure.Repository
         {
             configuration = _configuration;
         }
+        public async Task<bool> CheckEmployeeIdExist(string employeeId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    bool result = await connection.QuerySingleOrDefaultAsync<bool>(UserQueries.CheckEmployeeIdExist, new { EmployeeId = employeeId });
+                    connection.Close();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         public async Task<string> DeleteUser(string userId)
         {

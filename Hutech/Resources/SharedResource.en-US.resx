@@ -339,11 +339,20 @@
   <data name="Employee Id" xml:space="preserve">
     <value>Employee Id</value>
   </data>
+  <data name="Employee Id already Exist" xml:space="preserve">
+    <value>Employee Id already Exist</value>
+  </data>
+  <data name="Employee ID must be 24 characters long and contain only alphabets and numbers." xml:space="preserve">
+    <value>Employee ID must be 24 characters long and contain only alphabets and numbers.</value>
+  </data>
   <data name="EmployeeId" xml:space="preserve">
-    <value>EmployeeId</value>
+    <value>Employee Id</value>
+  </data>
+  <data name="EmployeeId Already Exist." xml:space="preserve">
+    <value>Employee Id already Exist.</value>
   </data>
   <data name="EmployeeId*" xml:space="preserve">
-    <value>EmployeeId*</value>
+    <value>Employee Id*</value>
   </data>
   <data name="Enter Activity Name" xml:space="preserve">
     <value>Enter Activity Name</value>
@@ -847,7 +856,7 @@
     <value>UserId</value>
   </data>
   <data name="UserNamePlaceHolder" xml:space="preserve">
-    <value>name@example.com</value>
+    <value>User Email/ Employee Id</value>
   </data>
   <data name="Users" xml:space="preserve">
     <value>Users</value>

@@ -210,112 +210,108 @@ namespace Hutech.Controllers
                     token = token.Replace("Bearer ", "");
                 }
                 var validation = new UserValidator();
-                var resultValidation = validation.Validate(userViewModel);
-                if (!resultValidation.IsValid)
+                List<UserTypeViewModel> userTypes = new List<UserTypeViewModel>();
+
+                using (var client = new HttpClient())
                 {
-                    foreach (var failuremsg in resultValidation.Errors)
-                    {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
 
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+
+                    HttpResponseMessage Res = await client.GetAsync("UserType/GetActiveUserType");
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        userTypes = root["result"].ToObject<List<UserTypeViewModel>>();
                     }
-                    List<UserTypeViewModel> userTypes = new List<UserTypeViewModel>();
+                }
+                var data = userTypes.Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }).ToList();
 
-                    using (var client = new HttpClient())
+                List<LocationViewModel> locations = new List<LocationViewModel>();
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    HttpResponseMessage Res = await client.GetAsync("Location/GetActiveLocation");
+                    if (Res.IsSuccessStatusCode)
                     {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Clear();
-
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-
-                        HttpResponseMessage Res = await client.GetAsync("UserType/GetActiveUserType");
-
-                        if (Res.IsSuccessStatusCode)
-                        {
-                            var content = await Res.Content.ReadAsStringAsync();
-                            JObject root = JObject.Parse(content);
-                            userTypes = root["result"].ToObject<List<UserTypeViewModel>>();
-                        }
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        locations = root["result"].ToObject<List<LocationViewModel>>();
                     }
-                    var data = userTypes.Select(x => new SelectListItem
-                    {
-                        Text = x.Name,
-                        Value = x.Id.ToString()
-                    }).ToList();
+                }
+                var locationData = locations.Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }).ToList();
+                List<DepartmentViewModel> departments = new List<DepartmentViewModel>();
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                    List<LocationViewModel> locations = new List<LocationViewModel>();
-                    using (var client = new HttpClient())
+                    HttpResponseMessage Res = await client.GetAsync("Department/GetActiveDepartment");
+                    if (Res.IsSuccessStatusCode)
                     {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                        HttpResponseMessage Res = await client.GetAsync("Location/GetActiveLocation");
-                        if (Res.IsSuccessStatusCode)
-                        {
-                            var content = await Res.Content.ReadAsStringAsync();
-                            JObject root = JObject.Parse(content);
-                            locations = root["result"].ToObject<List<LocationViewModel>>();
-                        }
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        departments = root["result"].ToObject<List<DepartmentViewModel>>();
                     }
-                    var locationData = locations.Select(x => new SelectListItem
-                    {
-                        Text = x.Name,
-                        Value = x.Id.ToString()
-                    }).ToList();
-                    List<DepartmentViewModel> departments = new List<DepartmentViewModel>();
-                    using (var client = new HttpClient())
-                    {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
+                var departmentData = departments.Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }).ToList();
+                List<RoleViewModel> roles = new List<RoleViewModel>();
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                        HttpResponseMessage Res = await client.GetAsync("Department/GetActiveDepartment");
-                        if (Res.IsSuccessStatusCode)
-                        {
-                            var content = await Res.Content.ReadAsStringAsync();
-                            JObject root = JObject.Parse(content);
-                            departments = root["result"].ToObject<List<DepartmentViewModel>>();
-                        }
+                    HttpResponseMessage Res = await client.GetAsync("Role/GetAllRoles");
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var content = await Res.Content.ReadAsStringAsync();
+                        JObject root = JObject.Parse(content);
+                        roles = root["result"].ToObject<List<RoleViewModel>>();
                     }
-                    var departmentData = departments.Select(x => new SelectListItem
-                    {
-                        Text = x.Name,
-                        Value = x.Id.ToString()
-                    }).ToList();
-                    List<RoleViewModel> roles = new List<RoleViewModel>();
-                    using (var client = new HttpClient())
-                    {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                        HttpResponseMessage Res = await client.GetAsync("Role/GetAllRoles");
-                        if (Res.IsSuccessStatusCode)
-                        {
-                            var content = await Res.Content.ReadAsStringAsync();
-                            JObject root = JObject.Parse(content);
-                            roles = root["result"].ToObject<List<RoleViewModel>>();
-                        }
-                    }
-                    var roleData = roles.Select(x => new SelectListItem
-                    {
-                        Text = x.Name,
-                        Value = x.Id.ToString()
-                    }).ToList();
-                    userViewModel.UserRolesId = roleData;
-                    userViewModel.DepartmentsId = departmentData;
-                    userViewModel.UserTypesId = data;
-                    userViewModel.LocationsId = locationData;
-                    userViewModel.WindowsUserNamesId = new List<SelectListItem>
+                }
+                var roleData = roles.Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }).ToList();
+                userViewModel.UserRolesId = roleData;
+                userViewModel.DepartmentsId = departmentData;
+                userViewModel.UserTypesId = data;
+                userViewModel.LocationsId = locationData;
+                userViewModel.WindowsUserNamesId = new List<SelectListItem>
                 {
                     new SelectListItem{Text="User1",Value="1"},
                     new SelectListItem{Text="User2",Value="2"},
                     new SelectListItem{Text="user3",Value="3"},
                 };
+                var resultValidation = validation.Validate(userViewModel);
+                if (!resultValidation.IsValid)
+                {
                     if (userViewModel.UserId > 0)
                     {
                         return View("EditUser", userViewModel);
@@ -323,13 +319,21 @@ namespace Hutech.Controllers
                     else
                     {
                         return View(userViewModel);
-
-
                     }
                 }
                 else
                 {
-
+                    JsonResult EmployeeId = await CheckEmployeeIdExist(userViewModel.EmployeeId);
+                    bool isEmployeeIdExist = (bool)EmployeeId.Value;
+                    if (userViewModel.UserId > 0)
+                    {
+                        isEmployeeIdExist = false;
+                    }
+                    if (isEmployeeIdExist)
+                    {
+                        ViewBag.ErrorMessageForEmployeeId = languageService.Getkey("Employee Id already Exist");
+                        return View(userViewModel);
+                    }
                     using (var client = new HttpClient())
                     {
                         client.BaseAddress = new Uri(apiUrl);
@@ -352,9 +356,12 @@ namespace Hutech.Controllers
                         else
                         {
                             var user = CreateUser();
+                            if (string.IsNullOrEmpty(userViewModel.Email))
+                                userViewModel.Email = userViewModel.EmployeeId;
                             await userStore.SetUserNameAsync(user, userViewModel.Email, CancellationToken.None);
                             await emailStore.SetEmailAsync(user, userViewModel.Email, CancellationToken.None);
                             user.EmailConfirmed = true;
+                            user.UserName = !string.IsNullOrEmpty(user.UserName) ? user.UserName : userViewModel.EmployeeId;
                             var result = await userManager.CreateAsync(user, "Hutech@123");
                             var userId = await userManager.GetUserIdAsync(user);
                             userViewModel.AspNetUserId = userId;
@@ -673,7 +680,7 @@ namespace Hutech.Controllers
                             worksheet.Cells[1, 7].Value = "Department Name";
                             worksheet.Cells[1, 8].Value = "Role";
                             worksheet.Cells[1, 9].Value = "Location";
-                           
+
                             int row = 2; // Start from the second row
 
                             // Iterate over each user and populate data into the worksheet
@@ -776,7 +783,7 @@ namespace Hutech.Controllers
                         }
                         else
                         {
-                            users = root["result"].ToObject<List<UserViewModel>>();   
+                            users = root["result"].ToObject<List<UserViewModel>>();
                         }
                     }
                     //Building an HTML string.
@@ -1456,6 +1463,26 @@ namespace Hutech.Controllers
         //        throw ex;
         //    }
         //}
-
+        public async Task<JsonResult> CheckEmployeeIdExist(string EmployeeId)
+        {
+            using (var client = new HttpClient())
+            {
+                string apiUrl = configuration["Baseurl"];
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //check whether employeeId exist or not
+                bool isExist = false;
+                HttpResponseMessage Result = await client.GetAsync(string.Format("User/CheckEmployeeIdExist/" + EmployeeId));
+                if (Result.IsSuccessStatusCode)
+                {
+                    var content = await Result.Content.ReadAsStringAsync();
+                    JObject root = JObject.Parse(content);
+                    var result = root["result"];
+                    isExist = (bool)result;
+                }
+                return Json(isExist);
+            }
+        }
     }
 }
