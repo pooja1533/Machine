@@ -17,5 +17,9 @@ namespace Hutech.Application.Interfaces
         public Task<InstrumentsIds> GetInstrumentIdDetail(long Id);
         public Task<String> PutInstrumentId(InstrumentsIds activity);
         public Task<ExecutionResult<GridData<InstrumentsIds>>> GetAllFilterInstrumentId(string? instrumentIdName,string? model,string? instrumentName,string? instrumentSerial,string? instrumentLocation,string? teamName, int pageNumber, string? updatedBy, string? status, string? updatedDate);
+        Task<bool> AddInstrumentIdDocumentMapping(InstrumentIdDocumentMapping instrumentIdDocumentMapping);
+        Task<long> GetLastInsertedInstrumentId();
+        Task<bool> AddInstrumentDocumentMapping(InstrumentIdDocumentMapping instrumentDocumentMapping);
+        public Task<string> DeleteDocument(long documentId, long instrumentId);
     }
 }

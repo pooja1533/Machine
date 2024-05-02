@@ -166,7 +166,7 @@
     <value>Add Activity Details</value>
   </data>
   <data name="Add AddInstrumentId" xml:space="preserve">
-    <value>Add AddInstrumentId</value>
+    <value>Add AddInstrument Id</value>
   </data>
   <data name="Add Configuration" xml:space="preserve">
     <value>Add Configuration</value>
@@ -188,6 +188,9 @@
   </data>
   <data name="Add Instrument Name" xml:space="preserve">
     <value>Add Instrument Name</value>
+  </data>
+  <data name="Add InstrumentId" xml:space="preserve">
+    <value>Add Instrument Id</value>
   </data>
   <data name="Add Location" xml:space="preserve">
     <value>Add Location</value>
@@ -267,6 +270,9 @@
   <data name="Department Name" xml:space="preserve">
     <value>Department Name</value>
   </data>
+  <data name="Department Name*" xml:space="preserve">
+    <value>Department Name*</value>
+  </data>
   <data name="Department Updated Successfully" xml:space="preserve">
     <value>Department Updated Successfully</value>
   </data>
@@ -301,7 +307,7 @@
     <value>Edit Instrument Name</value>
   </data>
   <data name="Edit InstrumentId" xml:space="preserve">
-    <value>Edit InstrumentId</value>
+    <value>Edit Instrument Id</value>
   </data>
   <data name="Edit Location" xml:space="preserve">
     <value>Edit Location</value>
@@ -509,6 +515,9 @@
   </data>
   <data name="InActive" xml:space="preserve">
     <value>InActive</value>
+  </data>
+  <data name="Installation Date*" xml:space="preserve">
+    <value>Installation Date*</value>
   </data>
   <data name="Instrument" xml:space="preserve">
     <value>Instrument</value>

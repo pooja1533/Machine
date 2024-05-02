@@ -208,5 +208,83 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
+        public async Task<bool> AddInstrumentIdDocumentMapping(InstrumentIdDocumentMapping instrumentIdDocumentMapping)
+        {
+            try
+            {
+                bool result = false;
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var instrumentIdDocumentMappingresult = await connection.QueryAsync<string>(InstrumentIdQueries.AddInstrumentIdDocumentMapping, instrumentIdDocumentMapping);
+                    if (instrumentIdDocumentMappingresult != null)
+                    {
+                        result = true;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<long> GetLastInsertedInstrumentId()
+        {
+            try
+            {
+                long lastinstrumentId = 0;
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var instrumentDocumentMappingresult = await connection.QueryAsync<long>(InstrumentIdQueries.GetLastInsertedInstrumentId);
+                    lastinstrumentId = instrumentDocumentMappingresult.First();
+                }
+                return lastinstrumentId;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> AddInstrumentDocumentMapping(InstrumentIdDocumentMapping instrumentIdDocumentMapping)
+        {
+            try
+            {
+                bool result = false;
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var instrumentIdDocumentMappingresult = await connection.QueryAsync<string>(InstrumentIdQueries.AddInstrumentDocumentMapping, instrumentIdDocumentMapping);
+                    if (instrumentIdDocumentMappingresult != null)
+                    {
+                        result = true;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<string> DeleteDocument(long documentId, long instrumentId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
+                {
+                    connection.Open();
+                    var result = await connection.QueryAsync<InstrumentIdDocumentMapping>(InstrumentIdQueries.DeleteInstrumentIdDocument, new { DocumentId = documentId, InstrumentId = instrumentId });
+                    var data = await connection.QueryAsync<Document>(DocumentQueries.DeleteDocument, new { Id = documentId });
+                    return result.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

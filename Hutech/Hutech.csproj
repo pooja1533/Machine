@@ -85,4 +85,8 @@
     <ProjectReference Include="..\Hutech.Application\Hutech.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Documents\InstrumentId\Image\" />
+  </ItemGroup>
+
 </Project>

@@ -6,6 +6,7 @@ using Hutech.Models;
 using Imputabiliteafro.Api.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Configuration;
 
 namespace Hutech.API.Controllers
 {
@@ -17,12 +18,16 @@ namespace Hutech.API.Controllers
         private readonly IInstrumentIdRepository instrumentIdRepository;
         private readonly ILogger<InstrumentIdController> logger;
         private readonly IAuditRepository auditRepository;
-        public InstrumentIdController(IMapper _mapper, IInstrumentIdRepository _instrumentIdRepository, ILogger<InstrumentIdController> _logger, IAuditRepository _auditRepository)
+        private readonly IConfiguration configuration;
+        private readonly IDocumentRepository documentRepository;
+        public InstrumentIdController(IMapper _mapper, IInstrumentIdRepository _instrumentIdRepository, ILogger<InstrumentIdController> _logger, IAuditRepository _auditRepository, IConfiguration _configuration, IDocumentRepository _documentRepository)
         {
             mapper = _mapper;
             instrumentIdRepository = _instrumentIdRepository;
             logger = _logger;
             auditRepository = _auditRepository;
+            configuration = _configuration;
+            documentRepository = _documentRepository;
         }
         [HttpGet("GetActiveInstrumentId")]
         public async Task<ApiResponse<List<InstrumentIdViewModel>>> GetActiveInstrumentId()
@@ -164,8 +169,8 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
         }
-        
-       [HttpPost("GetAllFilterInstrumentId")]
+
+        [HttpPost("GetAllFilterInstrumentId")]
         public async Task<ApiResponse<List<InstrumentIdViewModel>>> GetAllFilterInstrumentId(InstrumentIdModel instrumentIdModel)
         {
             var apiResponse = new ApiResponse<List<InstrumentIdViewModel>>();
@@ -183,7 +188,7 @@ namespace Hutech.API.Controllers
                 DateTime? updatedDate = instrumentIdModel.UpdatedDate;
                 string formattedDate = updatedDate?.ToString("yyyy-MM-dd");
 
-                var instrumentId = await instrumentIdRepository.GetAllFilterInstrumentId(instrumentIdName,model,instrumentName,instrumentSerial,instrumentLocation,teamName, pageNumber, updatedBy, status, formattedDate);
+                var instrumentId = await instrumentIdRepository.GetAllFilterInstrumentId(instrumentIdName, model, instrumentName, instrumentSerial, instrumentLocation, teamName, pageNumber, updatedBy, status, formattedDate);
                 var data = mapper.Map<List<InstrumentsIds>, List<InstrumentIdViewModel>>(instrumentId.Value.GridRecords);
                 apiResponse.Success = true;
                 apiResponse.Result = data;
@@ -203,6 +208,111 @@ namespace Hutech.API.Controllers
                 return apiResponse;
             }
 
+        }
+        [HttpPost]
+        [Route("UploadInstrumentIdDocument")]
+        public async Task<ApiResponse<string>> UploadInstrumentIdDocument([FromForm] InstrumentIdDocumentViewModel instrumentIdDocumentViewModel)
+        {
+            var apiResponse = new ApiResponse<string>();
+            try
+            {
+                var name = configuration.GetSection("InstrumentIdDocument").Value;
+                string path = string.Empty;
+                List<DocumentViewModel> documents = new List<DocumentViewModel>();
+                foreach (var files in instrumentIdDocumentViewModel.Files)
+                {
+                    if (files.ContentType.Contains("image"))
+                    {
+                        path = name + "Image/";
+                    }
+                    else
+                    {
+                        path = name + "Document/";
+
+                    }
+                    DocumentViewModel document = new DocumentViewModel();
+                    document.FileName = Path.GetFileNameWithoutExtension(files.FileName);
+                    document.FileExtension = Path.GetExtension(files.FileName);
+                    document.IsDeleted = false;
+                    document.CreatedDate = DateTime.UtcNow;
+                    document.CreatedBy = HttpContext.Session.GetString("UserId");
+                    document.Path = path + files.FileName;
+                    ; documents.Add(document);
+
+                }
+                var instrumentdata = mapper.Map<List<DocumentViewModel>, List<Document>>(documents);
+
+                if (instrumentIdDocumentViewModel.Id > 0)
+                {
+                    var data = await documentRepository.UpdateDocument(instrumentdata, instrumentIdDocumentViewModel.Id);
+                    foreach (var item in data)
+                    {
+                        InstrumentIdDocumentMapping instrumentIdDocumentMapping = new InstrumentIdDocumentMapping()
+                        {
+                            InstrumentId = instrumentIdDocumentViewModel.Id,
+                            DocumentId = item,
+                            IsDeleted = false,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = instrumentdata.First().CreatedBy
+                        };
+                        bool result = await instrumentIdRepository.AddInstrumentIdDocumentMapping(instrumentIdDocumentMapping);
+                    }
+                    apiResponse.Result = "Instrument Id document uploaded successfully";
+                }
+                else
+                {
+                    var data = await documentRepository.UploadDocument(instrumentdata);
+                    var instrumentId = await instrumentIdRepository.GetLastInsertedInstrumentId();
+                    foreach (var item in data)
+                    {
+                        InstrumentIdDocumentMapping instrumentIdDocumentMapping = new InstrumentIdDocumentMapping()
+                        {
+                            InstrumentId = instrumentId,
+                            DocumentId = item,
+                            IsDeleted = false,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = instrumentdata.First().CreatedBy
+                        };
+                        bool result = await instrumentIdRepository.AddInstrumentIdDocumentMapping(instrumentIdDocumentMapping);
+                    }
+                    apiResponse.Result = "Instrument Id document added successfully";
+                }
+                apiResponse.Success = true;
+                return apiResponse;
+
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
+        }
+        [HttpDelete("DeleteDocument/{documentId}/{instrumentId}")]
+        public async Task<ApiResponse<string>> DeleteDocument(long documentId, long instrumentId)
+        {
+            var apiResponse = new ApiResponse<string>();
+            try
+            {
+                var role = await instrumentIdRepository.DeleteDocument(documentId, instrumentId);
+                apiResponse.Success = true;
+                apiResponse.Message = "Instrument Id document deleted Successfully";
+                return apiResponse;
+            }
+            catch (Exception ex)
+            {
+                var id = RouteData.Values["AuditId"];
+                logger.LogInformation($"Exception Occure in API.{ex.Message}" + "{@AuditId}", id);
+                long auditId = System.Convert.ToInt64(id);
+                auditRepository.AddExceptionDetails(auditId, ex.Message);
+                apiResponse.Success = false;
+                apiResponse.AuditId = auditId;
+                return apiResponse;
+            }
         }
     }
 }

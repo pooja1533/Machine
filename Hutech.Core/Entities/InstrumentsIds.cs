@@ -37,5 +37,11 @@ namespace Hutech.Core.Entities
         public string? FullName { get; set; }
         [NotMapped]
         public string? Role { get; set; }
+        public long DepartmentId { get; set; }
+        public DateTime? InstallationDate { get; set; }
+        [NotMapped]
+        public string? DocumentId { get; set; }
+        [NotMapped]
+        public string? Path { get; set; }
     }
 }

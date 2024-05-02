@@ -1,9 +1,11 @@
-﻿@model Hutech.Models.InstrumentIdViewModel;
-<form class="horizontal" method="post" asp-controller="InstrumentId" asp-action="AddInstrumentId" asp-antiforgery="true">
+﻿@model Hutech.Models.InstrumentIdDocumentViewModel;
+@* <form class="horizontal" method="post" asp-controller="InstrumentId" asp-action="AddInstrumentId" asp-antiforgery="true"> *@
+@using (Html.BeginForm("AddInstrumentId", "InstrumentId", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
     <div class="col-sm-12">
         <div class="card">
             <div class="card-header">
-                <strong>@_localizer.Getkey("Add AddInstrumentId")</strong>
+                <strong>@_localizer.Getkey("Add InstrumentId")</strong>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -11,23 +13,23 @@
                         <div class="form-group">
                             <label for="company">@_localizer.Getkey("Instrument Id*")</label>
                             @Html.TextBoxFor(x => x.InstrumentsId, new { Placeholder = @_localizer.Getkey("Enter Instrument Id"), @class = "form-control", maxlength = "50", autofocus = "autofocus" })
-                            @Html.ValidationMessageFor(x=>x.InstrumentsId,"", new { @class = "text-danger"})
+                            @Html.ValidationMessageFor(x => x.InstrumentsId, "", new { @class = "text-danger" })
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">@_localizer.Getkey("Model*")</label>
-                            @Html.TextBoxFor(x => x.Model, new { Placeholder =@_localizer.Getkey("Enter Model"), @class = "form-control", maxlength = "50" })
-                            @Html.ValidationMessageFor(x=>x.Model,"", new { @class = "text-danger"})
+                            @Html.TextBoxFor(x => x.Model, new { Placeholder = @_localizer.Getkey("Enter Model"), @class = "form-control", maxlength = "50" })
+                            @Html.ValidationMessageFor(x => x.Model, "", new { @class = "text-danger" })
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">@_localizer.Getkey("Instrument Serial*")</label>
-                            @Html.TextBoxFor(x => x.InstrumentSerial, new { Placeholder =@_localizer.Getkey("Enter InstrumentSerial"), @class = "form-control", maxlength = "50" })
-                            @Html.ValidationMessageFor(x=>x.InstrumentSerial,"", new { @class = "text-danger"})
+                            @Html.TextBoxFor(x => x.InstrumentSerial, new { Placeholder = @_localizer.Getkey("Enter InstrumentSerial"), @class = "form-control", maxlength = "50" })
+                            @Html.ValidationMessageFor(x => x.InstrumentSerial, "", new { @class = "text-danger" })
                             @*<input class="form-control" id="company" type="text" placeholder="Enter your company name">*@
                         </div>
                     </div>
@@ -36,30 +38,52 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">@_localizer.Getkey("Instrument Name*")</label>
-                            @Html.DropDownListFor(x=>x.InstrumentId,Model.Instruments,@_localizer.Getkey("Please select Instrument"),new {@class="form-control processbank",onchange="handleActivityChange()"})
-                            @Html.ValidationMessageFor(x=>x.InstrumentId,"", new { @class = "text-danger"})
+                            @Html.DropDownListFor(x => x.InstrumentId, Model.Instruments, @_localizer.Getkey("Please select Instrument"), new { @class = "form-control processbank", onchange = "handleActivityChange()" })
+                            @Html.ValidationMessageFor(x => x.InstrumentId, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">@_localizer.Getkey("Location*")</label>
-                            @Html.DropDownListFor(x=>x.LocationId,Model.Locations,@_localizer.Getkey("Please select Location"),new {@class="form-control processbank",onchange="handleLocationChange()"})
-                            @Html.ValidationMessageFor(x=>x.LocationId,"", new { @class = "text-danger"})
+                            @Html.DropDownListFor(x => x.LocationId, Model.Locations, @_localizer.Getkey("Please select Location"), new { @class = "form-control processbank", onchange = "handleLocationChange()" })
+                            @Html.ValidationMessageFor(x => x.LocationId, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="company">@_localizer.Getkey("Team*")</label>
-                            @Html.DropDownListFor(x=>x.TeamId,Model.Teams,@_localizer.Getkey("Please select Team"),new {@class="form-control processbank",onchange="handleTeamChange()"})
-                            @Html.ValidationMessageFor(x=>x.TeamId,"", new { @class = "text-danger"})
+                            @Html.DropDownListFor(x => x.TeamId, Model.Teams, @_localizer.Getkey("Please select Team"), new { @class = "form-control processbank", onchange = "handleTeamChange()" })
+                            @Html.ValidationMessageFor(x => x.TeamId, "", new { @class = "text-danger" })
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
+                            <label for="company">@_localizer.Getkey("Department Name*")</label>
+                            @Html.DropDownListFor(x => x.DepartmentId, Model.Departments, @_localizer.Getkey("Please select Department"), new { @class = "form-control processbank", onchange = "handleActivityChange()" })
+                            @Html.ValidationMessageFor(x => x.DepartmentId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">@_localizer.Getkey("Installation Date*")</label>
+                            @Html.EditorFor(model => model.InstallationDate, new { htmlAttributes = new { @class = "form-control", placeholder = @_localizer.Getkey("Installation Date*") } })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
                             <label for="company">@_localizer.Getkey("Team Location")</label>
-                            @Html.TextBoxFor(x=>x.TeamLocation,new{Placeholder=@_localizer.Getkey("Enter Team Location"),@class="form-control",@readonly = true})
+                            @Html.TextBoxFor(x => x.TeamLocation, new { Placeholder = @_localizer.Getkey("Enter Team Location"), @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="company">@_localizer.Getkey("Select Multiple Files")</label>
+                            <input asp-for="Files" class="form-control" multiple />
+                            <span asp-validation-for="Files" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
@@ -70,29 +94,60 @@
             </div>
         </div>
     </div>
-</form>
-@if (TempData["message"] != null)
-{
-    <script type="text/javascript">
-        window.onload = function () {
-            alert("@TempData["message"]");
-            var url = "@TempData["RedirectURl"]";
-            window.location.href = url;
-        };
-    </script>
+    @* </form> *@
 }
-<script type="text/javascript">
-    function handleLocationChange() {
-        var teamId = $("#TeamId option:selected").text();
-        var locationId = $("#LocationId option:selected").text();
-        var teamLocation = teamId + "-" + locationId;
-        $("#TeamLocation").val(teamLocation)
+    @if (TempData["message"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@TempData["message"]");
+                var url = "@TempData["RedirectURl"]";
+                window.location.href = url;
+            };
+        </script>
     }
-    function handleTeamChange() {
-        var teamId = $("#TeamId option:selected").text();
-        var locationId = $("#LocationId option:selected").text();
-        var teamLocation = teamId + "-" + locationId;
-        $("#TeamLocation").val(teamLocation)
+    <script type="text/javascript">
+        function handleLocationChange() {
+            var teamId = $("#TeamId option:selected").text();
+            var locationId = $("#LocationId option:selected").text();
+            var teamLocation = teamId + "-" + locationId;
+            $("#TeamLocation").val(teamLocation)
+        }
+        function handleTeamChange() {
+            var teamId = $("#TeamId option:selected").text();
+            var locationId = $("#LocationId option:selected").text();
+            var teamLocation = teamId + "-" + locationId;
+            $("#TeamLocation").val(teamLocation)
 
-    }
-</script>
+        }
+        $("#Files").change(function () {
+            var allowedExtension = '@ViewBag.AllowedFileExtension';
+            var allowedFileSize = '@ViewBag.AlloweFileSize';
+            var size = parseInt(allowedFileSize);
+            var files = document.getElementById('Files');
+            for (var i = 0; i < files.files.length; ++i) {
+                var name = files.files.item(i).name;
+                var ext = name.split(".").slice(-1)[0];
+
+                var sizeInBytes = files.files.item(i).size;
+                let fileSizeMB = sizeInBytes / (1024 ** 2)
+
+                if (!allowedExtension.includes(ext)) {
+                    alert(ext + " is not supported " + "Only supported Extensions are " + allowedExtension);
+                    success = 'false';
+                    event.preventDefault();
+                }
+                else {
+                    if (fileSizeMB > size) {
+                        alert("Maximum file size is " + size + " MB");
+                        success = 'false';
+                        event.preventDefault();
+                    }
+                    else {
+                        success = 'true';
+
+                    }
+                }
+            }
+        });
+    </script>
