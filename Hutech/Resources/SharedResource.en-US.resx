@@ -594,6 +594,9 @@
   <data name="InstrumentSerial" xml:space="preserve">
     <value>InstrumentSerial</value>
   </data>
+  <data name="IpAddress" xml:space="preserve">
+    <value>IpAddress</value>
+  </data>
   <data name="Last Name" xml:space="preserve">
     <value>Last Name</value>
   </data>

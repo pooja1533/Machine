@@ -15,7 +15,8 @@ namespace Hutech.Core.Entities
         public string Request_Data { get; set; }
         public string Description { get; set; }
         public DateTime CreatedDatetime { get; set; }
-        
+        public string IPAddress { get; set; }
+        public string role { get; set; }
 
     }
 }

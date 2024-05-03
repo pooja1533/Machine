@@ -32,10 +32,12 @@
                             <tr>
                                 <th>@_localizer.Getkey("AuditId")</th>
                                 <th>@_localizer.Getkey("Module")</th>
+                                <th>@_localizer.Getkey("IpAddress")</th>
+                                <th>@_localizer.Getkey("Role")</th>
                                 <th>@_localizer.Getkey("DateTime")</th>
                                 <th>@_localizer.Getkey("UserId")</th>
                                 <th>@_localizer.Getkey("Description")</th>
-                                <td>@_localizer.Getkey("Message")</td>
+                                <th>@_localizer.Getkey("Message")</th>
                             </tr>
                         </thead>
                             @{
@@ -50,6 +52,8 @@
                                 <tr>
                                         <td>@Model.GridRecords[i].AuditId</td>
                                         <td>@Model.GridRecords[i].ModuleName</td>
+                                        <td>@Model.GridRecords[i].IPAddress</td>
+                                        <td>@Model.GridRecords[i].role</td>
                                         <td>@Model.GridRecords[i].CreatedDatetime</td>
                                         <td>@Model.GridRecords[i].UserId</td>
                                         <td>@Model.GridRecords[i].Description</td>

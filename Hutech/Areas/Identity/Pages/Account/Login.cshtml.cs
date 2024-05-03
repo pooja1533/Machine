@@ -26,6 +26,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
 using Hutech.Application;
 using Hutech.Services;
+using Hutech.Core.Constants;
 
 namespace Hutech.Areas.Identity.Pages.Account
 {
@@ -208,7 +209,19 @@ namespace Hutech.Areas.Identity.Pages.Account
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var user = await _userManager.FindByNameAsync(Input.Email);
                 var userRoles = await _userManager.GetRolesAsync(user);
-                HttpContext.Session.SetString("UserRole", userRoles.FirstOrDefault().ToString());
+                string userrole = string.Empty;
+                if (userRoles.Count > 0)
+                {
+                    foreach(var role in userRoles)
+                    {
+                        userrole= userrole+","+ role.ToString();
+                    }
+                }
+                if(userrole.StartsWith(","))
+                    userrole=userrole.TrimStart(',');
+                if (userrole.EndsWith(","))
+                    userrole = userrole.TrimEnd(',');
+                HttpContext.Session.SetString("UserRole", userrole.ToString());
                 HttpContext.Session.SetString("LoogedInUser", Input.Email.ToString());
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);

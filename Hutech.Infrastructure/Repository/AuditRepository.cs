@@ -38,7 +38,7 @@ namespace Hutech.Infrastructure.Repository
                 throw ex;
             }
         }
-
+      
         public long InsertAuditLogs(AuditModels objauditmodel)
         {
             try

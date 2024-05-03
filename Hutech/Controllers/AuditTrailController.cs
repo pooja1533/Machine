@@ -17,6 +17,8 @@ using iText.Kernel.Geom;
 using iText.Html2pdf;
 using System.Collections;
 using NuGet.Packaging;
+using Microsoft.AspNetCore.Http;
+using DocumentFormat.OpenXml.Bibliography;
 
 
 namespace Hutech.Controllers
@@ -103,6 +105,7 @@ namespace Hutech.Controllers
                         foreach (var item in audit)
                         {
                             item.Request_Data = item.Request_Data.Replace(",", ";");
+                            item.role = item.role.Replace(","," / ");
                             string line = string.Join(",", properties.Select(p => p.GetValue(item, null)).ToArray());
                             csvBuilder.AppendLine(line);
                         }
@@ -210,7 +213,11 @@ namespace Hutech.Controllers
                     }
                     //Building an HTML string.
                     StringBuilder sb = new StringBuilder();
-
+                    var loggedinUserEmail = HttpContext.Session.GetString("LoogedInUser");
+                    var loggedinUserRole = HttpContext.Session.GetString("UserRole");
+                    var currentDatetime = DateTime.UtcNow;
+                    string header = "<h2 style='text-align:center;Font-weight:bold;'>Report :- Audit Trail User Management,Printed By:- " + loggedinUserEmail + ",Role:- " + loggedinUserRole + ",DateTime:- " + currentDatetime + "</h2>";
+                    sb.Append(header);
                     //Table start.
                     sb.Append("<table border='1' cellpadding='5' cellspacing='0' style='border: 1px solid #ccc;font-family: Arial; font-size: 10pt;'>");
 
@@ -218,6 +225,8 @@ namespace Hutech.Controllers
                     sb.Append("<tr>");
                     sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>AuditID</th>");
                     sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Module Name</th>");
+                    sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Role</th>");
+                    sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>IP Address</th>");
                     sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>UserId</th>");
                     sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Description</th>");
                     sb.Append("<th style='background-color: #B8DBFD;border: 1px solid #ccc'>Created Date</th>");
@@ -229,13 +238,15 @@ namespace Hutech.Controllers
                     {
                         AuditViewModel model = new AuditViewModel();
                         model = audit[i];
-                        string[] auditData= new string[6];
+                        string[] auditData= new string[8];
                         auditData[0] = model.AuditId.ToString();
                         auditData[1] = model.ModuleName;
-                        auditData[2] = model.UserId;
-                        auditData[3] = model.Description;
-                        auditData[4] = model.CreatedDatetime.ToString();
-                        auditData[5] = model.Request_Data;
+                        auditData[2] = model.role;
+                        auditData[3] = model.IPAddress;
+                        auditData[4] = model.UserId;
+                        auditData[5] = model.Description;
+                        auditData[6] = model.CreatedDatetime.ToString();
+                        auditData[7] = model.Request_Data;
                         for (int j = 0; j < auditData.Length; j++)
                         {
                             //Append data.
