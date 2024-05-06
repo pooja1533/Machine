@@ -699,6 +699,9 @@
   <data name="Please select Location" xml:space="preserve">
     <value>Please select Location</value>
   </data>
+  <data name="Please select Report Type" xml:space="preserve">
+    <value>Please select Report Type</value>
+  </data>
   <data name="Please select Requirement" xml:space="preserve">
     <value>Please select Requirement</value>
   </data>

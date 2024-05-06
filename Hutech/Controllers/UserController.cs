@@ -1367,20 +1367,20 @@ namespace Hutech.Controllers
                     new SelectListItem{Text="User2",Value="2"},
                     new SelectListItem{Text="user3",Value="3"},
                     };
-                    var loggedinUserRole = HttpContext.Session.GetString("UserRole").ToString();
-                    HttpResponseMessage Result = await client.GetAsync(string.Format("Role/GetRoleAccordingToRole/" + loggedinUserRole));
+                    //var loggedinUserRole = HttpContext.Session.GetString("UserRole").ToString();
+                    //HttpResponseMessage Result = await client.GetAsync(string.Format("Role/GetRoleAccordingToRole/" + loggedinUserRole));
 
-                    if (Result.IsSuccessStatusCode)
-                    {
-                        var content = await Result.Content.ReadAsStringAsync();
-                        JObject root = JObject.Parse(content);
-                        roles = root["result"].ToObject<List<RoleViewModel>>();
-                        var items = roles.Select(x => new SelectListItem
-                        {
-                            Text = x.Name,
-                            Value = x.Id.ToString()
-                        }).ToList();
-                    }
+                    //if (Result.IsSuccessStatusCode)
+                    //{
+                    //    var content = await Result.Content.ReadAsStringAsync();
+                    //    JObject root = JObject.Parse(content);
+                    //    roles = root["result"].ToObject<List<RoleViewModel>>();
+                    //    var items = roles.Select(x => new SelectListItem
+                    //    {
+                    //        Text = x.Name,
+                    //        Value = x.Id.ToString()
+                    //    }).ToList();
+                    //}
                 }
                 return View(user);
             }

@@ -31,6 +31,8 @@ using Paragraph = iText.Layout.Element.Paragraph;
 using TextAlignment = iText.Layout.Properties.TextAlignment;
 using Hutech.Services;
 using Color = iText.Kernel.Colors.Color;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace Hutech.Controllers
@@ -350,10 +352,22 @@ namespace Hutech.Controllers
                                         table.AddCell(string.Empty);
                                     else
                                         table.AddCell(model.IPAddress);
-                                    table.AddCell(model.UserId);
-                                    table.AddCell(model.Description);
-                                    table.AddCell(model.CreatedDatetime.ToString());
-                                    table.AddCell(model.Request_Data);
+                                    if(string.IsNullOrEmpty(model.UserId))
+                                        table.AddCell(string.Empty);
+                                    else
+                                        table.AddCell(model.UserId);
+                                    if(string.IsNullOrEmpty(model.Description))
+                                        table.AddCell(string.Empty);
+                                    else
+                                        table.AddCell(model.Description);
+                                    if (model.CreatedDatetime==null)
+                                        table.AddCell(string.Empty);
+                                    else
+                                        table.AddCell(model.CreatedDatetime.ToString());
+                                    if (string.IsNullOrEmpty(model.Request_Data))
+                                        table.AddCell(string.Empty);
+                                    else
+                                        table.AddCell(model.Request_Data);
                                 }
 
                                 document.Add(table);
@@ -586,7 +600,10 @@ namespace Hutech.Controllers
                     TotalPages = totalPage,
                     TotalRecords = totalRecords
                 };
+                string requestedWithHeader = Request.Headers["X-Requested-With"];
                 return View(data);
+                //return PartialView("GetAllAuditTrail", data);
+
             }
             catch (Exception ex)
             {
@@ -594,6 +611,16 @@ namespace Hutech.Controllers
                 throw ex;
             }
             return View();
+        }
+        public async Task<IActionResult> GetAllReports()
+        {
+            ReportViewModel reports = new ReportViewModel();
+            reports.Reports = new List<SelectListItem>
+                {
+                    new SelectListItem{Text="Audit Trail",Value="1"},
+                    new SelectListItem{Text="User Creation Request",Value="2"},
+                };
+            return View(reports);
         }
     }
 }

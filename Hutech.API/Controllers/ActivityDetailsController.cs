@@ -106,7 +106,6 @@ namespace Hutech.API.Controllers
             try
             {
                 var activitydata = mapper.Map<ActivityDetailsViewModel, ActivityDetails>(activityDetailsViewModel);
-                activitydata.CreatedByUserId= httpContextAccessor.HttpContext.Session.GetString("UserId");
                 activitydata.CreatedDate = DateTime.UtcNow;
                 activitydata.ModifiedDate=DateTime.UtcNow;
                 activitydata.ModifyByUserId = activityDetailsViewModel.UpdatedBy;

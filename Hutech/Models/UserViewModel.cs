@@ -49,7 +49,11 @@ namespace Hutech.Models
         public long UserId { get; set; }
         [NotMapped]
         public string? UserstatusName { get; set; }
-        public string? RemarkForReject { get; set; }    
+        public string? RemarkForReject { get; set; }
+        public string? ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public string? RejectedBy { get; set; }
+        public DateTime? RejectedDate { get; set; }
     }
     public class UserValidator : AbstractValidator<UserViewModel>
     {

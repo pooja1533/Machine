@@ -500,6 +500,7 @@ namespace Hutech.Controllers
 
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        activityDetail.CreatedByUserId= HttpContext.Session.GetString("UserId").ToString();
                         activityDetail.UpdatedBy = HttpContext.Session.GetString("UserId").ToString();
                         var json = JsonConvert.SerializeObject(activityDetail);
                         var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");

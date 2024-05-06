@@ -67,6 +67,8 @@ namespace Hutech.Models
         [NotMapped]
         public string? Role { get; set; }
         public string? UpdatedBy { get; set; }
+        public string CreatedByUserId { get; set; }
+
     }
     public enum FrequencyEnumData
     {

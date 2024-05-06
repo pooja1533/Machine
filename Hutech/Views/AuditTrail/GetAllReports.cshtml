@@ -1,0 +1,39 @@
+﻿@* @{
+    var isAjaxRequest = string.Equals(Context.Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+    Layout = isAjaxRequest ? null : "_Layout";
+} *@
+@model Hutech.Models.ReportViewModel;
+@inject IConfiguration Configuration
+@using Microsoft.Extensions.Configuration
+@Html.AntiForgeryToken()
+<div class="col-sm-12">
+    <div class="card">
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="company">@_localizer.Getkey("User Type*")</label>
+                        @Html.DropDownListFor(x => x.ReportId, Model.Reports, @_localizer.Getkey("Please select Report Type"), new { @class = "form-control processbank", onchange = "changeReport()", @Id = "ReportId", @name = "ReportId" })
+                        @Html.ValidationMessageFor(x => x.ReportId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="result"></div> <!-- Container to render the result -->
+<script>
+    function changeReport() {
+        var selectedReportId = document.getElementById("ReportId").value;
+        $.ajax({
+            url: '@Url.Action("GetAllAuditTrail", "AuditTrail")',
+            type: 'GET',
+            data: { reportId: selectedReportId },
+            success: function (data) {
+                debugger;
+                $('#result').html(data);
+            }
+        });
+    }
+</script>

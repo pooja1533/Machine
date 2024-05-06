@@ -1,4 +1,7 @@
-﻿
+﻿@{
+    var isAjaxRequest = string.Equals(Context.Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+    Layout = isAjaxRequest ? null : "_Layout";
+}
 <div class="container-fluid">
     <div class="animated fadeIn">
         <div class="row">
