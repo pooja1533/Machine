@@ -15,8 +15,8 @@ namespace Hutech.Application.Interfaces
         public Task<string> DeleteUser(string userId);
         public Task<UserDetail> GetUserById(long Id);
         public Task<string> UpdateUser(AspNetUsers aspNetUsers);
-        public Task<bool> ApproveUser(long Id);
-        public Task<bool> RejectUser(string comment, long userId);
+        public Task<bool> ApproveUser(long Id,string loggedinUserId);
+        public Task<bool> RejectUser(string comment, long userId,string loggedinUserId);
         Task<bool> PostUser(UserDetail userDetail);
         public Task<UserDetail> GetUserDetail(long Id);
         public Task<ExecutionResult<GridData<UserDetail>>> GetAllFilterUser(string? fullName, int pageNumber, string? userName, string? status, string? email,string? loggedInUserId,string? employeeId,int? userType,long? departmentId,long? locationId,string? roleId);

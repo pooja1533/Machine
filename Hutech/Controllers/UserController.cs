@@ -1059,7 +1059,7 @@ namespace Hutech.Controllers
                     token = token.Replace("Bearer ", "");
                 }
                 bool isValidPassword = false;
-
+                var loggedinUserId = HttpContext.Session.GetString("UserId");
                 UserViewModel model = new UserViewModel();
                 string apiUrl = configuration["Baseurl"];
                 using (var client = new HttpClient())
@@ -1068,7 +1068,7 @@ namespace Hutech.Controllers
                     client.DefaultRequestHeaders.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    HttpResponseMessage response = await client.GetAsync(string.Format("User/RejectUser/{0}/{1}", comment, userId));
+                    HttpResponseMessage response = await client.GetAsync(string.Format("User/RejectUser/{0}/{1}/{2}", comment, userId,loggedinUserId));
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -1111,6 +1111,7 @@ namespace Hutech.Controllers
                 bool isValidPassword = false;
                 var loggedInUserEmail = HttpContext.Session.GetString("LoogedInUser").ToString();
                 var user = await userManager.FindByNameAsync(loggedInUserEmail);
+                var loggedinUserId = HttpContext.Session.GetString("UserId");
                 bool isPasswordvalidofLogginUser = await userManager.CheckPasswordAsync(user, Password);
                 if (isPasswordvalidofLogginUser == false)
                 {
@@ -1126,7 +1127,7 @@ namespace Hutech.Controllers
                         client.DefaultRequestHeaders.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        HttpResponseMessage response = await client.GetAsync(string.Format("User/ApproveUser/{0}", UserId));
+                        HttpResponseMessage response = await client.GetAsync(string.Format("User/ApproveUser/{0}/{1}", UserId, loggedinUserId));
 
                         if (response.IsSuccessStatusCode)
                         {

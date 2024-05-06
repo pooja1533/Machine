@@ -250,14 +250,15 @@ namespace Hutech.Infrastructure.Repository
             }
 
         }
-        public async Task<bool> RejectUser(string comment, long userId)
+        public async Task<bool> RejectUser(string comment, long userId,string loggedinUserId)
         {
             try
             {
                 using (IDbConnection connection = new SqlConnection(configuration.GetConnectionString("DBConnection")))
                 {
                     connection.Open();
-                    var result = await connection.ExecuteAsync(UserQueries.RejectUser, new { Id = userId, Comment = comment });
+                    DateTime RejectedDate=DateTime.UtcNow;
+                    var result = await connection.ExecuteAsync(UserQueries.RejectUser, new { Id = userId, Comment = comment, RejectedBy = loggedinUserId , RejectedDate = RejectedDate });
                     if (result == 1)
                     {
                         return true;
@@ -274,7 +275,7 @@ namespace Hutech.Infrastructure.Repository
             }
 
         }
-        public async Task<bool> ApproveUser(long UserId)
+        public async Task<bool> ApproveUser(long UserId, string loggedinUserId)
         {
             try
             {
@@ -282,7 +283,8 @@ namespace Hutech.Infrastructure.Repository
                 {
                     connection.Open();
                     bool IsApprove = true;
-                    var result = await connection.ExecuteAsync(UserQueries.ApproveUser, new { Id = UserId });
+                    DateTime ApprovedDate = DateTime.UtcNow;
+                    var result = await connection.ExecuteAsync(UserQueries.ApproveUser, new { Id = UserId, ApprovedDate= ApprovedDate , ApprovedBy =loggedinUserId});
                     if (result == 1)
                     {
                         return true;

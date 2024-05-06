@@ -29,8 +29,8 @@ namespace Hutech.Sql.Queries
         public static string DeleteRoleOfUser => "Delete From AspNetUserRoles where UserId=@Id";
         public static string GetAllUsersForAdmin = "Select a.Id,a.UserName,u.FirstName,u.Lastname,u.PhoneNumber,u.Address,r.Name as RoleName from AspNetUsers a left join UserDetail u on u.userId=a.Id" +
            " left join AspNetUserRoles ar on ar.UserId=a.Id  left join AspNetRoles r on r.Id=ar.RoleId where u.IsActive=1 and a.Id!=@Id";
-        public static string ApproveUser => "Update UserDetail set UserstatusId=(Select Id from UserStatus where Name='Performed') where Id=@Id";
-        public static string RejectUser => "Update UserDetail set RemarkForReject=@Comment,UserstatusId=(select Id from UserStatus where name='Rejected')where Id=@Id";
+        public static string ApproveUser => "Update UserDetail set ApprovedDate=@ApprovedDate,ApprovedBy=@ApprovedBy,UserstatusId=(Select Id from UserStatus where Name='Performed') where Id=@Id";
+        public static string RejectUser => "Update UserDetail set RemarkForReject=@Comment,RejectedBy=@RejectedBy,RejectedDate=@RejectedDate,UserstatusId=(select Id from UserStatus where name='Rejected')where Id=@Id";
         public static string GetUserDefualtStatus => "Select Id from UserStatus where Name='Pending'";
         public static string GetAllFilterUser = "select u.Id as UserId,ut.Name as UserType,u.EmployeeId,u.Remark,u.FirstName+' '+u.LastName as fullName,us.Name as UserstatusName," +
             "u.WindowsUserName,u.Email,d.Name as DepartmentName,L.Name as LocationName,(select STRING_AGG(r.name,',') from AspNetRoles r inner join AspNetUserRoles ar on ar.RoleId=r.Id  where u.AspNetUserId=ar.UserId) as RoleName from UserDetail u " +

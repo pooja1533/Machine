@@ -183,13 +183,13 @@ namespace Hutech.API.Controllers
                 return ApiResponse;
             }
         }
-        [HttpGet("ApproveUser/{UserId}")]
-        public async Task<ApiResponse<string>> ApproveUser(long UserId)
+        [HttpGet("ApproveUser/{UserId}/{loggedinUserId}")]
+        public async Task<ApiResponse<string>> ApproveUser(long UserId,string loggedinUserId)
         {
             var ApiResponse = new ApiResponse<string>();
             try
             {
-                bool result = await userRepository.ApproveUser(UserId);
+                bool result = await userRepository.ApproveUser(UserId,loggedinUserId);
                 ApiResponse.Success = result;
                 ApiResponse.Message = "User Approved successfully";
                 return ApiResponse;
@@ -206,13 +206,13 @@ namespace Hutech.API.Controllers
                 return ApiResponse;
             }
         }
-        [HttpGet("RejectUser/{comment}/{userId}")]
-        public async Task<ApiResponse<string>> RejectUser(string comment,long userId)
+        [HttpGet("RejectUser/{comment}/{userId}/{loggedinUserId}")]
+        public async Task<ApiResponse<string>> RejectUser(string comment,long userId,string loggedinUserId)
         {
             var ApiResponse = new ApiResponse<string>();
             try
             {
-                bool result = await userRepository.RejectUser(comment,userId);
+                bool result = await userRepository.RejectUser(comment,userId,loggedinUserId);
                 ApiResponse.Success = result;
                 ApiResponse.Message = "User Approved successfully";
                 return ApiResponse;
